@@ -9,7 +9,7 @@ const SERVERS: RTCConfiguration = {
   ],
 };
 
-export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
+export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvatar: string | null = null) {
   const localStream: Ref<MediaStream | null> = shallowRef(null);
   const screenStream: Ref<MediaStream | null> = shallowRef(null);
   const participants = ref<Participant[]>([]);
@@ -77,7 +77,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
     } else {
       participants.value = [
         ...participants.value,
-        { socketId, userName: `Участник`, displayName: '', initials: '?', avatar: null, stream, isMuted: false, isVideoOff: false, isScreenSharing: false },
+        { socketId, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream, isMuted: false, isVideoOff: false, isScreenSharing: false },
       ];
     }
   }
@@ -109,8 +109,9 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
       localStream.value = stream;
       mediaDenied.value = false;
       isMuted.value = false;
-      isVideoOff.value = false;
+      isVideoOff.value = stream.getVideoTracks().length === 0;
       addLocalTracksToAllPeers();
+      broadcastMediaState();
       await renegotiateAllPeers();
     } catch (e) {
       mediaDenied.value = true;
@@ -135,7 +136,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
       if (!participants.value.find((p) => p.socketId === remoteSocketId)) {
         participants.value = [
           ...participants.value,
-          { socketId: remoteSocketId, userName: `Участник`, displayName: '', initials: '?', avatar: null, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
+          { socketId: remoteSocketId, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
         ];
       }
       const pc = createPeerConnection(remoteSocketId);
@@ -144,6 +145,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
         await pc.setLocalDescription(offer);
         socket.emit('offer', { target: remoteSocketId, offer });
         broadcastUserInfo(remoteSocketId);
+        broadcastMediaState();
       } catch (e) { console.error('Error creating offer:', e); }
     });
 
@@ -153,7 +155,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
       if (!participants.value.find((p) => p.socketId === payload.from)) {
         participants.value = [
           ...participants.value,
-          { socketId: payload.from, userName: `Участник`, displayName: '', initials: '?', avatar: null, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
+          { socketId: payload.from, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
         ];
       }
       try {
@@ -162,6 +164,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?') {
         await pc.setLocalDescription(answer);
         socket.emit('answer', { target: payload.from, answer });
         broadcastUserInfo(payload.from);
+        broadcastMediaState();
       } catch (e) { console.error('Error handling offer:', e); }
     });
 

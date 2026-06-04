@@ -244,7 +244,7 @@ const {
   toggleMute,
   toggleVideo,
   toggleScreenShare,
-} = useWebRTC(roomSlug, authStore.displayName, authStore.initials);
+} = useWebRTC(roomSlug, authStore.displayName, authStore.initials, authStore.profile?.avatar ?? null);
 
 const AVATAR_COLORS = ['#4F46E5', '#7C3AED', '#DB2777', '#DC2626', '#EA580C', '#CA8A04', '#16A34A', '#0891B2', '#2563EB', '#9333EA'];
 
