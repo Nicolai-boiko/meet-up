@@ -82,13 +82,20 @@
             <div v-else class="w-full h-full flex items-center justify-center bg-gray-700">
               <div class="text-white text-xs font-bold" :style="{ backgroundColor: remoteAvatarColor(p.socketId) }" style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px">{{ p.initials }}</div>
             </div>
-            <div class="absolute bottom-0.5 left-1 text-white text-[10px] drop-shadow truncate max-w-[110px]">{{ p.displayName || p.userName }}</div>
           </div>
         </div>
         <!-- Self-view PiP -->
         <div v-show="localStream && showSelfView" class="absolute bottom-24 right-2 w-40 aspect-video bg-gray-800 rounded-lg overflow-hidden shadow-2xl border-2 border-blue-400 z-10">
           <video ref="selfVideoEl" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
-          <div class="absolute bottom-0.5 left-1 text-white text-[10px] drop-shadow">Вы</div>
+          <div v-if="!localStream || isVideoOff" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-700">
+            <template v-if="authStore.profile?.avatar">
+              <img :src="authStore.profile.avatar" class="w-12 h-12 rounded-full object-cover mb-1 border-2 border-gray-500" />
+            </template>
+            <template v-else>
+              <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white mb-1" :style="{ backgroundColor: localAvatarColor }">{{ authStore.initials }}</div>
+            </template>
+            <span class="text-gray-200 text-xs font-medium">{{ authStore.displayName }}</span>
+          </div>
           <button @click="showSelfView = false" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/50 text-white flex items-center justify-center text-[10px] hover:bg-black/70">✕</button>
         </div>
       </template>
@@ -108,7 +115,6 @@
                 </template>
                 <span class="text-gray-300 text-sm">{{ p.displayName || p.userName }}</span>
               </div>
-              <div class="absolute bottom-2 left-3 text-white text-sm drop-shadow-lg">{{ p.displayName || p.userName }}</div>
               <div v-if="p.isMuted" class="absolute top-2 right-2 bg-red-500 rounded-full p-1">
                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 01-16 0h2a6 6 0 0012 0h2zm-8 6a8.003 8.003 0 01-7.07-4H5a6 6 0 0010 0h2.07A8.014 8.014 0 0110 16z" clip-rule="evenodd" /></svg>
               </div>
@@ -121,16 +127,15 @@
           <!-- Self-view PiP -->
           <div v-show="localStream && showSelfView" class="absolute bottom-2 right-2 w-48 sm:w-56 aspect-video bg-gray-800 rounded-lg overflow-hidden shadow-2xl border-2 border-gray-600 hover:border-blue-400 transition-colors group/self z-10">
             <video ref="selfVideoEl" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
-            <div v-if="isVideoOff" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-700">
+            <div v-if="!localStream || isVideoOff" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-700">
               <template v-if="authStore.profile?.avatar">
-                <img :src="authStore.profile.avatar" class="w-10 h-10 rounded-full object-cover mb-1 border border-gray-500" />
+                <img :src="authStore.profile.avatar" class="w-16 h-16 rounded-full object-cover mb-2 border-2 border-gray-500" />
               </template>
               <template v-else>
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold text-white mb-1" :style="{ backgroundColor: localAvatarColor }">{{ authStore.initials }}</div>
+                <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white mb-2" :style="{ backgroundColor: localAvatarColor }">{{ authStore.initials }}</div>
               </template>
-              <span class="text-gray-300 text-xs">Вы</span>
+              <span class="text-gray-200 text-sm font-medium">{{ authStore.displayName }}</span>
             </div>
-            <div class="absolute bottom-1 left-2 text-white text-xs drop-shadow-lg">Вы</div>
             <button @click="showSelfView = false" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/self:opacity-100 transition-opacity hover:bg-black/70" title="Скрыть">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
             </button>
@@ -239,7 +244,7 @@ const {
   toggleMute,
   toggleVideo,
   toggleScreenShare,
-} = useWebRTC(roomSlug);
+} = useWebRTC(roomSlug, authStore.displayName, authStore.initials);
 
 const AVATAR_COLORS = ['#4F46E5', '#7C3AED', '#DB2777', '#DC2626', '#EA580C', '#CA8A04', '#16A34A', '#0891B2', '#2563EB', '#9333EA'];
 

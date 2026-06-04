@@ -27,6 +27,14 @@ export const initSignalingServer = (httpServer: HttpServer) => {
       io.to(payload.target).emit('ice-candidate', { from: socket.id, candidate: payload.candidate });
     });
 
+    socket.on('media-state', (data: { to: string; muted: boolean; videoOff: boolean }) => {
+      io.to(data.to).emit('media-state', { id: socket.id, muted: data.muted, videoOff: data.videoOff });
+    });
+
+    socket.on('user-info', (data: { to: string; name: string; init: string }) => {
+      io.to(data.to).emit('user-info', { id: socket.id, name: data.name, init: data.init });
+    });
+
     socket.on('disconnect', () => {
       console.log(`👋 Client disconnected: ${socket.id}`);
       io.emit('user-disconnected', socket.id);
