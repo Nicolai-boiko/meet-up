@@ -90,7 +90,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', myAvatar:
 
   function broadcastUserInfo(remoteId: string) {
     if (myName) {
-      const avatar = myAvatar && !myAvatar.startsWith('data:') ? myAvatar : null;
+      const avatar = (myAvatar && !myAvatar.startsWith('data:')) ? myAvatar : null;
       socket.emit('user-info', { to: remoteId, name: myName, init: myInit, avatar });
     }
   }

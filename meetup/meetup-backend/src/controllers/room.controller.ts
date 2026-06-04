@@ -7,7 +7,7 @@ interface AuthRequest extends Request {
 
 export const getRoomBySlug = async (req: Request, res: Response) => {
   try {
-    const { slug } = req.params;
+    const slug = req.params.slug as string;
     const room = await prisma.room.findUnique({
       where: { slug },
       include: { host: { select: { id: true, name: true, email: true } } },

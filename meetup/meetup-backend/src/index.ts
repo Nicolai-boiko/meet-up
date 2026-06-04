@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { createServer } from 'http'; // 👈 Импортируем createServer
 import { initSignalingServer } from './services/signaling'; // 👈 Импортируем наш сервер сигнализации
 import meetupRoutes from './routes/meetup.routes';
@@ -22,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/api/meetups', meetupRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);

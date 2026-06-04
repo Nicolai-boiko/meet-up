@@ -94,6 +94,15 @@ export const useAuthStore = defineStore('auth', () => {
     await apiClient.put('/profile/password', { currentPassword, newPassword });
   }
 
+  async function uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await apiClient.post<UserProfile>('/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    profile.value = response.data;
+  }
+
   return {
     token,
     userId,
@@ -108,5 +117,6 @@ export const useAuthStore = defineStore('auth', () => {
     fetchProfile,
     updateProfile,
     changePassword,
+    uploadAvatar,
   };
 });

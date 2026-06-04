@@ -234,15 +234,11 @@ async function handleAvatarUpload(e: Event) {
     profileError.value = 'Файл слишком большой (макс. 2MB)';
     return;
   }
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      await authStore.updateProfile({ avatar: reader.result as string });
-    } catch (e: any) {
-      profileError.value = e.response?.data?.message || 'Ошибка загрузки аватара';
-    }
-  };
-  reader.readAsDataURL(file);
+  try {
+    await authStore.uploadAvatar(file);
+  } catch (e: any) {
+    profileError.value = e.response?.data?.message || 'Ошибка загрузки аватара';
+  }
 }
 
 async function removeAvatar() {
