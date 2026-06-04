@@ -9,13 +9,7 @@ const SERVERS: RTCConfiguration = {
   ],
 };
 
-export interface UserInfo {
-  displayName: string;
-  initials: string;
-  avatar: string | null;
-}
-
-export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
+export function useWebRTC(roomSlug: string, myName = '', myInit = '?', myAvatar: string | null = null) {
   const localStream: Ref<MediaStream | null> = shallowRef(null);
   const screenStream: Ref<MediaStream | null> = shallowRef(null);
   const participants = ref<Participant[]>([]);
@@ -51,7 +45,6 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
       }
     };
 
-    // Add local tracks if already available
     if (localStream.value) {
       addLocalTracksToPeer(pc);
     }
@@ -71,60 +64,55 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
     if (!localStream.value) return;
     peerConnections.forEach((pc) => {
       localStream.value!.getTracks().forEach((track) => {
-        // Avoid adding duplicate senders
         const already = pc.getSenders().some((s) => s.track?.kind === track.kind);
-        if (!already) {
-          pc.addTrack(track, localStream.value!);
-        }
+        if (!already) pc.addTrack(track, localStream.value!);
       });
     });
   }
 
-  function updateParticipantStream(socketId: string, stream: MediaStream, info?: { displayName: string; initials: string; avatar: string | null } | null) {
+  function updateParticipantStream(socketId: string, stream: MediaStream) {
     const existing = participants.value.find((p) => p.socketId === socketId);
     if (existing) {
       existing.stream = stream;
     } else {
       participants.value = [
         ...participants.value,
-        {
-          socketId,
-          userName: info?.displayName ?? `Участник`,
-          displayName: info?.displayName ?? '',
-          initials: info?.initials ?? '?',
-          avatar: info?.avatar ?? null,
-          stream,
-          isMuted: false,
-          isVideoOff: false,
-          isScreenSharing: false,
-        },
+        { socketId, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream, isMuted: false, isVideoOff: false, isScreenSharing: false },
       ];
     }
   }
 
   function removeParticipant(socketId: string) {
     const pc = peerConnections.get(socketId);
-    if (pc) {
-      pc.close();
-      peerConnections.delete(socketId);
-    }
+    if (pc) { pc.close(); peerConnections.delete(socketId); }
     participants.value = participants.value.filter((p) => p.socketId !== socketId);
   }
 
+  function broadcastUserInfo(remoteId: string) {
+    if (myName) {
+      const avatar = (myAvatar && !myAvatar.startsWith('data:')) ? myAvatar : null;
+      socket.emit('user-info', { to: remoteId, name: myName, init: myInit, avatar });
+    }
+  }
+
+  function broadcastMediaState() {
+    peerConnections.forEach((_, remoteId) => {
+      socket.emit('media-state', { to: remoteId, muted: isMuted.value, videoOff: isVideoOff.value });
+    });
+  }
+
   async function enableMedia(kinds?: { video?: boolean; audio?: boolean }) {
-    const constraints = {
-      video: kinds?.video ?? true,
-      audio: kinds?.audio ?? true,
-    };
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: kinds?.video ?? true,
+        audio: kinds?.audio ?? true,
+      });
       localStream.value = stream;
       mediaDenied.value = false;
       isMuted.value = false;
-      isVideoOff.value = false;
-
-      // Add tracks to all existing peer connections and renegotiate
+      isVideoOff.value = stream.getVideoTracks().length === 0;
       addLocalTracksToAllPeers();
+      broadcastMediaState();
       await renegotiateAllPeers();
     } catch (e) {
       mediaDenied.value = true;
@@ -138,83 +126,78 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         socket.emit('offer', { target: remoteId, offer });
-      } catch (e) {
-        console.error('Renegotiation error:', e);
-      }
+      } catch (e) { console.error('Renegotiation error:', e); }
     }
   }
 
   async function joinRoom() {
-    socket.emit('join-room', roomSlug, userInfo);
+    socket.emit('join-room', roomSlug);
 
-    socket.on('user-connected', async (remoteSocketId: string, remoteInfo?: { displayName: string; initials: string; avatar: string | null }) => {
-      // Store/update participant info
-      const existing = participants.value.find((p) => p.socketId === remoteSocketId);
-      if (existing && remoteInfo) {
-        existing.userName = remoteInfo.displayName;
-        existing.displayName = remoteInfo.displayName;
-        existing.initials = remoteInfo.initials;
-        existing.avatar = remoteInfo.avatar;
-      } else if (!existing && remoteInfo) {
+    socket.on('user-connected', async (remoteSocketId: string) => {
+      if (!participants.value.find((p) => p.socketId === remoteSocketId)) {
         participants.value = [
           ...participants.value,
-          {
-            socketId: remoteSocketId,
-            userName: remoteInfo.displayName,
-            displayName: remoteInfo.displayName,
-            initials: remoteInfo.initials,
-            avatar: remoteInfo.avatar,
-            stream: undefined,
-            isMuted: false,
-            isVideoOff: false,
-            isScreenSharing: false,
-          },
+          { socketId: remoteSocketId, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
         ];
       }
-
       const pc = createPeerConnection(remoteSocketId);
       try {
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         socket.emit('offer', { target: remoteSocketId, offer });
-      } catch (e) {
-        console.error('Error creating offer:', e);
-      }
+        broadcastUserInfo(remoteSocketId);
+        broadcastMediaState();
+      } catch (e) { console.error('Error creating offer:', e); }
     });
 
     socket.on('offer', async (payload: { from: string; offer: RTCSessionDescriptionInit }) => {
       let pc = peerConnections.get(payload.from);
       if (!pc) pc = createPeerConnection(payload.from);
+      if (!participants.value.find((p) => p.socketId === payload.from)) {
+        participants.value = [
+          ...participants.value,
+          { socketId: payload.from, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
+        ];
+      }
       try {
         await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         socket.emit('answer', { target: payload.from, answer });
-      } catch (e) {
-        console.error('Error handling offer:', e);
-      }
+        broadcastUserInfo(payload.from);
+        broadcastMediaState();
+      } catch (e) { console.error('Error handling offer:', e); }
     });
 
     socket.on('answer', async (payload: { from: string; answer: RTCSessionDescriptionInit }) => {
       const pc = peerConnections.get(payload.from);
       if (pc) {
-        try {
-          await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
-        } catch (e) {
-          console.error('Error handling answer:', e);
-        }
+        try { await pc.setRemoteDescription(new RTCSessionDescription(payload.answer)); }
+        catch (e) { console.error('Error handling answer:', e); }
       }
     });
 
     socket.on('ice-candidate', async (payload: { from: string; candidate: RTCIceCandidateInit }) => {
       const pc = peerConnections.get(payload.from);
       if (pc) {
-        try {
-          await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
-        } catch (e) {
-          console.error('Error adding ICE candidate:', e);
-        }
+        try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }
+        catch (e) { console.error('Error adding ICE candidate:', e); }
       }
+    });
+
+    socket.on('user-info', (data: { id: string; name: string; init: string; avatar?: string | null }) => {
+      const p = participants.value.find((p) => p.socketId === data.id);
+      if (p) {
+        p.displayName = data.name;
+        p.userName = data.name;
+        p.initials = data.init;
+        p.avatar = data.avatar ?? null;
+      }
+    });
+
+    socket.on('media-state', (data: { id: string; muted: boolean; videoOff: boolean }) => {
+      const p = participants.value.find((p) => p.socketId === data.id);
+      if (p) { p.isMuted = data.muted; p.isVideoOff = data.videoOff; }
     });
 
     socket.on('user-disconnected', (remoteSocketId: string) => {
@@ -226,74 +209,69 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
 
   function toggleMute() {
     if (localStream.value) {
-      const audioTrack = localStream.value.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        isMuted.value = !audioTrack.enabled;
-      }
+      const t = localStream.value.getAudioTracks()[0];
+      if (t) { t.enabled = !t.enabled; isMuted.value = !t.enabled; broadcastMediaState(); }
     }
   }
 
   function toggleVideo() {
     if (localStream.value) {
-      const videoTrack = localStream.value.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = !videoTrack.enabled;
-        isVideoOff.value = !videoTrack.enabled;
-      }
+      const t = localStream.value.getVideoTracks()[0];
+      if (t) { t.enabled = !t.enabled; isVideoOff.value = !t.enabled; broadcastMediaState(); }
     }
   }
 
   async function toggleScreenShare() {
-    if (isScreenSharing.value) {
-      stopScreenShare();
-      return;
-    }
+    if (isScreenSharing.value) { stopScreenShare(); return; }
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
       screenStream.value = stream;
       isScreenSharing.value = true;
-
       const screenTrack = stream.getVideoTracks()[0];
       if (screenTrack) {
         peerConnections.forEach((pc) => {
           const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
           if (sender) sender.replaceTrack(screenTrack);
+          else { pc.addTrack(screenTrack, stream); renegotiateSinglePeer(pc); }
         });
         screenTrack.onended = () => stopScreenShare();
       }
-    } catch (e) {
-      console.error('Screen share error:', e);
-    }
+    } catch (e) { console.error('Screen share error:', e); }
   }
 
   function stopScreenShare() {
-    if (screenStream.value) {
-      screenStream.value.getTracks().forEach((t) => t.stop());
-      screenStream.value = null;
-    }
+    if (screenStream.value) { screenStream.value.getTracks().forEach((t) => t.stop()); screenStream.value = null; }
     isScreenSharing.value = false;
-
     const cameraTrack = localStream.value?.getVideoTracks()[0];
     if (cameraTrack) {
       peerConnections.forEach((pc) => {
         const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
         if (sender) sender.replaceTrack(cameraTrack);
+        else { pc.addTrack(cameraTrack, localStream.value!); renegotiateSinglePeer(pc); }
+      });
+    } else {
+      peerConnections.forEach((pc) => {
+        const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
+        if (sender) pc.removeTrack(sender);
       });
     }
+  }
+
+  async function renegotiateSinglePeer(pc: RTCPeerConnection) {
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      for (const [remoteId, existingPc] of peerConnections.entries()) {
+        if (existingPc === pc) { socket.emit('offer', { target: remoteId, offer }); break; }
+      }
+    } catch (e) { console.error('Renegotiation error:', e); }
   }
 
   async function leaveRoom() {
     peerConnections.forEach((pc) => pc.close());
     peerConnections.clear();
-    if (localStream.value) {
-      localStream.value.getTracks().forEach((t) => t.stop());
-      localStream.value = null;
-    }
-    if (screenStream.value) {
-      screenStream.value.getTracks().forEach((t) => t.stop());
-      screenStream.value = null;
-    }
+    if (localStream.value) { localStream.value.getTracks().forEach((t) => t.stop()); localStream.value = null; }
+    if (screenStream.value) { screenStream.value.getTracks().forEach((t) => t.stop()); screenStream.value = null; }
     socket.removeAllListeners();
     disconnectSignaling();
     participants.value = [];
@@ -302,20 +280,8 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
   }
 
   return {
-    localStream,
-    screenStream,
-    participants,
-    isMuted,
-    isVideoOff,
-    isScreenSharing,
-    isConnecting,
-    mediaDenied,
-    error,
-    joinRoom,
-    enableMedia,
-    leaveRoom,
-    toggleMute,
-    toggleVideo,
-    toggleScreenShare,
+    localStream, screenStream, participants, isMuted, isVideoOff, isScreenSharing,
+    isConnecting, mediaDenied, error, joinRoom, enableMedia, leaveRoom,
+    toggleMute, toggleVideo, toggleScreenShare,
   };
 }

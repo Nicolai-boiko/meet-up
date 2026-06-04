@@ -1,12 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { createServer } from 'http'; // 👈 Импортируем createServer
 import { initSignalingServer } from './services/signaling'; // 👈 Импортируем наш сервер сигнализации
 import meetupRoutes from './routes/meetup.routes';
 import authRoutes from './routes/auth.routes';
 import roomRoutes from './routes/room.routes';
 import profileRoutes from './routes/profile.routes';
+import contentRoutes from './routes/content.routes';
 import { prisma } from './config/database';
 
 dotenv.config();
@@ -21,10 +23,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/api/meetups', meetupRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/content', contentRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {
