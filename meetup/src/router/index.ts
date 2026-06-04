@@ -31,9 +31,27 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/create-call',
+      name: 'create-call',
+      component: () => import('../pages/CreateCall.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/room/:slug',
       name: 'video-room',
       component: () => import('../pages/VideoRoom.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/library',
+      name: 'library',
+      component: () => import('../pages/Library.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/schedule',
+      name: 'schedule',
+      component: () => import('../pages/SchedulePlaceholder.vue'),
       meta: { requiresAuth: true },
     },
   ],

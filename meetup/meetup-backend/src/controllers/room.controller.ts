@@ -26,13 +26,28 @@ export const createRoom = async (req: AuthRequest, res: Response) => {
     if (!title || !slug) return res.status(400).json({ message: 'Название и slug обязательны' });
 
     const existing = await prisma.room.findUnique({ where: { slug } });
-    if (existing) return res.status(409).json({ message: 'Slug уже занят' });
+
+    if (existing) {
+      if (existing.isActive) {
+        return res.status(409).json({
+          message: 'Комната с таким названием уже активна. Присоединитесь к ней через поле "Войти".',
+          room: existing,
+        });
+      }
+      // Reactivate inactive room
+      const room = await prisma.room.update({
+        where: { id: existing.id },
+        data: { isActive: true, hostId },
+      });
+      return res.status(200).json(room);
+    }
 
     const room = await prisma.room.create({
       data: { title, slug, hostId, isActive: true },
     });
     res.status(201).json(room);
   } catch (error) {
+    console.error('createRoom error:', error);
     res.status(500).json({ message: 'Ошибка сервера при создании комнаты' });
   }
 };

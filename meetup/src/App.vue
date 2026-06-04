@@ -1,8 +1,35 @@
 <template>
-  <div id="app" class="bg-gray-100 min-h-screen">
-    <header class="bg-blue-600 text-white shadow-md">
+  <div id="app" class="bg-gray-100 h-screen flex flex-col overflow-hidden">
+    <header class="bg-blue-600 text-white shadow-md shrink-0">
       <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-        <router-link to="/home" class="text-2xl font-bold">Meetups</router-link>
+        <div class="flex items-center gap-1">
+          <router-link to="/home" class="text-xl font-bold px-2 hover:text-blue-200 transition-colors">
+            MeetUp
+          </router-link>
+          <template v-if="authStore.isAuthenticated">
+            <router-link
+              to="/create-call"
+              class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-blue-700 transition-colors"
+              active-class="bg-blue-700 text-white"
+            >
+              Звонки
+            </router-link>
+            <router-link
+              to="/library"
+              class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-blue-700 transition-colors"
+              active-class="bg-blue-700 text-white"
+            >
+              Библиотека
+            </router-link>
+            <router-link
+              to="/schedule"
+              class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-blue-700 transition-colors"
+              active-class="bg-blue-700 text-white"
+            >
+              Расписание
+            </router-link>
+          </template>
+        </div>
         <div class="flex items-center gap-4">
           <template v-if="!authStore.isAuthenticated">
             <router-link to="/auth" class="px-4 py-2 rounded-md text-white hover:bg-blue-700">
@@ -39,7 +66,7 @@
         </div>
       </nav>
     </header>
-    <main class="container mx-auto p-6">
+    <main class="container mx-auto p-6 flex-1 min-h-0 overflow-auto">
       <router-view></router-view>
     </main>
   </div>

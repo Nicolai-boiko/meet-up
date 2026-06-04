@@ -60,6 +60,17 @@ export interface Participant {
   isScreenSharing: boolean;
 }
 
+export interface ContentItem {
+  id: number;
+  title: string;
+  type: string;
+  body: string | null;
+  mediaUrl: string | null;
+  authorId: number;
+  createdAt: string;
+  author?: { id: number; name: string; avatar: string | null };
+}
+
 export interface SignalingPayload {
   target: string;
   offer?: RTCSessionDescriptionInit;

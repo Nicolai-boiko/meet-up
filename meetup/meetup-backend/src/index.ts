@@ -7,6 +7,7 @@ import meetupRoutes from './routes/meetup.routes';
 import authRoutes from './routes/auth.routes';
 import roomRoutes from './routes/room.routes';
 import profileRoutes from './routes/profile.routes';
+import contentRoutes from './routes/content.routes';
 import { prisma } from './config/database';
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use('/api/meetups', meetupRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/content', contentRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {

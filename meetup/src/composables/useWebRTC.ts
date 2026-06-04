@@ -9,13 +9,7 @@ const SERVERS: RTCConfiguration = {
   ],
 };
 
-export interface UserInfo {
-  displayName: string;
-  initials: string;
-  avatar: string | null;
-}
-
-export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
+export function useWebRTC(roomSlug: string) {
   const localStream: Ref<MediaStream | null> = shallowRef(null);
   const screenStream: Ref<MediaStream | null> = shallowRef(null);
   const participants = ref<Participant[]>([]);
@@ -51,7 +45,6 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
       }
     };
 
-    // Add local tracks if already available
     if (localStream.value) {
       addLocalTracksToPeer(pc);
     }
@@ -71,7 +64,6 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
     if (!localStream.value) return;
     peerConnections.forEach((pc) => {
       localStream.value!.getTracks().forEach((track) => {
-        // Avoid adding duplicate senders
         const already = pc.getSenders().some((s) => s.track?.kind === track.kind);
         if (!already) {
           pc.addTrack(track, localStream.value!);
@@ -80,7 +72,7 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
     });
   }
 
-  function updateParticipantStream(socketId: string, stream: MediaStream, info?: { displayName: string; initials: string; avatar: string | null } | null) {
+  function updateParticipantStream(socketId: string, stream: MediaStream) {
     const existing = participants.value.find((p) => p.socketId === socketId);
     if (existing) {
       existing.stream = stream;
@@ -89,10 +81,10 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
         ...participants.value,
         {
           socketId,
-          userName: info?.displayName ?? `Участник`,
-          displayName: info?.displayName ?? '',
-          initials: info?.initials ?? '?',
-          avatar: info?.avatar ?? null,
+          userName: `Участник`,
+          displayName: '',
+          initials: '?',
+          avatar: null,
           stream,
           isMuted: false,
           isVideoOff: false,
@@ -122,8 +114,6 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
       mediaDenied.value = false;
       isMuted.value = false;
       isVideoOff.value = false;
-
-      // Add tracks to all existing peer connections and renegotiate
       addLocalTracksToAllPeers();
       await renegotiateAllPeers();
     } catch (e) {
@@ -145,25 +135,19 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
   }
 
   async function joinRoom() {
-    socket.emit('join-room', roomSlug, userInfo);
+    socket.emit('join-room', roomSlug);
 
-    socket.on('user-connected', async (remoteSocketId: string, remoteInfo?: { displayName: string; initials: string; avatar: string | null }) => {
-      // Store/update participant info
-      const existing = participants.value.find((p) => p.socketId === remoteSocketId);
-      if (existing && remoteInfo) {
-        existing.userName = remoteInfo.displayName;
-        existing.displayName = remoteInfo.displayName;
-        existing.initials = remoteInfo.initials;
-        existing.avatar = remoteInfo.avatar;
-      } else if (!existing && remoteInfo) {
+    socket.on('user-connected', async (remoteSocketId: string) => {
+      const exists = participants.value.find((p) => p.socketId === remoteSocketId);
+      if (!exists) {
         participants.value = [
           ...participants.value,
           {
             socketId: remoteSocketId,
-            userName: remoteInfo.displayName,
-            displayName: remoteInfo.displayName,
-            initials: remoteInfo.initials,
-            avatar: remoteInfo.avatar,
+            userName: `Участник`,
+            displayName: '',
+            initials: '?',
+            avatar: null,
             stream: undefined,
             isMuted: false,
             isVideoOff: false,
@@ -185,6 +169,22 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
     socket.on('offer', async (payload: { from: string; offer: RTCSessionDescriptionInit }) => {
       let pc = peerConnections.get(payload.from);
       if (!pc) pc = createPeerConnection(payload.from);
+      if (!participants.value.find((p) => p.socketId === payload.from)) {
+        participants.value = [
+          ...participants.value,
+          {
+            socketId: payload.from,
+            userName: `Участник`,
+            displayName: '',
+            initials: '?',
+            avatar: null,
+            stream: undefined,
+            isMuted: false,
+            isVideoOff: false,
+            isScreenSharing: false,
+          },
+        ];
+      }
       try {
         await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
         const answer = await pc.createAnswer();
@@ -258,7 +258,12 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
       if (screenTrack) {
         peerConnections.forEach((pc) => {
           const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
-          if (sender) sender.replaceTrack(screenTrack);
+          if (sender) {
+            sender.replaceTrack(screenTrack);
+          } else {
+            pc.addTrack(screenTrack, stream);
+            renegotiateSinglePeer(pc);
+          }
         });
         screenTrack.onended = () => stopScreenShare();
       }
@@ -278,8 +283,33 @@ export function useWebRTC(roomSlug: string, userInfo?: UserInfo) {
     if (cameraTrack) {
       peerConnections.forEach((pc) => {
         const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
-        if (sender) sender.replaceTrack(cameraTrack);
+        if (sender) {
+          sender.replaceTrack(cameraTrack);
+        } else {
+          pc.addTrack(cameraTrack, localStream.value!);
+          renegotiateSinglePeer(pc);
+        }
       });
+    } else {
+      peerConnections.forEach((pc) => {
+        const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
+        if (sender) pc.removeTrack(sender);
+      });
+    }
+  }
+
+  async function renegotiateSinglePeer(pc: RTCPeerConnection) {
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      for (const [remoteId, existingPc] of peerConnections.entries()) {
+        if (existingPc === pc) {
+          socket.emit('offer', { target: remoteId, offer });
+          break;
+        }
+      }
+    } catch (e) {
+      console.error('Renegotiation error:', e);
     }
   }
 
