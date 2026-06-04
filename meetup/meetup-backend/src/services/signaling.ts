@@ -31,8 +31,8 @@ export const initSignalingServer = (httpServer: HttpServer) => {
       io.to(data.to).emit('media-state', { id: socket.id, muted: data.muted, videoOff: data.videoOff });
     });
 
-    socket.on('user-info', (data: { to: string; name: string; init: string }) => {
-      io.to(data.to).emit('user-info', { id: socket.id, name: data.name, init: data.init });
+    socket.on('user-info', (data: { to: string; name: string; init: string; avatar?: string | null }) => {
+      io.to(data.to).emit('user-info', { id: socket.id, name: data.name, init: data.init, avatar: data.avatar });
     });
 
     socket.on('disconnect', () => {

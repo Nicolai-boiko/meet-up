@@ -9,7 +9,7 @@ const SERVERS: RTCConfiguration = {
   ],
 };
 
-export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvatar: string | null = null) {
+export function useWebRTC(roomSlug: string, myName = '', myInit = '?', myAvatar: string | null = null) {
   const localStream: Ref<MediaStream | null> = shallowRef(null);
   const screenStream: Ref<MediaStream | null> = shallowRef(null);
   const participants = ref<Participant[]>([]);
@@ -77,7 +77,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvata
     } else {
       participants.value = [
         ...participants.value,
-        { socketId, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream, isMuted: false, isVideoOff: false, isScreenSharing: false },
+        { socketId, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream, isMuted: false, isVideoOff: false, isScreenSharing: false },
       ];
     }
   }
@@ -90,7 +90,8 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvata
 
   function broadcastUserInfo(remoteId: string) {
     if (myName) {
-      socket.emit('user-info', { to: remoteId, name: myName, init: myInit });
+      const avatar = myAvatar && !myAvatar.startsWith('data:') ? myAvatar : null;
+      socket.emit('user-info', { to: remoteId, name: myName, init: myInit, avatar });
     }
   }
 
@@ -136,7 +137,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvata
       if (!participants.value.find((p) => p.socketId === remoteSocketId)) {
         participants.value = [
           ...participants.value,
-          { socketId: remoteSocketId, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
+          { socketId: remoteSocketId, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
         ];
       }
       const pc = createPeerConnection(remoteSocketId);
@@ -155,7 +156,7 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvata
       if (!participants.value.find((p) => p.socketId === payload.from)) {
         participants.value = [
           ...participants.value,
-          { socketId: payload.from, userName: `Участник`, displayName: '', initials: '?', avatar: mockAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
+          { socketId: payload.from, userName: `Участник`, displayName: '', initials: '?', avatar: myAvatar, stream: undefined, isMuted: false, isVideoOff: false, isScreenSharing: false },
         ];
       }
       try {
@@ -184,12 +185,13 @@ export function useWebRTC(roomSlug: string, myName = '', myInit = '?', mockAvata
       }
     });
 
-    socket.on('user-info', (data: { id: string; name: string; init: string }) => {
+    socket.on('user-info', (data: { id: string; name: string; init: string; avatar?: string | null }) => {
       const p = participants.value.find((p) => p.socketId === data.id);
       if (p) {
         p.displayName = data.name;
         p.userName = data.name;
         p.initials = data.init;
+        p.avatar = data.avatar ?? null;
       }
     });
 
