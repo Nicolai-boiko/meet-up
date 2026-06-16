@@ -51,7 +51,7 @@ const router = createRouter({
     {
       path: '/schedule',
       name: 'schedule',
-      component: () => import('../pages/SchedulePlaceholder.vue'),
+      component: () => import('../pages/Schedule.vue'),
       meta: { requiresAuth: true },
     },
   ],

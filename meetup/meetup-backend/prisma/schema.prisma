@@ -22,8 +22,8 @@ model User {
   rooms             Room[]    @relation("RoomHost")
   content           Content[]
 
-  hostedMeetings    Meeting[] @relation("MeetingHost")
-  attendingMeetings Meeting[] @relation("MeetingParticipants")
+  hostedMeetings    Meeting[]              @relation("MeetingHost")
+  meetingParticipations MeetingParticipant[]
 }
 
 model Room {
@@ -53,7 +53,20 @@ model Meeting {
   roomId      Int?
   room        Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
 
-  participants User[]  @relation("MeetingParticipants")
+  meetingParticipants MeetingParticipant[]
+}
+
+model MeetingParticipant {
+  id        Int      @id @default(autoincrement())
+  meetingId Int
+  userId    Int
+  status    String   @default("INVITED")
+  createdAt DateTime @default(now())
+
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
 }
 
 model Content {

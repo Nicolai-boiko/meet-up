@@ -1,11 +1,38 @@
-export interface Meetup {
-  id: string;
+export interface UserSummary {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+  firstName: string | null;
+  lastName: string | null;
+}
+
+export interface ParticipantInfo extends UserSummary {
+  status: MeetingParticipantStatus;
+  meetingParticipantId: number;
+}
+
+export type MeetingParticipantStatus = 'INVITED' | 'ACCEPTED' | 'DECLINED';
+
+export interface RoomSummary {
+  id: number;
   title: string;
-  description: string;
-  date: string;
-  location: string;
-  organizer: string;
-  attendees: string[];
+  slug: string;
+  isActive: boolean;
+}
+
+export interface Meetup {
+  id: number;
+  title: string;
+  description: string | null;
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+  hostId: number;
+  roomId: number | null;
+  host?: UserSummary;
+  participants?: ParticipantInfo[];
+  room?: RoomSummary | null;
 }
 
 export interface UserCredentials {

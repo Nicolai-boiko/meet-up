@@ -5,11 +5,14 @@ const SOCKET_URL = 'http://localhost:3000';
 let socket: Socket | null = null;
 
 export function getSignalingSocket(): Socket {
-  if (!socket?.connected) {
+  if (!socket) {
     socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
-      autoConnect: true,
+      autoConnect: false,
     });
+  }
+  if (!socket.connected) {
+    socket.connect();
   }
   return socket;
 }

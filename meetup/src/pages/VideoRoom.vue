@@ -62,6 +62,9 @@
       </div>
     </div>
 
+    <!-- Main content + chat -->
+    <div class="flex-1 flex min-h-0 overflow-hidden">
+
     <!-- Main content area -->
     <div class="flex-1 px-4 py-3 overflow-hidden min-h-0 relative flex flex-col">
 
@@ -148,6 +151,88 @@
 
     </div>
 
+    <!-- Chat Panel -->
+    <aside
+      v-if="showChat"
+      class="w-80 border-l border-gray-700 bg-gray-850 flex flex-col shrink-0"
+    >
+      <!-- Chat header -->
+      <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between shrink-0">
+        <h3 class="text-white text-sm font-semibold">Чат</h3>
+        <button @click="showChat = false" class="text-gray-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div ref="chatMessagesEl" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <div
+          v-for="msg in chatMessages"
+          :key="msg.id"
+          class="flex gap-2"
+          :class="msg.socketId === mySocketId ? 'flex-row-reverse' : ''"
+        >
+          <!-- Avatar -->
+          <div class="shrink-0">
+            <img
+              v-if="msg.avatar"
+              :src="msg.avatar"
+              class="w-7 h-7 rounded-full object-cover"
+            />
+            <div
+              v-else
+              class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+              :style="{ backgroundColor: chatAvatarColor(msg.socketId) }"
+            >
+              {{ msg.initials }}
+            </div>
+          </div>
+          <!-- Bubble -->
+          <div
+            class="max-w-[75%] rounded-xl px-3 py-2 text-sm"
+            :class="msg.socketId === mySocketId
+              ? 'bg-blue-600 text-white rounded-tr-sm'
+              : 'bg-gray-700 text-gray-200 rounded-tl-sm'"
+          >
+            <div class="text-[11px] opacity-70 mb-0.5" :class="msg.socketId === mySocketId ? 'text-right' : ''">
+              {{ msg.userName }} · {{ formatChatTime(msg.timestamp) }}
+            </div>
+            <div class="whitespace-pre-wrap break-words">{{ msg.text }}</div>
+          </div>
+        </div>
+        <div v-if="chatMessages.length === 0" class="text-center text-gray-500 text-sm py-8">
+          Сообщений пока нет
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="p-3 border-t border-gray-700 shrink-0">
+        <div class="flex gap-2">
+          <input
+            v-model="chatInput"
+            type="text"
+            placeholder="Сообщение..."
+            maxlength="2000"
+            class="flex-1 bg-gray-700 text-white text-sm rounded-lg px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            @keyup.enter="sendChatMessage"
+          />
+          <button
+            @click="sendChatMessage"
+            :disabled="!chatInput.trim()"
+            class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    </div>
+
     <!-- Control Bar -->
     <footer class="bg-gray-800 px-4 py-3 flex items-center justify-center gap-4 border-t border-gray-700 shrink-0">
       <button
@@ -187,6 +272,19 @@
       </button>
 
       <button
+        @click="showChat = !showChat"
+        :class="[
+          'control-btn',
+          showChat ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600 hover:bg-gray-500'
+        ]"
+        title="Чат"
+      >
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm3 0H8v2h2V9zm3 0h-2v2h2V9z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <button
         @click="toggleScreenShare"
         :class="[
           'control-btn',
@@ -217,8 +315,19 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, onUpdated, nextTick }
 import { useRoute, useRouter } from 'vue-router';
 import { useWebRTC } from '../composables/useWebRTC';
 import { useAuthStore } from '../stores/auth';
+import { getSignalingSocket } from '../api/signaling';
 import apiClient from '../api';
 import type { Room } from '../types';
+
+interface ChatMessage {
+  id: string;
+  socketId: string;
+  text: string;
+  userName: string;
+  initials: string;
+  avatar: string | null;
+  timestamp: string;
+}
 
 const route = useRoute();
 const router = useRouter();
@@ -229,6 +338,55 @@ const roomTitle = ref('Комната');
 const selfVideoEl = ref<HTMLVideoElement | null>(null);
 const screenVideoEl = ref<HTMLVideoElement | null>(null);
 const showSelfView = ref(true);
+
+// ── Chat state ──
+const showChat = ref(false);
+const chatInput = ref('');
+const chatMessages = ref<ChatMessage[]>([]);
+const chatMessagesEl = ref<HTMLElement | null>(null);
+
+// Используем тот же сокет что и WebRTC, не создаём отдельный
+const chatSocket = getSignalingSocket();
+const mySocketId = ref(chatSocket.connected ? (chatSocket.id ?? '') : '');
+
+chatSocket.on('connect', () => {
+  mySocketId.value = chatSocket.id ?? '';
+});
+
+function sendChatMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  chatSocket.emit('send-message', {
+    roomId: roomSlug,
+    text,
+    userName: authStore.displayName,
+    initials: authStore.initials,
+    avatar: (authStore.profile?.avatar && !authStore.profile.avatar.startsWith('data:'))
+      ? authStore.profile.avatar
+      : null,
+  });
+  chatInput.value = '';
+}
+
+chatSocket.on('new-message', (msg: ChatMessage) => {
+  chatMessages.value = [...chatMessages.value, msg];
+  // Auto-scroll
+  setTimeout(() => {
+    if (chatMessagesEl.value) {
+      chatMessagesEl.value.scrollTop = chatMessagesEl.value.scrollHeight;
+    }
+  }, 50);
+});
+
+function formatChatTime(ts: string): string {
+  return new Date(ts).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+function chatAvatarColor(socketId: string): string {
+  let hash = 0;
+  for (const c of socketId) hash = ((hash << 5) - hash + c.charCodeAt(0)) | 0;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 const {
   localStream,
@@ -306,6 +464,8 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(async () => {
+  chatSocket.off('new-message');
+  chatSocket.off('connect');
   await leaveRoom();
 });
 </script>

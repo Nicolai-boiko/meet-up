@@ -5,6 +5,20 @@ interface AuthRequest extends Request {
   user?: { userId: string; email: string };
 }
 
+export const getAllRooms = async (_req: Request, res: Response) => {
+  try {
+    const rooms = await prisma.room.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, slug: true, isActive: true },
+    });
+    res.json(rooms);
+  } catch (error) {
+    console.error('getAllRooms error:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
 export const getRoomBySlug = async (req: Request, res: Response) => {
   try {
     const slug = req.params.slug as string;

@@ -35,6 +35,20 @@ export const initSignalingServer = (httpServer: HttpServer) => {
       io.to(data.to).emit('user-info', { id: socket.id, name: data.name, init: data.init, avatar: data.avatar });
     });
 
+    // ── Chat ──
+    socket.on('send-message', (payload: { roomId: string; text: string; userName: string; initials: string; avatar: string | null }) => {
+      const msg = {
+        id: `${socket.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        socketId: socket.id,
+        text: payload.text.slice(0, 2000),
+        userName: payload.userName,
+        initials: payload.initials,
+        avatar: payload.avatar,
+        timestamp: new Date().toISOString(),
+      };
+      io.to(payload.roomId).emit('new-message', msg);
+    });
+
     socket.on('disconnect', () => {
       console.log(`👋 Client disconnected: ${socket.id}`);
       io.emit('user-disconnected', socket.id);

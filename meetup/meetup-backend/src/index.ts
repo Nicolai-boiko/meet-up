@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes';
 import roomRoutes from './routes/room.routes';
 import profileRoutes from './routes/profile.routes';
 import contentRoutes from './routes/content.routes';
+import userRoutes from './routes/user.routes';
 import { prisma } from './config/database';
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {

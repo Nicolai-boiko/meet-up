@@ -259,7 +259,7 @@ export type UserWhereInput = {
   rooms?: Prisma.RoomListRelationFilter
   content?: Prisma.ContentListRelationFilter
   hostedMeetings?: Prisma.MeetingListRelationFilter
-  attendingMeetings?: Prisma.MeetingListRelationFilter
+  meetingParticipations?: Prisma.MeetingParticipantListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -276,7 +276,7 @@ export type UserOrderByWithRelationInput = {
   rooms?: Prisma.RoomOrderByRelationAggregateInput
   content?: Prisma.ContentOrderByRelationAggregateInput
   hostedMeetings?: Prisma.MeetingOrderByRelationAggregateInput
-  attendingMeetings?: Prisma.MeetingOrderByRelationAggregateInput
+  meetingParticipations?: Prisma.MeetingParticipantOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -296,7 +296,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   rooms?: Prisma.RoomListRelationFilter
   content?: Prisma.ContentListRelationFilter
   hostedMeetings?: Prisma.MeetingListRelationFilter
-  attendingMeetings?: Prisma.MeetingListRelationFilter
+  meetingParticipations?: Prisma.MeetingParticipantListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -346,7 +346,7 @@ export type UserCreateInput = {
   rooms?: Prisma.RoomCreateNestedManyWithoutHostInput
   content?: Prisma.ContentCreateNestedManyWithoutAuthorInput
   hostedMeetings?: Prisma.MeetingCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -363,7 +363,7 @@ export type UserUncheckedCreateInput = {
   rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutHostInput
   content?: Prisma.ContentUncheckedCreateNestedManyWithoutAuthorInput
   hostedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -379,7 +379,7 @@ export type UserUpdateInput = {
   rooms?: Prisma.RoomUpdateManyWithoutHostNestedInput
   content?: Prisma.ContentUpdateManyWithoutAuthorNestedInput
   hostedMeetings?: Prisma.MeetingUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -396,7 +396,7 @@ export type UserUncheckedUpdateInput = {
   rooms?: Prisma.RoomUncheckedUpdateManyWithoutHostNestedInput
   content?: Prisma.ContentUncheckedUpdateManyWithoutAuthorNestedInput
   hostedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -489,16 +489,6 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
-export type UserListRelationFilter = {
-  every?: Prisma.UserWhereInput
-  some?: Prisma.UserWhereInput
-  none?: Prisma.UserWhereInput
-}
-
-export type UserOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -543,18 +533,6 @@ export type UserCreateNestedOneWithoutHostedMeetingsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserCreateNestedManyWithoutAttendingMeetingsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput> | Prisma.UserCreateWithoutAttendingMeetingsInput[] | Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput | Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-}
-
-export type UserUncheckedCreateNestedManyWithoutAttendingMeetingsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput> | Prisma.UserCreateWithoutAttendingMeetingsInput[] | Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput | Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-}
-
 export type UserUpdateOneRequiredWithoutHostedMeetingsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutHostedMeetingsInput, Prisma.UserUncheckedCreateWithoutHostedMeetingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutHostedMeetingsInput
@@ -563,30 +541,18 @@ export type UserUpdateOneRequiredWithoutHostedMeetingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHostedMeetingsInput, Prisma.UserUpdateWithoutHostedMeetingsInput>, Prisma.UserUncheckedUpdateWithoutHostedMeetingsInput>
 }
 
-export type UserUpdateManyWithoutAttendingMeetingsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput> | Prisma.UserCreateWithoutAttendingMeetingsInput[] | Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput | Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput[]
-  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutAttendingMeetingsInput | Prisma.UserUpsertWithWhereUniqueWithoutAttendingMeetingsInput[]
-  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  update?: Prisma.UserUpdateWithWhereUniqueWithoutAttendingMeetingsInput | Prisma.UserUpdateWithWhereUniqueWithoutAttendingMeetingsInput[]
-  updateMany?: Prisma.UserUpdateManyWithWhereWithoutAttendingMeetingsInput | Prisma.UserUpdateManyWithWhereWithoutAttendingMeetingsInput[]
-  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+export type UserCreateNestedOneWithoutMeetingParticipationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipationsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingParticipationsInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUncheckedUpdateManyWithoutAttendingMeetingsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput> | Prisma.UserCreateWithoutAttendingMeetingsInput[] | Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput | Prisma.UserCreateOrConnectWithoutAttendingMeetingsInput[]
-  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutAttendingMeetingsInput | Prisma.UserUpsertWithWhereUniqueWithoutAttendingMeetingsInput[]
-  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  update?: Prisma.UserUpdateWithWhereUniqueWithoutAttendingMeetingsInput | Prisma.UserUpdateWithWhereUniqueWithoutAttendingMeetingsInput[]
-  updateMany?: Prisma.UserUpdateManyWithWhereWithoutAttendingMeetingsInput | Prisma.UserUpdateManyWithWhereWithoutAttendingMeetingsInput[]
-  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+export type UserUpdateOneRequiredWithoutMeetingParticipationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipationsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingParticipationsInput
+  upsert?: Prisma.UserUpsertWithoutMeetingParticipationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMeetingParticipationsInput, Prisma.UserUpdateWithoutMeetingParticipationsInput>, Prisma.UserUncheckedUpdateWithoutMeetingParticipationsInput>
 }
 
 export type UserCreateNestedOneWithoutContentInput = {
@@ -615,7 +581,7 @@ export type UserCreateWithoutRoomsInput = {
   createdAt?: Date | string
   content?: Prisma.ContentCreateNestedManyWithoutAuthorInput
   hostedMeetings?: Prisma.MeetingCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRoomsInput = {
@@ -631,7 +597,7 @@ export type UserUncheckedCreateWithoutRoomsInput = {
   createdAt?: Date | string
   content?: Prisma.ContentUncheckedCreateNestedManyWithoutAuthorInput
   hostedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRoomsInput = {
@@ -662,7 +628,7 @@ export type UserUpdateWithoutRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   content?: Prisma.ContentUpdateManyWithoutAuthorNestedInput
   hostedMeetings?: Prisma.MeetingUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRoomsInput = {
@@ -678,7 +644,7 @@ export type UserUncheckedUpdateWithoutRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   content?: Prisma.ContentUncheckedUpdateManyWithoutAuthorNestedInput
   hostedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHostedMeetingsInput = {
@@ -693,7 +659,7 @@ export type UserCreateWithoutHostedMeetingsInput = {
   createdAt?: Date | string
   rooms?: Prisma.RoomCreateNestedManyWithoutHostInput
   content?: Prisma.ContentCreateNestedManyWithoutAuthorInput
-  attendingMeetings?: Prisma.MeetingCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHostedMeetingsInput = {
@@ -709,48 +675,12 @@ export type UserUncheckedCreateWithoutHostedMeetingsInput = {
   createdAt?: Date | string
   rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutHostInput
   content?: Prisma.ContentUncheckedCreateNestedManyWithoutAuthorInput
-  attendingMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHostedMeetingsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutHostedMeetingsInput, Prisma.UserUncheckedCreateWithoutHostedMeetingsInput>
-}
-
-export type UserCreateWithoutAttendingMeetingsInput = {
-  email: string
-  name: string
-  passwordHash: string
-  role?: string
-  firstName?: string | null
-  lastName?: string | null
-  birthDate?: Date | string | null
-  avatar?: string | null
-  createdAt?: Date | string
-  rooms?: Prisma.RoomCreateNestedManyWithoutHostInput
-  content?: Prisma.ContentCreateNestedManyWithoutAuthorInput
-  hostedMeetings?: Prisma.MeetingCreateNestedManyWithoutHostInput
-}
-
-export type UserUncheckedCreateWithoutAttendingMeetingsInput = {
-  id?: number
-  email: string
-  name: string
-  passwordHash: string
-  role?: string
-  firstName?: string | null
-  lastName?: string | null
-  birthDate?: Date | string | null
-  avatar?: string | null
-  createdAt?: Date | string
-  rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutHostInput
-  content?: Prisma.ContentUncheckedCreateNestedManyWithoutAuthorInput
-  hostedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutHostInput
-}
-
-export type UserCreateOrConnectWithoutAttendingMeetingsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput>
 }
 
 export type UserUpsertWithoutHostedMeetingsInput = {
@@ -776,7 +706,7 @@ export type UserUpdateWithoutHostedMeetingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.RoomUpdateManyWithoutHostNestedInput
   content?: Prisma.ContentUpdateManyWithoutAuthorNestedInput
-  attendingMeetings?: Prisma.MeetingUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHostedMeetingsInput = {
@@ -792,39 +722,85 @@ export type UserUncheckedUpdateWithoutHostedMeetingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.RoomUncheckedUpdateManyWithoutHostNestedInput
   content?: Prisma.ContentUncheckedUpdateManyWithoutAuthorNestedInput
-  attendingMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type UserUpsertWithWhereUniqueWithoutAttendingMeetingsInput = {
+export type UserCreateWithoutMeetingParticipationsInput = {
+  email: string
+  name: string
+  passwordHash: string
+  role?: string
+  firstName?: string | null
+  lastName?: string | null
+  birthDate?: Date | string | null
+  avatar?: string | null
+  createdAt?: Date | string
+  rooms?: Prisma.RoomCreateNestedManyWithoutHostInput
+  content?: Prisma.ContentCreateNestedManyWithoutAuthorInput
+  hostedMeetings?: Prisma.MeetingCreateNestedManyWithoutHostInput
+}
+
+export type UserUncheckedCreateWithoutMeetingParticipationsInput = {
+  id?: number
+  email: string
+  name: string
+  passwordHash: string
+  role?: string
+  firstName?: string | null
+  lastName?: string | null
+  birthDate?: Date | string | null
+  avatar?: string | null
+  createdAt?: Date | string
+  rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutHostInput
+  content?: Prisma.ContentUncheckedCreateNestedManyWithoutAuthorInput
+  hostedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutHostInput
+}
+
+export type UserCreateOrConnectWithoutMeetingParticipationsInput = {
   where: Prisma.UserWhereUniqueInput
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAttendingMeetingsInput, Prisma.UserUncheckedUpdateWithoutAttendingMeetingsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendingMeetingsInput, Prisma.UserUncheckedCreateWithoutAttendingMeetingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipationsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipationsInput>
 }
 
-export type UserUpdateWithWhereUniqueWithoutAttendingMeetingsInput = {
-  where: Prisma.UserWhereUniqueInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAttendingMeetingsInput, Prisma.UserUncheckedUpdateWithoutAttendingMeetingsInput>
+export type UserUpsertWithoutMeetingParticipationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMeetingParticipationsInput, Prisma.UserUncheckedUpdateWithoutMeetingParticipationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipationsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipationsInput>
+  where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateManyWithWhereWithoutAttendingMeetingsInput = {
-  where: Prisma.UserScalarWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutAttendingMeetingsInput>
+export type UserUpdateToOneWithWhereWithoutMeetingParticipationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMeetingParticipationsInput, Prisma.UserUncheckedUpdateWithoutMeetingParticipationsInput>
 }
 
-export type UserScalarWhereInput = {
-  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-  OR?: Prisma.UserScalarWhereInput[]
-  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-  id?: Prisma.IntFilter<"User"> | number
-  email?: Prisma.StringFilter<"User"> | string
-  name?: Prisma.StringFilter<"User"> | string
-  passwordHash?: Prisma.StringFilter<"User"> | string
-  role?: Prisma.StringFilter<"User"> | string
-  firstName?: Prisma.StringNullableFilter<"User"> | string | null
-  lastName?: Prisma.StringNullableFilter<"User"> | string | null
-  birthDate?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
-  avatar?: Prisma.StringNullableFilter<"User"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+export type UserUpdateWithoutMeetingParticipationsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rooms?: Prisma.RoomUpdateManyWithoutHostNestedInput
+  content?: Prisma.ContentUpdateManyWithoutAuthorNestedInput
+  hostedMeetings?: Prisma.MeetingUpdateManyWithoutHostNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMeetingParticipationsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rooms?: Prisma.RoomUncheckedUpdateManyWithoutHostNestedInput
+  content?: Prisma.ContentUncheckedUpdateManyWithoutAuthorNestedInput
+  hostedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutHostNestedInput
 }
 
 export type UserCreateWithoutContentInput = {
@@ -839,7 +815,7 @@ export type UserCreateWithoutContentInput = {
   createdAt?: Date | string
   rooms?: Prisma.RoomCreateNestedManyWithoutHostInput
   hostedMeetings?: Prisma.MeetingCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutContentInput = {
@@ -855,7 +831,7 @@ export type UserUncheckedCreateWithoutContentInput = {
   createdAt?: Date | string
   rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutHostInput
   hostedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutHostInput
-  attendingMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParticipantsInput
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutContentInput = {
@@ -886,7 +862,7 @@ export type UserUpdateWithoutContentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.RoomUpdateManyWithoutHostNestedInput
   hostedMeetings?: Prisma.MeetingUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUpdateManyWithoutParticipantsNestedInput
+  meetingParticipations?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutContentInput = {
@@ -902,51 +878,7 @@ export type UserUncheckedUpdateWithoutContentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.RoomUncheckedUpdateManyWithoutHostNestedInput
   hostedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutHostNestedInput
-  attendingMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParticipantsNestedInput
-}
-
-export type UserUpdateWithoutAttendingMeetingsInput = {
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  rooms?: Prisma.RoomUpdateManyWithoutHostNestedInput
-  content?: Prisma.ContentUpdateManyWithoutAuthorNestedInput
-  hostedMeetings?: Prisma.MeetingUpdateManyWithoutHostNestedInput
-}
-
-export type UserUncheckedUpdateWithoutAttendingMeetingsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  rooms?: Prisma.RoomUncheckedUpdateManyWithoutHostNestedInput
-  content?: Prisma.ContentUncheckedUpdateManyWithoutAuthorNestedInput
-  hostedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutHostNestedInput
-}
-
-export type UserUncheckedUpdateManyWithoutAttendingMeetingsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meetingParticipations?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -958,14 +890,14 @@ export type UserCountOutputType = {
   rooms: number
   content: number
   hostedMeetings: number
-  attendingMeetings: number
+  meetingParticipations: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rooms?: boolean | UserCountOutputTypeCountRoomsArgs
   content?: boolean | UserCountOutputTypeCountContentArgs
   hostedMeetings?: boolean | UserCountOutputTypeCountHostedMeetingsArgs
-  attendingMeetings?: boolean | UserCountOutputTypeCountAttendingMeetingsArgs
+  meetingParticipations?: boolean | UserCountOutputTypeCountMeetingParticipationsArgs
 }
 
 /**
@@ -1002,8 +934,8 @@ export type UserCountOutputTypeCountHostedMeetingsArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountAttendingMeetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MeetingWhereInput
+export type UserCountOutputTypeCountMeetingParticipationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingParticipantWhereInput
 }
 
 
@@ -1021,7 +953,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   rooms?: boolean | Prisma.User$roomsArgs<ExtArgs>
   content?: boolean | Prisma.User$contentArgs<ExtArgs>
   hostedMeetings?: boolean | Prisma.User$hostedMeetingsArgs<ExtArgs>
-  attendingMeetings?: boolean | Prisma.User$attendingMeetingsArgs<ExtArgs>
+  meetingParticipations?: boolean | Prisma.User$meetingParticipationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1069,7 +1001,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   rooms?: boolean | Prisma.User$roomsArgs<ExtArgs>
   content?: boolean | Prisma.User$contentArgs<ExtArgs>
   hostedMeetings?: boolean | Prisma.User$hostedMeetingsArgs<ExtArgs>
-  attendingMeetings?: boolean | Prisma.User$attendingMeetingsArgs<ExtArgs>
+  meetingParticipations?: boolean | Prisma.User$meetingParticipationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1081,7 +1013,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     rooms: Prisma.$RoomPayload<ExtArgs>[]
     content: Prisma.$ContentPayload<ExtArgs>[]
     hostedMeetings: Prisma.$MeetingPayload<ExtArgs>[]
-    attendingMeetings: Prisma.$MeetingPayload<ExtArgs>[]
+    meetingParticipations: Prisma.$MeetingParticipantPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1491,7 +1423,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   rooms<T extends Prisma.User$roomsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   content<T extends Prisma.User$contentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hostedMeetings<T extends Prisma.User$hostedMeetingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hostedMeetingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  attendingMeetings<T extends Prisma.User$attendingMeetingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attendingMeetingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  meetingParticipations<T extends Prisma.User$meetingParticipationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$meetingParticipationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1996,27 +1928,27 @@ export type User$hostedMeetingsArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * User.attendingMeetings
+ * User.meetingParticipations
  */
-export type User$attendingMeetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$meetingParticipationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Meeting
+   * Select specific fields to fetch from the MeetingParticipant
    */
-  select?: Prisma.MeetingSelect<ExtArgs> | null
+  select?: Prisma.MeetingParticipantSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Meeting
+   * Omit specific fields from the MeetingParticipant
    */
-  omit?: Prisma.MeetingOmit<ExtArgs> | null
+  omit?: Prisma.MeetingParticipantOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.MeetingInclude<ExtArgs> | null
-  where?: Prisma.MeetingWhereInput
-  orderBy?: Prisma.MeetingOrderByWithRelationInput | Prisma.MeetingOrderByWithRelationInput[]
-  cursor?: Prisma.MeetingWhereUniqueInput
+  include?: Prisma.MeetingParticipantInclude<ExtArgs> | null
+  where?: Prisma.MeetingParticipantWhereInput
+  orderBy?: Prisma.MeetingParticipantOrderByWithRelationInput | Prisma.MeetingParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingParticipantWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.MeetingScalarFieldEnum | Prisma.MeetingScalarFieldEnum[]
+  distinct?: Prisma.MeetingParticipantScalarFieldEnum | Prisma.MeetingParticipantScalarFieldEnum[]
 }
 
 /**

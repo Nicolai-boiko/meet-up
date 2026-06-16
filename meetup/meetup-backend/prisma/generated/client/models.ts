@@ -11,5 +11,6 @@
 export type * from './models/User'
 export type * from './models/Room'
 export type * from './models/Meeting'
+export type * from './models/MeetingParticipant'
 export type * from './models/Content'
 export type * from './commonInputTypes'
