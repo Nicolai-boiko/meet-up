@@ -100,11 +100,70 @@
         </router-link>
       </div>
     </section>
+
+    <!-- Upcoming meetups preview -->
+    <section v-if="authStore.isAuthenticated && upcomingMeetups.length" class="bg-white border-t border-gray-200 px-6 py-12">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-800">Ближайшие встречи</h2>
+          <router-link to="/schedule" class="text-sm text-blue-600 hover:underline font-medium">
+            Все встречи →
+          </router-link>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-for="m in upcomingMeetups.slice(0, 6)"
+            :key="m.id"
+            class="border rounded-xl p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer"
+            @click="goToSchedule"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold text-gray-800 text-sm truncate">{{ m.title }}</h3>
+              <span v-if="m.room" class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded shrink-0">🎥</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1.5">
+              {{ formatMeetupDate(m.startTime) }}
+            </p>
+            <p v-if="m.description" class="text-xs text-gray-400 mt-1 line-clamp-2">{{ m.description }}</p>
+            <div class="flex items-center gap-1 mt-2">
+              <span class="text-xs text-gray-500">{{ m.host?.name || 'Неизвестный' }}</span>
+              <span v-if="m.participants?.length" class="text-xs text-gray-400">
+                · {{ m.participants.length }} участ.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { useMeetupStore } from '../stores/meetup';
 
+const router = useRouter();
 const authStore = useAuthStore();
+const meetupStore = useMeetupStore();
+
+function goToSchedule() {
+  router.push('/schedule');
+}
+
+const upcomingMeetups = computed(() => meetupStore.upcomingMeetups);
+
+function formatMeetupDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' })
+    + ' · '
+    + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    meetupStore.fetchMeetups();
+  }
+});
 </script>

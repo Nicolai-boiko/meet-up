@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Room: 'Room',
   Meeting: 'Meeting',
+  MeetingParticipant: 'MeetingParticipant',
   Content: 'Content'
 } as const
 
@@ -113,6 +114,17 @@ export const MeetingScalarFieldEnum = {
 } as const
 
 export type MeetingScalarFieldEnum = (typeof MeetingScalarFieldEnum)[keyof typeof MeetingScalarFieldEnum]
+
+
+export const MeetingParticipantScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  userId: 'userId',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type MeetingParticipantScalarFieldEnum = (typeof MeetingParticipantScalarFieldEnum)[keyof typeof MeetingParticipantScalarFieldEnum]
 
 
 export const ContentScalarFieldEnum = {

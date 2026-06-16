@@ -55,6 +55,11 @@ export type Room = Prisma.RoomModel
  */
 export type Meeting = Prisma.MeetingModel
 /**
+ * Model MeetingParticipant
+ * 
+ */
+export type MeetingParticipant = Prisma.MeetingParticipantModel
+/**
  * Model Content
  * 
  */

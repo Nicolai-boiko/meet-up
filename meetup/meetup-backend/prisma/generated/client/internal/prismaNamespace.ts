@@ -387,6 +387,7 @@ export const ModelName = {
   User: 'User',
   Room: 'Room',
   Meeting: 'Meeting',
+  MeetingParticipant: 'MeetingParticipant',
   Content: 'Content'
 } as const
 
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "room" | "meeting" | "content"
+    modelProps: "user" | "room" | "meeting" | "meetingParticipant" | "content"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,6 +630,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MeetingParticipant: {
+      payload: Prisma.$MeetingParticipantPayload<ExtArgs>
+      fields: Prisma.MeetingParticipantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MeetingParticipantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MeetingParticipantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        findFirst: {
+          args: Prisma.MeetingParticipantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MeetingParticipantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        findMany: {
+          args: Prisma.MeetingParticipantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>[]
+        }
+        create: {
+          args: Prisma.MeetingParticipantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        createMany: {
+          args: Prisma.MeetingParticipantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MeetingParticipantCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>[]
+        }
+        delete: {
+          args: Prisma.MeetingParticipantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        update: {
+          args: Prisma.MeetingParticipantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        deleteMany: {
+          args: Prisma.MeetingParticipantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MeetingParticipantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MeetingParticipantUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>[]
+        }
+        upsert: {
+          args: Prisma.MeetingParticipantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingParticipantPayload>
+        }
+        aggregate: {
+          args: Prisma.MeetingParticipantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMeetingParticipant>
+        }
+        groupBy: {
+          args: Prisma.MeetingParticipantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MeetingParticipantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MeetingParticipantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MeetingParticipantCountAggregateOutputType> | number
+        }
+      }
+    }
     Content: {
       payload: Prisma.$ContentPayload<ExtArgs>
       fields: Prisma.ContentFieldRefs
@@ -782,6 +857,17 @@ export const MeetingScalarFieldEnum = {
 } as const
 
 export type MeetingScalarFieldEnum = (typeof MeetingScalarFieldEnum)[keyof typeof MeetingScalarFieldEnum]
+
+
+export const MeetingParticipantScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  userId: 'userId',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type MeetingParticipantScalarFieldEnum = (typeof MeetingParticipantScalarFieldEnum)[keyof typeof MeetingParticipantScalarFieldEnum]
 
 
 export const ContentScalarFieldEnum = {
@@ -1002,6 +1088,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   room?: Prisma.RoomOmit
   meeting?: Prisma.MeetingOmit
+  meetingParticipant?: Prisma.MeetingParticipantOmit
   content?: Prisma.ContentOmit
 }
 

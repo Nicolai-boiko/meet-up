@@ -4,6 +4,7 @@ import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
+router.get('/', RoomController.getAllRooms);
 router.get('/:slug', RoomController.getRoomBySlug);
 router.post('/', authMiddleware, RoomController.createRoom);
 router.put('/:id', authMiddleware, RoomController.updateRoomStatus);
