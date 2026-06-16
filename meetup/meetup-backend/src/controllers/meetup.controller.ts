@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
+import { sendMeetingInviteEmail, sendMeetingUpdatedEmail } from '../services/email';
 
 interface AuthRequest extends Request {
   user?: { userId: string; email: string };
@@ -24,18 +25,6 @@ function meetingToResponse(m: any) {
       meetingParticipantId: mp.id,
     })) ?? [],
   };
-}
-
-// ── Email stub ──
-function sendInviteEmailStub(hostName: string, guestEmail: string, meetingTitle: string, startTime: Date) {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`📧 [EMAIL STUB] Приглашение на встречу`);
-  console.log(`   От: ${hostName}`);
-  console.log(`   Кому: ${guestEmail}`);
-  console.log(`   Встреча: ${meetingTitle}`);
-  console.log(`   Начало: ${startTime.toLocaleString('ru-RU')}`);
-  console.log(`   Статус: ОЖИДАЕТ РЕАЛИЗАЦИИ EMAIL-СЕРВИСА`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
 // ── GET / ──
@@ -106,13 +95,14 @@ export const createMeetup = async (req: AuthRequest, res: Response) => {
       include: meetingInclude,
     });
 
-    // Email stubs для приглашённых
+    // Отправляем email приглашённым
     if (participantIds?.length) {
-      const hostName = req.user?.email ?? 'Организатор'; // будет заменено на имя
       const invitedUsers = meetup.meetingParticipants.filter((mp) => mp.status === 'INVITED');
       for (const mp of invitedUsers) {
         if (mp.user.email) {
-          sendInviteEmailStub(hostName, mp.user.email, title, new Date(startTime));
+          sendMeetingInviteEmail(mp.user.email, title, new Date(startTime), meetup.id).catch((e) =>
+            console.error('Failed to send invite email:', e),
+          );
         }
       }
     }
@@ -193,14 +183,15 @@ export const updateMeetup = async (req: AuthRequest, res: Response) => {
           data: toAdd.map((userId) => ({ meetingId: Number(id), userId, status: 'INVITED' })),
         });
 
-        // Email stubs для новых приглашённых
-        const hostEmail = req.user?.email ?? '';
+        // Отправляем email новым приглашённым
         for (const userId of toAdd) {
           const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
           if (user?.email) {
             const meetingTitle = title ?? existing.title;
             const meetingStart = startTime ? new Date(startTime) : existing.startTime;
-            sendInviteEmailStub(hostEmail, user.email, meetingTitle, meetingStart);
+            sendMeetingUpdatedEmail(user.email, meetingTitle, meetingStart).catch((e) =>
+              console.error('Failed to send updated invite email:', e),
+            );
           }
         }
       }

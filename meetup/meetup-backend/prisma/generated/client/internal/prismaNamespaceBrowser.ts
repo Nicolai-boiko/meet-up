@@ -55,6 +55,7 @@ export const ModelName = {
   Room: 'Room',
   Meeting: 'Meeting',
   MeetingParticipant: 'MeetingParticipant',
+  PasswordResetToken: 'PasswordResetToken',
   Content: 'Content'
 } as const
 
@@ -125,6 +126,18 @@ export const MeetingParticipantScalarFieldEnum = {
 } as const
 
 export type MeetingParticipantScalarFieldEnum = (typeof MeetingParticipantScalarFieldEnum)[keyof typeof MeetingParticipantScalarFieldEnum]
+
+
+export const PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+} as const
+
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
 
 
 export const ContentScalarFieldEnum = {
