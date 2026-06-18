@@ -81,14 +81,29 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Tag {
+  id      Int          @id @default(autoincrement())
+  name    String       @unique
+  content ContentTag[]
+}
+
+model ContentTag {
+  contentId Int
+  tagId     Int
+  id        Int         @id @default(autoincrement())
+  content   Content     @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag       Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+}
+
 model Content {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
   type        String
   body        String?
   mediaUrl    String?
   authorId    Int
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
 
-  author      User     @relation(fields: [authorId], references: [id])
+  author      User         @relation(fields: [authorId], references: [id])
+  contentTags ContentTag[]
 }

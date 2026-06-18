@@ -237,6 +237,7 @@ export type ContentWhereInput = {
   authorId?: Prisma.IntFilter<"Content"> | number
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  contentTags?: Prisma.ContentTagListRelationFilter
 }
 
 export type ContentOrderByWithRelationInput = {
@@ -248,6 +249,7 @@ export type ContentOrderByWithRelationInput = {
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
+  contentTags?: Prisma.ContentTagOrderByRelationAggregateInput
 }
 
 export type ContentWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +264,7 @@ export type ContentWhereUniqueInput = Prisma.AtLeast<{
   authorId?: Prisma.IntFilter<"Content"> | number
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  contentTags?: Prisma.ContentTagListRelationFilter
 }, "id">
 
 export type ContentOrderByWithAggregationInput = {
@@ -299,6 +302,7 @@ export type ContentCreateInput = {
   mediaUrl?: string | null
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutContentInput
+  contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateInput = {
@@ -309,6 +313,7 @@ export type ContentUncheckedCreateInput = {
   mediaUrl?: string | null
   authorId: number
   createdAt?: Date | string
+  contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentUpdateInput = {
@@ -318,6 +323,7 @@ export type ContentUpdateInput = {
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
+  contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateInput = {
@@ -328,6 +334,7 @@ export type ContentUncheckedUpdateInput = {
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateManyInput = {
@@ -366,6 +373,11 @@ export type ContentListRelationFilter = {
 
 export type ContentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ContentScalarRelationFilter = {
+  is?: Prisma.ContentWhereInput
+  isNot?: Prisma.ContentWhereInput
 }
 
 export type ContentCountOrderByAggregateInput = {
@@ -450,12 +462,27 @@ export type ContentUncheckedUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.ContentScalarWhereInput | Prisma.ContentScalarWhereInput[]
 }
 
+export type ContentCreateNestedOneWithoutContentTagsInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutContentTagsInput, Prisma.ContentUncheckedCreateWithoutContentTagsInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutContentTagsInput
+  connect?: Prisma.ContentWhereUniqueInput
+}
+
+export type ContentUpdateOneRequiredWithoutContentTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutContentTagsInput, Prisma.ContentUncheckedCreateWithoutContentTagsInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutContentTagsInput
+  upsert?: Prisma.ContentUpsertWithoutContentTagsInput
+  connect?: Prisma.ContentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutContentTagsInput, Prisma.ContentUpdateWithoutContentTagsInput>, Prisma.ContentUncheckedUpdateWithoutContentTagsInput>
+}
+
 export type ContentCreateWithoutAuthorInput = {
   title: string
   type: string
   body?: string | null
   mediaUrl?: string | null
   createdAt?: Date | string
+  contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutAuthorInput = {
@@ -465,6 +492,7 @@ export type ContentUncheckedCreateWithoutAuthorInput = {
   body?: string | null
   mediaUrl?: string | null
   createdAt?: Date | string
+  contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutAuthorInput = {
@@ -506,6 +534,60 @@ export type ContentScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
 }
 
+export type ContentCreateWithoutContentTagsInput = {
+  title: string
+  type: string
+  body?: string | null
+  mediaUrl?: string | null
+  createdAt?: Date | string
+  author: Prisma.UserCreateNestedOneWithoutContentInput
+}
+
+export type ContentUncheckedCreateWithoutContentTagsInput = {
+  id?: number
+  title: string
+  type: string
+  body?: string | null
+  mediaUrl?: string | null
+  authorId: number
+  createdAt?: Date | string
+}
+
+export type ContentCreateOrConnectWithoutContentTagsInput = {
+  where: Prisma.ContentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentCreateWithoutContentTagsInput, Prisma.ContentUncheckedCreateWithoutContentTagsInput>
+}
+
+export type ContentUpsertWithoutContentTagsInput = {
+  update: Prisma.XOR<Prisma.ContentUpdateWithoutContentTagsInput, Prisma.ContentUncheckedUpdateWithoutContentTagsInput>
+  create: Prisma.XOR<Prisma.ContentCreateWithoutContentTagsInput, Prisma.ContentUncheckedCreateWithoutContentTagsInput>
+  where?: Prisma.ContentWhereInput
+}
+
+export type ContentUpdateToOneWithWhereWithoutContentTagsInput = {
+  where?: Prisma.ContentWhereInput
+  data: Prisma.XOR<Prisma.ContentUpdateWithoutContentTagsInput, Prisma.ContentUncheckedUpdateWithoutContentTagsInput>
+}
+
+export type ContentUpdateWithoutContentTagsInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateWithoutContentTagsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ContentCreateManyAuthorInput = {
   id?: number
   title: string
@@ -521,6 +603,7 @@ export type ContentUpdateWithoutAuthorInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutAuthorInput = {
@@ -530,6 +613,7 @@ export type ContentUncheckedUpdateWithoutAuthorInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateManyWithoutAuthorInput = {
@@ -542,6 +626,35 @@ export type ContentUncheckedUpdateManyWithoutAuthorInput = {
 }
 
 
+/**
+ * Count Type ContentCountOutputType
+ */
+
+export type ContentCountOutputType = {
+  contentTags: number
+}
+
+export type ContentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  contentTags?: boolean | ContentCountOutputTypeCountContentTagsArgs
+}
+
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentCountOutputType
+   */
+  select?: Prisma.ContentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeCountContentTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentTagWhereInput
+}
+
 
 export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -552,6 +665,8 @@ export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   authorId?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  contentTags?: boolean | Prisma.Content$contentTagsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
 export type ContentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -589,6 +704,8 @@ export type ContentSelectScalar = {
 export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "type" | "body" | "mediaUrl" | "authorId" | "createdAt", ExtArgs["result"]["content"]>
 export type ContentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  contentTags?: boolean | Prisma.Content$contentTagsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -601,6 +718,7 @@ export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Content"
   objects: {
     author: Prisma.$UserPayload<ExtArgs>
+    contentTags: Prisma.$ContentTagPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1005,6 +1123,7 @@ readonly fields: ContentFieldRefs;
 export interface Prisma__ContentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  contentTags<T extends Prisma.Content$contentTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$contentTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1439,6 +1558,30 @@ export type ContentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Contents to delete.
    */
   limit?: number
+}
+
+/**
+ * Content.contentTags
+ */
+export type Content$contentTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentTag
+   */
+  select?: Prisma.ContentTagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentTag
+   */
+  omit?: Prisma.ContentTagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentTagInclude<ExtArgs> | null
+  where?: Prisma.ContentTagWhereInput
+  orderBy?: Prisma.ContentTagOrderByWithRelationInput | Prisma.ContentTagOrderByWithRelationInput[]
+  cursor?: Prisma.ContentTagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentTagScalarFieldEnum | Prisma.ContentTagScalarFieldEnum[]
 }
 
 /**
