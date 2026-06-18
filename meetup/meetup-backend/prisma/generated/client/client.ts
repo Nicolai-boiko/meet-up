@@ -89,3 +89,8 @@ export type Content = Prisma.ContentModel
  * 
  */
 export type Favorite = Prisma.FavoriteModel
+/**
+ * Model ContentFile
+ * 
+ */
+export type ContentFile = Prisma.ContentFileModel

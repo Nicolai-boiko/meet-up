@@ -393,7 +393,8 @@ export const ModelName = {
   Tag: 'Tag',
   ContentTag: 'ContentTag',
   Content: 'Content',
-  Favorite: 'Favorite'
+  Favorite: 'Favorite',
+  ContentFile: 'ContentFile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "room" | "meeting" | "meetingParticipant" | "refreshToken" | "passwordResetToken" | "tag" | "contentTag" | "content" | "favorite"
+    modelProps: "user" | "room" | "meeting" | "meetingParticipant" | "refreshToken" | "passwordResetToken" | "tag" | "contentTag" | "content" | "favorite" | "contentFile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1153,6 +1154,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ContentFile: {
+      payload: Prisma.$ContentFilePayload<ExtArgs>
+      fields: Prisma.ContentFileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentFileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentFileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        findFirst: {
+          args: Prisma.ContentFileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentFileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        findMany: {
+          args: Prisma.ContentFileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>[]
+        }
+        create: {
+          args: Prisma.ContentFileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        createMany: {
+          args: Prisma.ContentFileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ContentFileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>[]
+        }
+        delete: {
+          args: Prisma.ContentFileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        update: {
+          args: Prisma.ContentFileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentFileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentFileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ContentFileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>[]
+        }
+        upsert: {
+          args: Prisma.ContentFileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentFilePayload>
+        }
+        aggregate: {
+          args: Prisma.ContentFileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentFile>
+        }
+        groupBy: {
+          args: Prisma.ContentFileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentFileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentFileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentFileCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1291,6 +1366,7 @@ export const ContentScalarFieldEnum = {
   type: 'type',
   body: 'body',
   mediaUrl: 'mediaUrl',
+  fileName: 'fileName',
   authorId: 'authorId',
   createdAt: 'createdAt'
 } as const
@@ -1306,6 +1382,18 @@ export const FavoriteScalarFieldEnum = {
 } as const
 
 export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
+
+
+export const ContentFileScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  fileName: 'fileName',
+  filePath: 'filePath',
+  fileSize: 'fileSize',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentFileScalarFieldEnum = (typeof ContentFileScalarFieldEnum)[keyof typeof ContentFileScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1520,6 +1608,7 @@ export type GlobalOmitConfig = {
   contentTag?: Prisma.ContentTagOmit
   content?: Prisma.ContentOmit
   favorite?: Prisma.FavoriteOmit
+  contentFile?: Prisma.ContentFileOmit
 }
 
 /* Types for Logging */

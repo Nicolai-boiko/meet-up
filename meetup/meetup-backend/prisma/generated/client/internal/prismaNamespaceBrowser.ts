@@ -60,7 +60,8 @@ export const ModelName = {
   Tag: 'Tag',
   ContentTag: 'ContentTag',
   Content: 'Content',
-  Favorite: 'Favorite'
+  Favorite: 'Favorite',
+  ContentFile: 'ContentFile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -178,6 +179,7 @@ export const ContentScalarFieldEnum = {
   type: 'type',
   body: 'body',
   mediaUrl: 'mediaUrl',
+  fileName: 'fileName',
   authorId: 'authorId',
   createdAt: 'createdAt'
 } as const
@@ -193,6 +195,18 @@ export const FavoriteScalarFieldEnum = {
 } as const
 
 export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
+
+
+export const ContentFileScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  fileName: 'fileName',
+  filePath: 'filePath',
+  fileSize: 'fileSize',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentFileScalarFieldEnum = (typeof ContentFileScalarFieldEnum)[keyof typeof ContentFileScalarFieldEnum]
 
 
 export const SortOrder = {
