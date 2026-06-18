@@ -14,11 +14,12 @@ export const useContentStore = defineStore('content', () => {
 
   const hasMore = ref(false);
 
-  async function fetchPage(pageNum: number, tagId?: number) {
+  async function fetchPage(pageNum: number, tagId?: number, favorites?: boolean) {
     loading.value = true;
     try {
       const params: any = { page: pageNum, limit };
       if (tagId) params.tagId = tagId;
+      if (favorites) params.favorites = '1';
       const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params });
       items.value = data.items;
       page.value = data.page;
@@ -77,6 +78,15 @@ export const useContentStore = defineStore('content', () => {
     return data;
   }
 
+  async function toggleFavorite(id: number) {
+    const { data } = await apiClient.post<{ favorited: boolean }>(`/content/${id}/favorite`);
+    // Обновляем isFavorited во всех списках
+    const update = (item: ContentItem | null) => { if (item && item.id === id) item.isFavorited = data.favorited; };
+    items.value.forEach(update);
+    if (current.value) update(current.value);
+    return data.favorited;
+  }
+
   async function remove(id: number) {
     await apiClient.delete(`/content/${id}`);
     items.value = items.value.filter((i) => i.id !== id);
@@ -84,5 +94,5 @@ export const useContentStore = defineStore('content', () => {
     if (current.value?.id === id) current.value = null;
   }
 
-  return { items, current, loading, loadingMore, page, total, limit, hasMore, fetchPage, fetchMore, fetchById, create, update, remove };
+  return { items, current, loading, loadingMore, page, total, limit, hasMore, fetchPage, fetchMore, fetchById, create, update, remove, toggleFavorite };
 });

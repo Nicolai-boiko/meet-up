@@ -16,12 +16,24 @@
             </svg>
           </button>
         </div>
-        <input
-          v-model="search"
-          type="text"
-          placeholder="Поиск..."
-          class="w-full border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+        <div class="flex gap-2 mt-0">
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Поиск..."
+            class="flex-1 border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            @click="showFavorites = !showFavorites; fetchFiltered()"
+            class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+            :class="showFavorites ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'"
+            title="Избранное"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </button>
+        </div>
         <!-- Tag filter chips -->
         <div v-if="allTags.length" class="flex flex-wrap gap-1 mt-2">
           <button
@@ -53,7 +65,20 @@
               {{ item.type === 'video' ? '🎬' : item.type === 'link' ? '🔗' : '📄' }}
             </span>
             <div class="min-w-0 flex-1">
-              <div class="text-sm font-medium text-gray-800 truncate">{{ item.title }}</div>
+              <div class="flex items-center gap-1.5">
+                <div class="text-sm font-medium text-gray-800 truncate">{{ item.title }}</div>
+                <button
+                  v-if="authStore.isAuthenticated"
+                  @click.stop="handleToggleFavorite(item)"
+                  class="shrink-0"
+                  :class="item.isFavorited ? 'text-amber-500' : 'text-gray-300 hover:text-amber-400'"
+                  title="В избранное"
+                >
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                </button>
+              </div>
               <div class="text-xs text-gray-400 mt-0.5">
                 {{ item.author?.name }} · {{ formatDate(item.createdAt) }}
               </div>
@@ -268,12 +293,13 @@ import { useContentStore } from '../stores/content';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
-import type { Tag } from '../types';
+import type { ContentItem, Tag } from '../types';
 
 const contentStore = useContentStore();
 const authStore = useAuthStore();
 const { confirm } = useConfirm();
 const search = ref('');
+const showFavorites = ref(false);
 const isEditing = ref(false);
 const editingId = ref<number | null>(null);
 const saving = ref(false);
@@ -286,6 +312,11 @@ const allTags = ref<Tag[]>([]);
 const selectedTagIds = ref<number[]>([]);
 const formTagIds = ref<number[]>([]);
 
+function fetchFiltered() {
+  const activeTag = selectedTagIds.value[0];
+  contentStore.fetchPage(1, activeTag, showFavorites.value);
+}
+
 function toggleTagFilter(tagId: number) {
   const idx = selectedTagIds.value.indexOf(tagId);
   if (idx >= 0) {
@@ -294,8 +325,15 @@ function toggleTagFilter(tagId: number) {
     // Один тег за раз для фильтрации
     selectedTagIds.value = [tagId];
   }
-  const activeTag = selectedTagIds.value[0];
-  contentStore.fetchPage(1, activeTag);
+  fetchFiltered();
+}
+
+async function handleToggleFavorite(item: ContentItem) {
+  try {
+    await contentStore.toggleFavorite(item.id);
+  } catch (e) {
+    console.error('toggleFavorite error:', e);
+  }
 }
 
 function toggleFormTag(tagId: number) {
@@ -447,7 +485,7 @@ function loadMore() {
 }
 
 onMounted(() => {
-  contentStore.fetchPage(1);
+  fetchFiltered();
   loadTags();
 });
 </script>

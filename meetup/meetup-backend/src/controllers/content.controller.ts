@@ -9,10 +9,11 @@ interface AuthRequest extends Request {
 const authorSelect = { select: { id: true, name: true, avatar: true } };
 const tagsInclude = { include: { contentTags: { include: { tag: true } } } };
 
-function itemToResponse(item: any) {
+function itemToResponse(item: any, userId?: number) {
   return {
     ...item,
     tags: item.contentTags?.map((ct: any) => ct.tag) ?? [],
+    isFavorited: userId ? item.favorites?.some((f: any) => f.userId === userId) ?? false : false,
   };
 }
 
@@ -20,11 +21,23 @@ export const getAll = async (req: Request, res: Response) => {
   try {
     const { page, limit, skip } = parsePagination(req.query as any);
     const tagId = req.query.tagId ? Number(req.query.tagId) : null;
+    const favoritesOnly = req.query.favorites === '1';
+    const authReq = req as AuthRequest;
+    const userId = authReq.user ? Number(authReq.user.userId) : null;
 
     const where: any = {};
     if (tagId) {
       where.contentTags = { some: { tagId } };
     }
+    if (favoritesOnly && userId) {
+      where.favorites = { some: { userId } };
+    }
+
+    const include = {
+      author: authorSelect,
+      contentTags: { include: { tag: true } },
+      ...(userId ? { favorites: { where: { userId }, select: { userId: true } } } : {}),
+    };
 
     const [items, total] = await Promise.all([
       prisma.content.findMany({
@@ -32,12 +45,12 @@ export const getAll = async (req: Request, res: Response) => {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: { author: authorSelect, contentTags: { include: { tag: true } } },
+        include,
       }),
       prisma.content.count({ where }),
     ]);
 
-    res.json(paginatedResponse(items.map(itemToResponse), total, page, limit));
+    res.json(paginatedResponse(items.map((i) => itemToResponse(i, userId ?? undefined)), total, page, limit));
   } catch (error) {
     console.error('content getAll error:', error);
     res.status(500).json({ message: 'Ошибка сервера' });
@@ -113,6 +126,28 @@ export const update = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('content update error:', error);
     res.status(500).json({ message: 'Ошибка сервера при обновлении' });
+  }
+};
+
+export const toggleFavorite = async (req: AuthRequest, res: Response) => {
+  try {
+    const contentId = Number(req.params.id);
+    const userId = Number(req.user!.userId);
+
+    const existing = await prisma.favorite.findUnique({
+      where: { userId_contentId: { userId, contentId } },
+    });
+
+    if (existing) {
+      await prisma.favorite.delete({ where: { id: existing.id } });
+      res.json({ favorited: false });
+    } else {
+      await prisma.favorite.create({ data: { userId, contentId } });
+      res.json({ favorited: true });
+    }
+  } catch (error) {
+    console.error('toggleFavorite error:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 

@@ -104,6 +104,7 @@ export interface ContentItem {
   createdAt: string;
   author?: { id: number; name: string; avatar: string | null };
   tags?: Tag[];
+  isFavorited?: boolean;
 }
 
 export interface PaginatedResponse<T> {
