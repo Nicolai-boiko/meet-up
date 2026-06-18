@@ -118,6 +118,20 @@ export interface ContentItem {
   isFavorited?: boolean;
 }
 
+export interface AdminStats {
+  totals: {
+    users: number;
+    content: number;
+    meetings: number;
+    files: number;
+    totalStorage: number;
+  };
+  usersByDay: { date: string; count: number }[];
+  contentByType: { type: string; count: number }[];
+  topAuthors: { id: number; name: string; avatar: string | null; count: number }[];
+  contentByTag: { tagId: number; tagName: string; count: number }[];
+}
+
 export interface PaginatedResponse<T> {
   items: T[];
   total: number;

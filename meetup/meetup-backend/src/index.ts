@@ -11,6 +11,7 @@ import profileRoutes from './routes/profile.routes';
 import contentRoutes from './routes/content.routes';
 import userRoutes from './routes/user.routes';
 import tagRoutes from './routes/tag.routes';
+import adminRoutes from './routes/admin.routes';
 import { prisma } from './config/database';
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {

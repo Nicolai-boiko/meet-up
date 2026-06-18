@@ -23,6 +23,63 @@
     <!-- Content -->
     <div class="flex-1 overflow-y-auto p-6">
 
+      <!-- Dashboard Tab -->
+      <div v-if="activeTab === 'dashboard'">
+        <div v-if="dashLoading" class="text-center text-gray-500 py-8">Загрузка...</div>
+        <template v-else-if="dashStats">
+          <!-- Stat cards -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-blue-500 uppercase tracking-wide font-medium mb-1">Пользователей</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.users }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-green-500 uppercase tracking-wide font-medium mb-1">Материалов</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.content }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-amber-500 uppercase tracking-wide font-medium mb-1">Встреч</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.meetings }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-indigo-500 uppercase tracking-wide font-medium mb-1">Файлов</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.files }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-teal-500 uppercase tracking-wide font-medium mb-1">Объём</div>
+              <div class="text-2xl font-bold text-gray-800">{{ formatStorage(dashStats.totals.totalStorage) }}</div>
+            </div>
+          </div>
+          <!-- Charts grid -->
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- New users per day — Line -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Новые пользователи (30 дн)</h3>
+              <Line v-if="usersChartData" :data="usersChartData" :options="lineChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Top 5 authors — Bar -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Топ-5 авторов</h3>
+              <Bar v-if="authorsChartData" :data="authorsChartData" :options="barChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Content by type — Doughnut -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Материалы по типам</h3>
+              <Doughnut v-if="typeChartData" :data="typeChartData" :options="doughnutChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Content by tag — Doughnut -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Материалы по тегам</h3>
+              <Doughnut v-if="tagsChartData" :data="tagsChartData" :options="doughnutChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+          </div>
+        </template>
+      </div>
+
       <!-- Users Tab -->
       <div v-if="activeTab === 'users'">
         <!-- Search -->
@@ -242,12 +299,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
-import type { UserSummary, ContentItem, Room, PaginatedResponse } from '../types';
+import type { UserSummary, ContentItem, Room, PaginatedResponse, AdminStats } from '../types';
+import { Line, Bar, Doughnut } from 'vue-chartjs';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const { confirm } = useConfirm();
 
@@ -255,16 +337,86 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const tabs = [
+  { key: 'dashboard', label: 'Дашборд' },
   { key: 'users', label: 'Пользователи' },
   { key: 'content', label: 'Библиотека' },
   { key: 'rooms', label: 'Комнаты' },
 ] as const;
-const activeTab = ref<'users' | 'content' | 'rooms'>('users');
+const activeTab = ref<'dashboard' | 'users' | 'content' | 'rooms'>('dashboard');
 
 function switchTab(tab: typeof activeTab.value) {
   activeTab.value = tab;
+  if (tab === 'dashboard') loadDashboard();
+  if (tab === 'users') loadUsers();
   if (tab === 'content') loadContent();
   if (tab === 'rooms') loadRooms();
+}
+
+// ── Dashboard ──
+const dashLoading = ref(false);
+const dashStats = ref<AdminStats | null>(null);
+
+const TYPE_LABELS: Record<string, string> = { text: 'Текст', video: 'Видео', link: 'Ссылка', file: 'Файл' };
+
+const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'];
+const chartBg = chartColors.map((c) => c + '33');
+
+const lineChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+const barChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+const hBarChartOptions = { responsive: true, maintainAspectRatio: false, indexAxis: 'y' as const, plugins: { legend: { display: false } } };
+const doughnutChartOptions = { responsive: true, maintainAspectRatio: false };
+
+const usersChartData = computed(() => {
+  if (!dashStats.value?.usersByDay.length) return null;
+  return {
+    labels: dashStats.value.usersByDay.map((d) => new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })),
+    datasets: [{ label: 'Пользователей', data: dashStats.value.usersByDay.map((d) => d.count), borderColor: '#3b82f6', backgroundColor: '#3b82f633', fill: true, tension: 0.3 }],
+  };
+});
+
+const typeChartData = computed(() => {
+  if (!dashStats.value?.contentByType.length) return null;
+  return {
+    labels: dashStats.value.contentByType.map((c) => TYPE_LABELS[c.type] ?? c.type),
+    datasets: [{ label: 'Материалов', data: dashStats.value.contentByType.map((c) => c.count), backgroundColor: chartBg.slice(0, dashStats.value.contentByType.length), borderColor: chartColors.slice(0, dashStats.value.contentByType.length), borderWidth: 1 }],
+  };
+});
+
+const authorsChartData = computed(() => {
+  if (!dashStats.value?.topAuthors.length) return null;
+  return {
+    labels: dashStats.value.topAuthors.map((a) => a.name),
+    datasets: [{ label: 'Материалов', data: dashStats.value.topAuthors.map((a) => a.count), backgroundColor: chartBg.slice(0, dashStats.value.topAuthors.length) }],
+  };
+});
+
+const tagsChartData = computed(() => {
+  if (!dashStats.value?.contentByTag.length) return null;
+  return {
+    labels: dashStats.value.contentByTag.map((t) => t.tagName),
+    datasets: [{ label: 'Материалов', data: dashStats.value.contentByTag.map((t) => t.count), backgroundColor: chartBg, borderColor: chartColors, borderWidth: 1 }],
+  };
+});
+
+function formatStorage(bytes: number): string {
+  if (!bytes) return '0 Б';
+  if (bytes < 1024) return `${bytes} Б`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} ГБ`;
+}
+
+async function loadDashboard() {
+  if (dashStats.value && !dashLoading.value) return; // уже загружено
+  dashLoading.value = true;
+  try {
+    const { data } = await apiClient.get<AdminStats>('/admin/stats');
+    dashStats.value = data;
+  } catch (e) {
+    console.error('loadDashboard error:', e);
+  } finally {
+    dashLoading.value = false;
+  }
 }
 
 // ── Users ──
@@ -463,6 +615,6 @@ onMounted(() => {
     router.push('/home');
     return;
   }
-  loadUsers();
+  loadDashboard();
 });
 </script>
