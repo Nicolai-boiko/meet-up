@@ -269,7 +269,7 @@
                 <p class="font-semibold text-blue-800">{{ viewMeeting.room.title }}</p>
               </div>
               <router-link
-                :to="`/room/${viewMeeting.room.slug}`"
+                :to="`/room/${viewMeeting.room.slug}${viewMeeting.room.isPrivate ? `?meetingId=${viewMeeting.id}` : ''}`"
                 class="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Войти
@@ -894,8 +894,8 @@ function toLocalDateTimeStr(date: Date): string {
 // ── Data loading ──
 async function loadUsers() {
   try {
-    const { data } = await apiClient.get<UserSummary[]>('/users');
-    usersList.value = data;
+    const { data } = await apiClient.get<{ items: UserSummary[] }>('/users', { params: { limit: 1000 } });
+    usersList.value = data.items;
   } catch (e) {
     console.error('Failed to load users', e);
   }

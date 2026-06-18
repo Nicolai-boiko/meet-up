@@ -23,20 +23,97 @@
     <!-- Content -->
     <div class="flex-1 overflow-y-auto p-6">
 
+      <!-- Dashboard Tab -->
+      <div v-if="activeTab === 'dashboard'">
+        <div v-if="dashLoading" class="text-center text-gray-500 py-8">Загрузка...</div>
+        <template v-else-if="dashStats">
+          <!-- Stat cards -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-blue-500 uppercase tracking-wide font-medium mb-1">Пользователей</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.users }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-green-500 uppercase tracking-wide font-medium mb-1">Материалов</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.content }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-amber-500 uppercase tracking-wide font-medium mb-1">Встреч</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.meetings }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-indigo-500 uppercase tracking-wide font-medium mb-1">Файлов</div>
+              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.files }}</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-4">
+              <div class="text-xs text-teal-500 uppercase tracking-wide font-medium mb-1">Объём</div>
+              <div class="text-2xl font-bold text-gray-800">{{ formatStorage(dashStats.totals.totalStorage) }}</div>
+            </div>
+          </div>
+          <!-- Charts grid -->
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- New users per day — Line -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Новые пользователи (30 дн)</h3>
+              <Line v-if="usersChartData" :data="usersChartData" :options="lineChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Top 5 authors — Bar -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Топ-5 авторов</h3>
+              <Bar v-if="authorsChartData" :data="authorsChartData" :options="barChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Content by type — Doughnut -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Материалы по типам</h3>
+              <Doughnut v-if="typeChartData" :data="typeChartData" :options="doughnutChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+            <!-- Content by tag — Doughnut -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Материалы по тегам</h3>
+              <Doughnut v-if="tagsChartData" :data="tagsChartData" :options="doughnutChartOptions" class="max-h-64" />
+              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+            </div>
+          </div>
+        </template>
+      </div>
+
       <!-- Users Tab -->
       <div v-if="activeTab === 'users'">
+        <!-- Search -->
+        <div class="mb-4">
+          <input
+            v-model="searchUsers"
+            type="text"
+            placeholder="Поиск по имени или email..."
+            class="w-full max-w-md border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div v-if="adminUsers.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
+          <template v-else>
           <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Пользователь</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Email</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Роль</th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('name')">
+                  Пользователь
+                  <span v-if="userSortBy === 'name'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('email')">
+                  Email
+                  <span v-if="userSortBy === 'email'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('role')">
+                  Роль
+                  <span v-if="userSortBy === 'role'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
                 <th class="text-right px-4 py-3 font-medium text-gray-500">Действия</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-              <tr v-for="user in adminUsers" :key="user.id">
+              <tr v-for="user in adminUsers.items" :key="user.id">
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2">
                     <img v-if="user.avatar" :src="user.avatar" class="w-7 h-7 rounded-full object-cover" />
@@ -74,6 +151,16 @@
               </tr>
             </tbody>
           </table>
+          <!-- Pagination -->
+          <div v-if="adminUsers.hasMore" class="p-3 border-t border-gray-100">
+            <button
+              @click="loadMoreUsers"
+              class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              Загрузить ещё ({{ adminUsers.total - adminUsers.items.length }})
+            </button>
+          </div>
+          </template>
         </div>
       </div>
 
@@ -221,12 +308,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
-import type { UserSummary, ContentItem, Room, PaginatedResponse } from '../types';
+import type { UserSummary, ContentItem, Room, PaginatedResponse, AdminStats } from '../types';
+import { Line, Bar, Doughnut } from 'vue-chartjs';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const { confirm } = useConfirm();
 
@@ -234,29 +346,146 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const tabs = [
+  { key: 'dashboard', label: 'Дашборд' },
   { key: 'users', label: 'Пользователи' },
   { key: 'content', label: 'Библиотека' },
   { key: 'rooms', label: 'Комнаты' },
 ] as const;
-const activeTab = ref<'users' | 'content' | 'rooms'>('users');
+const activeTab = ref<'dashboard' | 'users' | 'content' | 'rooms'>('dashboard');
 
 function switchTab(tab: typeof activeTab.value) {
   activeTab.value = tab;
+  if (tab === 'dashboard') loadDashboard();
+  if (tab === 'users') loadUsers();
   if (tab === 'content') loadContent();
   if (tab === 'rooms') loadRooms();
 }
 
-// ── Users ──
-const adminUsers = ref<UserSummary[]>([]);
+// ── Dashboard ──
+const dashLoading = ref(false);
+const dashStats = ref<AdminStats | null>(null);
 
-async function loadUsers() {
+const TYPE_LABELS: Record<string, string> = { text: 'Текст', video: 'Видео', link: 'Ссылка', file: 'Файл' };
+
+const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'];
+const chartBg = chartColors.map((c) => c + '33');
+
+const lineChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+const barChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+const hBarChartOptions = { responsive: true, maintainAspectRatio: false, indexAxis: 'y' as const, plugins: { legend: { display: false } } };
+const doughnutChartOptions = { responsive: true, maintainAspectRatio: false };
+
+const usersChartData = computed(() => {
+  if (!dashStats.value?.usersByDay.length) return null;
+  return {
+    labels: dashStats.value.usersByDay.map((d) => new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })),
+    datasets: [{ label: 'Пользователей', data: dashStats.value.usersByDay.map((d) => d.count), borderColor: '#3b82f6', backgroundColor: '#3b82f633', fill: true, tension: 0.3 }],
+  };
+});
+
+const typeChartData = computed(() => {
+  if (!dashStats.value?.contentByType.length) return null;
+  return {
+    labels: dashStats.value.contentByType.map((c) => TYPE_LABELS[c.type] ?? c.type),
+    datasets: [{ label: 'Материалов', data: dashStats.value.contentByType.map((c) => c.count), backgroundColor: chartBg.slice(0, dashStats.value.contentByType.length), borderColor: chartColors.slice(0, dashStats.value.contentByType.length), borderWidth: 1 }],
+  };
+});
+
+const authorsChartData = computed(() => {
+  if (!dashStats.value?.topAuthors.length) return null;
+  return {
+    labels: dashStats.value.topAuthors.map((a) => a.name),
+    datasets: [{ label: 'Материалов', data: dashStats.value.topAuthors.map((a) => a.count), backgroundColor: chartBg.slice(0, dashStats.value.topAuthors.length) }],
+  };
+});
+
+const tagsChartData = computed(() => {
+  if (!dashStats.value?.contentByTag.length) return null;
+  return {
+    labels: dashStats.value.contentByTag.map((t) => t.tagName),
+    datasets: [{ label: 'Материалов', data: dashStats.value.contentByTag.map((t) => t.count), backgroundColor: chartBg, borderColor: chartColors, borderWidth: 1 }],
+  };
+});
+
+function formatStorage(bytes: number): string {
+  if (!bytes) return '0 Б';
+  if (bytes < 1024) return `${bytes} Б`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} ГБ`;
+}
+
+async function loadDashboard() {
+  if (dashStats.value && !dashLoading.value) return; // уже загружено
+  dashLoading.value = true;
   try {
-    const { data } = await apiClient.get<UserSummary[]>('/users');
-    adminUsers.value = data;
+    const { data } = await apiClient.get<AdminStats>('/admin/stats');
+    dashStats.value = data;
   } catch (e) {
-    console.error('loadUsers error:', e);
+    console.error('loadDashboard error:', e);
+  } finally {
+    dashLoading.value = false;
   }
 }
+
+// ── Users ──
+const searchUsers = ref('');
+const userSortBy = ref('name');
+const userSortOrder = ref<'asc' | 'desc'>('asc');
+const adminUsers = reactive({
+  items: [] as UserSummary[],
+  loading: false,
+  page: 1,
+  total: 0,
+  limit: 20,
+  hasMore: false,
+});
+
+async function loadUsers(page = 1) {
+  adminUsers.loading = true;
+  try {
+    const params: any = { page, limit: adminUsers.limit, sortBy: userSortBy.value, sortOrder: userSortOrder.value };
+    if (searchUsers.value) params.search = searchUsers.value;
+    const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
+    adminUsers.items = data.items;
+    adminUsers.page = data.page;
+    adminUsers.total = data.total;
+    adminUsers.hasMore = data.page < data.totalPages;
+  } catch (e) {
+    console.error('loadUsers error:', e);
+  } finally {
+    adminUsers.loading = false;
+  }
+}
+
+async function loadMoreUsers() {
+  if (!adminUsers.hasMore) return;
+  try {
+    const params: any = { page: adminUsers.page + 1, limit: adminUsers.limit, sortBy: userSortBy.value, sortOrder: userSortOrder.value };
+    if (searchUsers.value) params.search = searchUsers.value;
+    const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
+    adminUsers.items = [...adminUsers.items, ...data.items];
+    adminUsers.page = data.page;
+    adminUsers.total = data.total;
+    adminUsers.hasMore = data.page < data.totalPages;
+  } catch (e) {
+    console.error('loadMoreUsers error:', e);
+  }
+}
+
+function toggleUserSort(field: string) {
+  if (userSortBy.value === field) {
+    userSortOrder.value = userSortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    userSortBy.value = field;
+    userSortOrder.value = 'asc';
+  }
+  loadUsers(1);
+}
+
+watch(searchUsers, () => {
+  loadUsers(1);
+});
 
 async function promoteUser(user: UserSummary) {
   const ok = await confirm('Назначить администратором?', `${userDisplayName(user)} получит полный доступ к управлению.`, 'warning');
@@ -407,6 +636,6 @@ onMounted(() => {
     router.push('/home');
     return;
   }
-  loadUsers();
+  loadDashboard();
 });
 </script>

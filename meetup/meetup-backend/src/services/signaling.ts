@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
+import { prisma } from '../config/database';
 
 export const initSignalingServer = (httpServer: HttpServer) => {
   const io = new Server(httpServer, {
@@ -36,17 +37,31 @@ export const initSignalingServer = (httpServer: HttpServer) => {
     });
 
     // ── Chat ──
-    socket.on('send-message', (payload: { roomId: string; text: string; userName: string; initials: string; avatar: string | null }) => {
-      const msg = {
-        id: `${socket.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        socketId: socket.id,
-        text: payload.text.slice(0, 2000),
-        userName: payload.userName,
-        initials: payload.initials,
-        avatar: payload.avatar,
-        timestamp: new Date().toISOString(),
-      };
-      io.to(payload.roomId).emit('new-message', msg);
+    socket.on('send-message', async (payload: { roomId: string; text: string; userName: string; initials: string; avatar: string | null }) => {
+      try {
+        const saved = await prisma.chatMessage.create({
+          data: {
+            roomSlug: payload.roomId,
+            text: payload.text.slice(0, 2000),
+            userName: payload.userName,
+            initials: payload.initials,
+            avatar: payload.avatar ?? null,
+            socketId: socket.id,
+          },
+        });
+        const msg = {
+          id: String(saved.id),
+          socketId: socket.id,
+          text: payload.text.slice(0, 2000),
+          userName: payload.userName,
+          initials: payload.initials,
+          avatar: payload.avatar,
+          timestamp: saved.createdAt.toISOString(),
+        };
+        io.to(payload.roomId).emit('new-message', msg);
+      } catch (error) {
+        console.error('chatMessage save error:', error);
+      }
     });
 
     socket.on('disconnect', () => {

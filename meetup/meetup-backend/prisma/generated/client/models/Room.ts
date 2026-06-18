@@ -41,6 +41,8 @@ export type RoomMinAggregateOutputType = {
   title: string | null
   slug: string | null
   isActive: boolean | null
+  isPrivate: boolean | null
+  passwordHash: string | null
   hostId: number | null
   createdAt: Date | null
 }
@@ -50,6 +52,8 @@ export type RoomMaxAggregateOutputType = {
   title: string | null
   slug: string | null
   isActive: boolean | null
+  isPrivate: boolean | null
+  passwordHash: string | null
   hostId: number | null
   createdAt: Date | null
 }
@@ -59,6 +63,8 @@ export type RoomCountAggregateOutputType = {
   title: number
   slug: number
   isActive: number
+  isPrivate: number
+  passwordHash: number
   hostId: number
   createdAt: number
   _all: number
@@ -80,6 +86,8 @@ export type RoomMinAggregateInputType = {
   title?: true
   slug?: true
   isActive?: true
+  isPrivate?: true
+  passwordHash?: true
   hostId?: true
   createdAt?: true
 }
@@ -89,6 +97,8 @@ export type RoomMaxAggregateInputType = {
   title?: true
   slug?: true
   isActive?: true
+  isPrivate?: true
+  passwordHash?: true
   hostId?: true
   createdAt?: true
 }
@@ -98,6 +108,8 @@ export type RoomCountAggregateInputType = {
   title?: true
   slug?: true
   isActive?: true
+  isPrivate?: true
+  passwordHash?: true
   hostId?: true
   createdAt?: true
   _all?: true
@@ -194,6 +206,8 @@ export type RoomGroupByOutputType = {
   title: string
   slug: string
   isActive: boolean
+  isPrivate: boolean
+  passwordHash: string | null
   hostId: number
   createdAt: Date
   _count: RoomCountAggregateOutputType | null
@@ -226,6 +240,8 @@ export type RoomWhereInput = {
   title?: Prisma.StringFilter<"Room"> | string
   slug?: Prisma.StringFilter<"Room"> | string
   isActive?: Prisma.BoolFilter<"Room"> | boolean
+  isPrivate?: Prisma.BoolFilter<"Room"> | boolean
+  passwordHash?: Prisma.StringNullableFilter<"Room"> | string | null
   hostId?: Prisma.IntFilter<"Room"> | number
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
   host?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -237,6 +253,8 @@ export type RoomOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPrivate?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   hostId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   host?: Prisma.UserOrderByWithRelationInput
@@ -251,6 +269,8 @@ export type RoomWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.RoomWhereInput | Prisma.RoomWhereInput[]
   title?: Prisma.StringFilter<"Room"> | string
   isActive?: Prisma.BoolFilter<"Room"> | boolean
+  isPrivate?: Prisma.BoolFilter<"Room"> | boolean
+  passwordHash?: Prisma.StringNullableFilter<"Room"> | string | null
   hostId?: Prisma.IntFilter<"Room"> | number
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
   host?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -262,6 +282,8 @@ export type RoomOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPrivate?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   hostId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RoomCountOrderByAggregateInput
@@ -279,6 +301,8 @@ export type RoomScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Room"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Room"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"Room"> | boolean
+  isPrivate?: Prisma.BoolWithAggregatesFilter<"Room"> | boolean
+  passwordHash?: Prisma.StringNullableWithAggregatesFilter<"Room"> | string | null
   hostId?: Prisma.IntWithAggregatesFilter<"Room"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Room"> | Date | string
 }
@@ -287,6 +311,8 @@ export type RoomCreateInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   createdAt?: Date | string
   host: Prisma.UserCreateNestedOneWithoutRoomsInput
   meetings?: Prisma.MeetingCreateNestedManyWithoutRoomInput
@@ -297,6 +323,8 @@ export type RoomUncheckedCreateInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   hostId: number
   createdAt?: Date | string
   meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutRoomInput
@@ -306,6 +334,8 @@ export type RoomUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   host?: Prisma.UserUpdateOneRequiredWithoutRoomsNestedInput
   meetings?: Prisma.MeetingUpdateManyWithoutRoomNestedInput
@@ -316,6 +346,8 @@ export type RoomUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meetings?: Prisma.MeetingUncheckedUpdateManyWithoutRoomNestedInput
@@ -326,6 +358,8 @@ export type RoomCreateManyInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   hostId: number
   createdAt?: Date | string
 }
@@ -334,6 +368,8 @@ export type RoomUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,6 +378,8 @@ export type RoomUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -361,6 +399,8 @@ export type RoomCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPrivate?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -375,6 +415,8 @@ export type RoomMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPrivate?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -384,6 +426,8 @@ export type RoomMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPrivate?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -464,6 +508,8 @@ export type RoomCreateWithoutHostInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   createdAt?: Date | string
   meetings?: Prisma.MeetingCreateNestedManyWithoutRoomInput
 }
@@ -473,6 +519,8 @@ export type RoomUncheckedCreateWithoutHostInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   createdAt?: Date | string
   meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutRoomInput
 }
@@ -511,6 +559,8 @@ export type RoomScalarWhereInput = {
   title?: Prisma.StringFilter<"Room"> | string
   slug?: Prisma.StringFilter<"Room"> | string
   isActive?: Prisma.BoolFilter<"Room"> | boolean
+  isPrivate?: Prisma.BoolFilter<"Room"> | boolean
+  passwordHash?: Prisma.StringNullableFilter<"Room"> | string | null
   hostId?: Prisma.IntFilter<"Room"> | number
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
 }
@@ -519,6 +569,8 @@ export type RoomCreateWithoutMeetingsInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   createdAt?: Date | string
   host: Prisma.UserCreateNestedOneWithoutRoomsInput
 }
@@ -528,6 +580,8 @@ export type RoomUncheckedCreateWithoutMeetingsInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   hostId: number
   createdAt?: Date | string
 }
@@ -552,6 +606,8 @@ export type RoomUpdateWithoutMeetingsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   host?: Prisma.UserUpdateOneRequiredWithoutRoomsNestedInput
 }
@@ -561,6 +617,8 @@ export type RoomUncheckedUpdateWithoutMeetingsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -570,6 +628,8 @@ export type RoomCreateManyHostInput = {
   title: string
   slug: string
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: string | null
   createdAt?: Date | string
 }
 
@@ -577,6 +637,8 @@ export type RoomUpdateWithoutHostInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meetings?: Prisma.MeetingUpdateManyWithoutRoomNestedInput
 }
@@ -586,6 +648,8 @@ export type RoomUncheckedUpdateWithoutHostInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meetings?: Prisma.MeetingUncheckedUpdateManyWithoutRoomNestedInput
 }
@@ -595,6 +659,8 @@ export type RoomUncheckedUpdateManyWithoutHostInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -634,6 +700,8 @@ export type RoomSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   title?: boolean
   slug?: boolean
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: boolean
   hostId?: boolean
   createdAt?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -646,6 +714,8 @@ export type RoomSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   slug?: boolean
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: boolean
   hostId?: boolean
   createdAt?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -656,6 +726,8 @@ export type RoomSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   slug?: boolean
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: boolean
   hostId?: boolean
   createdAt?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -666,11 +738,13 @@ export type RoomSelectScalar = {
   title?: boolean
   slug?: boolean
   isActive?: boolean
+  isPrivate?: boolean
+  passwordHash?: boolean
   hostId?: boolean
   createdAt?: boolean
 }
 
-export type RoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "isActive" | "hostId" | "createdAt", ExtArgs["result"]["room"]>
+export type RoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "isActive" | "isPrivate" | "passwordHash" | "hostId" | "createdAt", ExtArgs["result"]["room"]>
 export type RoomInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   meetings?: boolean | Prisma.Room$meetingsArgs<ExtArgs>
@@ -694,6 +768,8 @@ export type $RoomPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     title: string
     slug: string
     isActive: boolean
+    isPrivate: boolean
+    passwordHash: string | null
     hostId: number
     createdAt: Date
   }, ExtArgs["result"]["room"]>
@@ -1125,6 +1201,8 @@ export interface RoomFieldRefs {
   readonly title: Prisma.FieldRef<"Room", 'String'>
   readonly slug: Prisma.FieldRef<"Room", 'String'>
   readonly isActive: Prisma.FieldRef<"Room", 'Boolean'>
+  readonly isPrivate: Prisma.FieldRef<"Room", 'Boolean'>
+  readonly passwordHash: Prisma.FieldRef<"Room", 'String'>
   readonly hostId: Prisma.FieldRef<"Room", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Room", 'DateTime'>
 }

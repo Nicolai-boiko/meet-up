@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
+import { parsePagination, paginatedResponse } from '../utils/pagination';
 
 interface AuthRequest extends Request {
   user?: { userId: string; email: string; role: string };
@@ -8,14 +9,38 @@ interface AuthRequest extends Request {
 export const getUsers = async (req: AuthRequest, res: Response) => {
   try {
     const isAdmin = req.user?.role === 'ADMIN';
-    const users = await prisma.user.findMany({
-      select: {
-        id: true, name: true, email: true, avatar: true, firstName: true, lastName: true,
-        ...(isAdmin ? { role: true } : {}),
-      },
-      orderBy: { name: 'asc' },
-    });
-    res.json(users);
+    const { page, limit, skip } = parsePagination(req.query as any);
+    const search = (req.query.search as string)?.trim() || '';
+
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
+            { firstName: { contains: search, mode: 'insensitive' as const } },
+            { lastName: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    // Сортировка
+    const sortBy = (req.query.sortBy as string) || 'name';
+    const sortOrder = (req.query.sortOrder as string) === 'desc' ? 'desc' : 'asc';
+    const allowedSortFields = ['name', 'email', 'role'];
+    const field = allowedSortFields.includes(sortBy) ? sortBy : 'name';
+    const orderBy = { [field]: sortOrder };
+
+    const select = {
+      id: true, name: true, email: true, avatar: true, firstName: true, lastName: true,
+      ...(isAdmin ? { role: true } : {}),
+    };
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({ where, select, skip, take: limit, orderBy }),
+      prisma.user.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(users, total, page, limit));
   } catch (error) {
     console.error('getUsers error:', error);
     res.status(500).json({ message: 'Ошибка сервера' });

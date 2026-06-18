@@ -28,6 +28,39 @@
       </div>
     </header>
 
+    <!-- Password gate -->
+    <div
+      v-if="passwordRequired"
+      class="flex-1 flex items-center justify-center"
+    >
+      <div class="bg-gray-800 rounded-xl p-8 w-full max-w-sm border border-gray-700">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+          </svg>
+          <h2 class="text-lg font-semibold text-white">{{ roomTitle }}</h2>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Эта комната защищена паролем</p>
+        <form @submit.prevent="handleRoomPassword" class="space-y-3">
+          <input
+            v-model="roomPassword"
+            type="password"
+            placeholder="Введите пароль"
+            class="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
+            @keyup.enter="handleRoomPassword"
+          />
+          <p v-if="passwordError" class="text-red-400 text-xs">{{ passwordError }}</p>
+          <button
+            type="submit"
+            :disabled="!roomPassword.trim()"
+            class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm font-medium"
+          >
+            Войти
+          </button>
+        </form>
+      </div>
+    </div>
+
     <!-- Room not found -->
     <div
       v-if="roomNotFound"
@@ -465,11 +498,25 @@ watch([localStream, screenStream], () => nextTick().then(bindStreams));
 onUpdated(() => nextTick().then(bindStreams));
 
 const roomNotFound = ref(false);
+const roomIsPrivate = ref(false);
+const passwordRequired = ref(false);
+const roomPassword = ref('');
+const passwordError = ref('');
 
 async function fetchRoomInfo() {
   try {
-    const { data } = await apiClient.get<Room>(`/rooms/${roomSlug}`);
+    const meetingId = route.query.meetingId as string | undefined;
+    const params: any = {};
+    if (meetingId) params.meetingId = meetingId;
+    const { data } = await apiClient.get<Room>(`/rooms/${roomSlug}`, { params });
     roomTitle.value = data.title;
+    if (data.isPrivate) {
+      roomIsPrivate.value = true;
+      // Бэкенд возвращает hostId только при наличии доступа
+      if (!(data as any).hostId) {
+        passwordRequired.value = true;
+      }
+    }
   } catch (e: any) {
     if (e.response?.status === 404) {
       roomNotFound.value = true;
@@ -478,14 +525,41 @@ async function fetchRoomInfo() {
   }
 }
 
+async function handleRoomPassword() {
+  const pwd = roomPassword.value.trim();
+  if (!pwd) return;
+  passwordError.value = '';
+  try {
+    await apiClient.post(`/rooms/${roomSlug}/verify`, { password: pwd });
+    passwordRequired.value = false;
+    // Повторно загружаем инфо (теперь с meetingId для bypass, либо просто пароль уже принят)
+    await joinRoom();
+    await loadChatHistory();
+  } catch (e: any) {
+    passwordError.value = e.response?.data?.message || 'Неверный пароль';
+  }
+}
+
 async function handleLeave() {
   await leaveRoom();
   router.push('/home');
 }
 
+async function loadChatHistory() {
+  try {
+    const { data } = await apiClient.get<ChatMessage[]>(`/rooms/${roomSlug}/messages?limit=50`);
+    chatMessages.value = data;
+  } catch (e) {
+    console.error('loadChatHistory error:', e);
+  }
+}
+
 onMounted(async () => {
   await fetchRoomInfo();
-  await joinRoom();
+  if (!passwordRequired.value) {
+    await joinRoom();
+    await loadChatHistory();
+  }
 });
 
 onBeforeUnmount(async () => {

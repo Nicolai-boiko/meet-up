@@ -4,21 +4,29 @@
     <section class="bg-white rounded-xl shadow-sm p-6">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Видео-комнаты</h2>
       <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1 flex gap-2">
+        <div class="flex-1 flex flex-col gap-2">
+          <div class="flex gap-2">
+            <input
+              v-model="newRoomSlug"
+              type="text"
+              placeholder="Название комнаты (slug)"
+              class="border rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              @keyup.enter="createAndJoin"
+            />
+            <button
+              @click="createAndJoin"
+              :disabled="!newRoomSlug.trim() || creating"
+              class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
+            >
+              {{ creating ? 'Создание...' : 'Создать' }}
+            </button>
+          </div>
           <input
-            v-model="newRoomSlug"
+            v-model="roomPassword"
             type="text"
-            placeholder="Название комнаты (slug)"
-            class="border rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            @keyup.enter="createAndJoin"
+            placeholder="Пароль (оставьте пустым для открытой комнаты)"
+            class="border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <button
-            @click="createAndJoin"
-            :disabled="!newRoomSlug.trim() || creating"
-            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
-          >
-            {{ creating ? 'Создание...' : 'Создать' }}
-          </button>
         </div>
         <div class="flex-1 flex gap-2">
           <input
@@ -71,6 +79,7 @@ const router = useRouter();
 const meetupStore = useMeetupStore();
 
 const newRoomSlug = ref('');
+const roomPassword = ref('');
 const joinSlug = ref('');
 const creating = ref(false);
 const joining = ref(false);
@@ -83,7 +92,9 @@ async function createAndJoin() {
   creating.value = true;
   roomError.value = null;
   try {
-    await apiClient.post('/rooms', { title: slug, slug });
+    const payload: any = { title: slug, slug };
+    if (roomPassword.value.trim()) payload.password = roomPassword.value.trim();
+    await apiClient.post('/rooms', payload);
     router.push(`/room/${slug}`);
   } catch (e: any) {
     if (e.response?.status === 409) {

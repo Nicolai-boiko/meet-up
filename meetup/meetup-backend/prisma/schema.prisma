@@ -30,16 +30,18 @@ model User {
 }
 
 model Room {
-  id          Int       @id @default(autoincrement())
-  title       String
-  slug        String    @unique
-  isActive    Boolean   @default(false)
-  hostId      Int
-  createdAt   DateTime  @default(now())
+  id           Int       @id @default(autoincrement())
+  title        String
+  slug         String    @unique
+  isActive     Boolean   @default(false)
+  isPrivate    Boolean   @default(false)
+  passwordHash String?
+  hostId       Int
+  createdAt    DateTime  @default(now())
 
-  host        User      @relation("RoomHost", fields: [hostId], references: [id])
+  host         User      @relation("RoomHost", fields: [hostId], references: [id])
 
-  meetings    Meeting[]
+  meetings     Meeting[]
 }
 
 model Meeting {
@@ -141,4 +143,18 @@ model ContentFile {
   fileSize  Int?
   createdAt DateTime @default(now())
   content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  roomSlug  String
+  text      String
+  userName  String
+  initials  String
+  avatar    String?
+  socketId  String
+  userId    Int?
+  createdAt DateTime @default(now())
+
+  @@index([roomSlug, createdAt])
 }
