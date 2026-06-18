@@ -210,16 +210,6 @@
                   <span class="text-sm font-medium truncate">{{ f.fileName }}</span>
                   <span v-if="f.fileSize" class="text-xs text-blue-400 shrink-0">{{ formatFileSize(f.fileSize) }}</span>
                 </a>
-                <button
-                  v-if="authStore.isAdmin"
-                  @click="handleDeleteFile(f.id)"
-                  class="ml-2 text-red-400 hover:text-red-600 shrink-0"
-                  title="Удалить файл"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
