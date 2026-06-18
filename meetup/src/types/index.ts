@@ -20,6 +20,7 @@ export interface RoomSummary {
   title: string;
   slug: string;
   isActive: boolean;
+  isPrivate?: boolean;
 }
 
 export interface Meetup {
@@ -71,6 +72,7 @@ export interface Room {
   title: string;
   slug: string;
   isActive: boolean;
+  isPrivate?: boolean;
   hostId: number;
   createdAt: string;
   host?: { id: number; name: string; email: string };

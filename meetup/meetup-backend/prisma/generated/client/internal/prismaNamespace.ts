@@ -1363,6 +1363,8 @@ export const RoomScalarFieldEnum = {
   title: 'title',
   slug: 'slug',
   isActive: 'isActive',
+  isPrivate: 'isPrivate',
+  passwordHash: 'passwordHash',
   hostId: 'hostId',
   createdAt: 'createdAt'
 } as const

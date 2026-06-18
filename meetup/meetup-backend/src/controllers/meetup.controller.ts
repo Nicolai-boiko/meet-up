@@ -14,7 +14,7 @@ const meetingInclude = {
       user: { select: { id: true, name: true, email: true, avatar: true, firstName: true, lastName: true } },
     },
   },
-  room: { select: { id: true, title: true, slug: true, isActive: true } },
+  room: { select: { id: true, title: true, slug: true, isActive: true, isPrivate: true } },
 };
 
 function meetingToResponse(m: any) {
