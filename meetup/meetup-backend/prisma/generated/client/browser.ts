@@ -38,6 +38,11 @@ export type Meeting = Prisma.MeetingModel
  */
 export type MeetingParticipant = Prisma.MeetingParticipantModel
 /**
+ * Model RefreshToken
+ * 
+ */
+export type RefreshToken = Prisma.RefreshTokenModel
+/**
  * Model PasswordResetToken
  * 
  */

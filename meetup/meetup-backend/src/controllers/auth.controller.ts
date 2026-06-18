@@ -5,6 +5,29 @@ import crypto from 'crypto';
 import { prisma } from '../config/database';
 import { sendPasswordResetEmail } from '../services/email';
 
+// ── Refresh token helpers ──
+
+const REFRESH_TOKEN_BYTES = 64;
+const REFRESH_TOKEN_DAYS = 30;
+
+function hashToken(raw: string): string {
+  return crypto.createHash('sha256').update(raw).digest('hex');
+}
+
+async function generateRefreshToken(userId: number): Promise<string> {
+  const raw = crypto.randomBytes(REFRESH_TOKEN_BYTES).toString('hex');
+  await prisma.refreshToken.create({
+    data: {
+      tokenHash: hashToken(raw),
+      userId,
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000),
+    },
+  });
+  return raw;
+}
+
+// ── Auth controllers ──
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
@@ -29,7 +52,9 @@ export const register = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
 
-    res.status(201).json({ message: 'Пользователь создан', token, userId: user.id, role: user.role });
+    const refreshToken = await generateRefreshToken(user.id);
+
+    res.status(201).json({ message: 'Пользователь создан', token, refreshToken, userId: user.id, role: user.role });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Ошибка сервера при регистрации' });
@@ -60,9 +85,66 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
 
-    res.json({ token, userId: user.id, role: user.role });
+    const refreshToken = await generateRefreshToken(user.id);
+
+    res.json({ token, refreshToken, userId: user.id, role: user.role });
   } catch (error) {
     res.status(500).json({ message: 'Ошибка сервера при авторизации' });
+  }
+};
+
+export const refresh = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'refreshToken обязателен' });
+    }
+
+    const hashed = hashToken(refreshToken);
+    const existing = await prisma.refreshToken.findUnique({
+      where: { tokenHash: hashed },
+      include: { user: true },
+    });
+
+    if (!existing || existing.expiresAt < new Date()) {
+      // Удаляем просроченный токен если есть
+      if (existing) {
+        await prisma.refreshToken.delete({ where: { id: existing.id } });
+      }
+      return res.status(401).json({ message: 'Refresh-токен недействителен или истёк' });
+    }
+
+    // Token rotation: удаляем старый, создаём новый
+    const [newRefreshToken] = await Promise.all([
+      generateRefreshToken(existing.userId),
+      prisma.refreshToken.delete({ where: { id: existing.id } }),
+    ]);
+
+    const user = existing.user;
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token, refreshToken: newRefreshToken, userId: user.id, role: user.role });
+  } catch (error) {
+    console.error('refresh error:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+    if (refreshToken) {
+      const hashed = hashToken(refreshToken);
+      await prisma.refreshToken.deleteMany({ where: { tokenHash: hashed } });
+    }
+    res.json({ message: 'Выход выполнен' });
+  } catch (error) {
+    console.error('logout error:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 

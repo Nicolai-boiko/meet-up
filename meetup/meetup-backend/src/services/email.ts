@@ -1,14 +1,16 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false,
   auth: {
-    user: 'mikolaj.bojko.91@gmail.com',
-    pass: 'wcan hwvj usid zksx',
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
-const FROM = '"MeetUp" <mikolaj.bojko.91@gmail.com>';
+const FROM = process.env.SMTP_FROM || '"MeetUp" <noreply@meetup.local>';
 const APP_URL = process.env.APP_URL || 'http://localhost:5173';
 
 export async function sendPasswordResetEmail(to: string, token: string): Promise<void> {

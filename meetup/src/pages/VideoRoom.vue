@@ -159,7 +159,7 @@
       <!-- Chat header -->
       <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between shrink-0">
         <h3 class="text-white text-sm font-semibold">Чат</h3>
-        <button @click="showChat = false" class="text-gray-400 hover:text-white transition-colors">
+        <button @click="toggleChat" class="text-gray-400 hover:text-white transition-colors">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
@@ -248,8 +248,10 @@
         <svg v-if="!isMuted" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8h-1a6 6 0 01-12 0H3a7.001 7.001 0 006 6.93V17H6v1h8v-1h-3v-2.07z" clip-rule="evenodd" />
         </svg>
-        <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 01-16 0h2a6 6 0 0012 0h2zm-8 6a8.003 8.003 0 01-7.07-4H5a6 6 0 0010 0h2.07A8.014 8.014 0 0110 16z" clip-rule="evenodd" />
+        <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3z" />
+          <path d="M19 10a7 7 0 01-6 6.93V19h3v1H8v-1h3v-2.07A7 7 0 015 10h1a6 6 0 0012 0h1z" />
+          <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2" />
         </svg>
       </button>
 
@@ -272,9 +274,9 @@
       </button>
 
       <button
-        @click="showChat = !showChat"
+        @click="toggleChat"
         :class="[
-          'control-btn',
+          'control-btn relative',
           showChat ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600 hover:bg-gray-500'
         ]"
         title="Чат"
@@ -282,6 +284,12 @@
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm3 0H8v2h2V9zm3 0h-2v2h2V9z" clip-rule="evenodd" />
         </svg>
+        <span
+          v-if="unreadCount > 0"
+          class="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1"
+        >
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
       </button>
 
       <button
@@ -344,6 +352,7 @@ const showChat = ref(false);
 const chatInput = ref('');
 const chatMessages = ref<ChatMessage[]>([]);
 const chatMessagesEl = ref<HTMLElement | null>(null);
+const unreadCount = ref(0);
 
 // Используем тот же сокет что и WebRTC, не создаём отдельный
 const chatSocket = getSignalingSocket();
@@ -352,6 +361,19 @@ const mySocketId = ref(chatSocket.connected ? (chatSocket.id ?? '') : '');
 chatSocket.on('connect', () => {
   mySocketId.value = chatSocket.id ?? '';
 });
+
+function toggleChat() {
+  showChat.value = !showChat.value;
+  if (showChat.value) {
+    unreadCount.value = 0;
+    // Скролл вниз при открытии
+    setTimeout(() => {
+      if (chatMessagesEl.value) {
+        chatMessagesEl.value.scrollTop = chatMessagesEl.value.scrollHeight;
+      }
+    }, 100);
+  }
+}
 
 function sendChatMessage() {
   const text = chatInput.value.trim();
@@ -370,6 +392,9 @@ function sendChatMessage() {
 
 chatSocket.on('new-message', (msg: ChatMessage) => {
   chatMessages.value = [...chatMessages.value, msg];
+  if (!showChat.value) {
+    unreadCount.value++;
+  }
   // Auto-scroll
   setTimeout(() => {
     if (chatMessagesEl.value) {
