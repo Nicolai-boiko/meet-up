@@ -90,3 +90,18 @@ export const deleteRoom = async (_req: Request, res: Response) => {
     res.status(500).json({ message: 'Ошибка сервера при удалении комнаты' });
   }
 };
+
+export const bulkDelete = async (req: Request, res: Response) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'ids должен быть непустым массивом' });
+    }
+    const numericIds = ids.map(Number);
+    const result = await prisma.room.deleteMany({ where: { id: { in: numericIds } } });
+    res.json({ deleted: result.count });
+  } catch (error) {
+    console.error('room bulkDelete error:', error);
+    res.status(500).json({ message: 'Ошибка сервера при удалении комнат' });
+  }
+};
