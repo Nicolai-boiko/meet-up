@@ -142,3 +142,17 @@ model ContentFile {
   createdAt DateTime @default(now())
   content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 }
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  roomSlug  String
+  text      String
+  userName  String
+  initials  String
+  avatar    String?
+  socketId  String
+  userId    Int?
+  createdAt DateTime @default(now())
+
+  @@index([roomSlug, createdAt])
+}

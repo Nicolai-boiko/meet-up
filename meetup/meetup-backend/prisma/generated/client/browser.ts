@@ -72,3 +72,8 @@ export type Favorite = Prisma.FavoriteModel
  * 
  */
 export type ContentFile = Prisma.ContentFileModel
+/**
+ * Model ChatMessage
+ * 
+ */
+export type ChatMessage = Prisma.ChatMessageModel

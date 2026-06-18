@@ -61,7 +61,8 @@ export const ModelName = {
   ContentTag: 'ContentTag',
   Content: 'Content',
   Favorite: 'Favorite',
-  ContentFile: 'ContentFile'
+  ContentFile: 'ContentFile',
+  ChatMessage: 'ChatMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -207,6 +208,21 @@ export const ContentFileScalarFieldEnum = {
 } as const
 
 export type ContentFileScalarFieldEnum = (typeof ContentFileScalarFieldEnum)[keyof typeof ContentFileScalarFieldEnum]
+
+
+export const ChatMessageScalarFieldEnum = {
+  id: 'id',
+  roomSlug: 'roomSlug',
+  text: 'text',
+  userName: 'userName',
+  initials: 'initials',
+  avatar: 'avatar',
+  socketId: 'socketId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
 
 
 export const SortOrder = {

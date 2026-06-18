@@ -483,9 +483,19 @@ async function handleLeave() {
   router.push('/home');
 }
 
+async function loadChatHistory() {
+  try {
+    const { data } = await apiClient.get<ChatMessage[]>(`/rooms/${roomSlug}/messages?limit=50`);
+    chatMessages.value = data;
+  } catch (e) {
+    console.error('loadChatHistory error:', e);
+  }
+}
+
 onMounted(async () => {
   await fetchRoomInfo();
   await joinRoom();
+  await loadChatHistory();
 });
 
 onBeforeUnmount(async () => {

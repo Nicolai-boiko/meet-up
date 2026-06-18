@@ -91,6 +91,32 @@ export const deleteRoom = async (_req: Request, res: Response) => {
   }
 };
 
+export const getMessages = async (req: Request, res: Response) => {
+  try {
+    const slug = req.params.slug as string;
+    const limit = Math.min(100, parseInt(req.query.limit as string) || 50);
+
+    const messages = await prisma.chatMessage.findMany({
+      where: { roomSlug: slug },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+    });
+
+    res.json(messages.map((m) => ({
+      id: String(m.id),
+      socketId: m.socketId,
+      text: m.text,
+      userName: m.userName,
+      initials: m.initials,
+      avatar: m.avatar,
+      timestamp: m.createdAt.toISOString(),
+    })));
+  } catch (error) {
+    console.error('getMessages error:', error);
+    res.status(500).json({ message: 'Ошибка сервера при загрузке сообщений' });
+  }
+};
+
 export const bulkDelete = async (req: Request, res: Response) => {
   try {
     const { ids } = req.body;
