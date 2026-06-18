@@ -25,7 +25,18 @@
 
       <!-- Users Tab -->
       <div v-if="activeTab === 'users'">
+        <!-- Search -->
+        <div class="mb-4">
+          <input
+            v-model="searchUsers"
+            type="text"
+            placeholder="Поиск по имени или email..."
+            class="w-full max-w-md border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div v-if="adminUsers.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
+          <template v-else>
           <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -36,7 +47,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-              <tr v-for="user in adminUsers" :key="user.id">
+              <tr v-for="user in adminUsers.items" :key="user.id">
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2">
                     <img v-if="user.avatar" :src="user.avatar" class="w-7 h-7 rounded-full object-cover" />
@@ -74,6 +85,16 @@
               </tr>
             </tbody>
           </table>
+          <!-- Pagination -->
+          <div v-if="adminUsers.hasMore" class="p-3 border-t border-gray-100">
+            <button
+              @click="loadMoreUsers"
+              class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              Загрузить ещё ({{ adminUsers.total - adminUsers.items.length }})
+            </button>
+          </div>
+          </template>
         </div>
       </div>
 
@@ -247,16 +268,51 @@ function switchTab(tab: typeof activeTab.value) {
 }
 
 // ── Users ──
-const adminUsers = ref<UserSummary[]>([]);
+const searchUsers = ref('');
+const adminUsers = reactive({
+  items: [] as UserSummary[],
+  loading: false,
+  page: 1,
+  total: 0,
+  limit: 20,
+  hasMore: false,
+});
 
-async function loadUsers() {
+async function loadUsers(page = 1) {
+  adminUsers.loading = true;
   try {
-    const { data } = await apiClient.get<UserSummary[]>('/users');
-    adminUsers.value = data;
+    const params: any = { page, limit: adminUsers.limit };
+    if (searchUsers.value) params.search = searchUsers.value;
+    const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
+    adminUsers.items = data.items;
+    adminUsers.page = data.page;
+    adminUsers.total = data.total;
+    adminUsers.hasMore = data.page < data.totalPages;
   } catch (e) {
     console.error('loadUsers error:', e);
+  } finally {
+    adminUsers.loading = false;
   }
 }
+
+async function loadMoreUsers() {
+  if (!adminUsers.hasMore) return;
+  try {
+    const params: any = { page: adminUsers.page + 1, limit: adminUsers.limit };
+    if (searchUsers.value) params.search = searchUsers.value;
+    const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
+    adminUsers.items = [...adminUsers.items, ...data.items];
+    adminUsers.page = data.page;
+    adminUsers.total = data.total;
+    adminUsers.hasMore = data.page < data.totalPages;
+  } catch (e) {
+    console.error('loadMoreUsers error:', e);
+  }
+}
+
+watch(searchUsers, () => {
+  loadUsers(1);
+});
 
 async function promoteUser(user: UserSummary) {
   const ok = await confirm('Назначить администратором?', `${userDisplayName(user)} получит полный доступ к управлению.`, 'warning');
