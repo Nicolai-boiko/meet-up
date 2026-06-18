@@ -517,11 +517,13 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue';
 import { useMeetupStore } from '../stores/meetup';
 import { useAuthStore } from '../stores/auth';
+import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
 import type { Meetup, Room, UserSummary, ParticipantInfo } from '../types';
 
 const meetupStore = useMeetupStore();
 const authStore = useAuthStore();
+const { confirm } = useConfirm();
 
 // ── Calendar state ──
 const currentDate = ref(new Date());
@@ -836,7 +838,8 @@ async function handleSave() {
 }
 
 async function handleDelete(m: Meetup) {
-  if (!confirm('Удалить эту встречу?')) return;
+  const ok = await confirm('Удалить встречу?', `«${m.title}» будет удалена. Участники получат уведомление.`, 'danger');
+  if (!ok) return;
   try {
     await meetupStore.deleteMeetup(m.id);
     closeModal();

@@ -77,12 +77,26 @@
     <main class="container mx-auto p-6 flex-1 min-h-0 overflow-auto">
       <router-view></router-view>
     </main>
+
+    <!-- Global confirm modal -->
+    <ConfirmModal ref="confirmModalRef" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from './stores/auth';
+import ConfirmModal from './components/ConfirmModal.vue';
+import { registerConfirmModal } from './composables/useConfirm';
+
+const confirmModalRef = ref<InstanceType<typeof ConfirmModal> | null>(null);
+
+onMounted(() => {
+  if (confirmModalRef.value) {
+    registerConfirmModal(confirmModalRef.value);
+  }
+});
 
 const authStore = useAuthStore();
 const router = useRouter();

@@ -158,8 +158,11 @@
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
 import type { UserSummary, ContentItem, Room, PaginatedResponse } from '../types';
+
+const { confirm } = useConfirm();
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -190,13 +193,15 @@ async function loadUsers() {
 }
 
 async function promoteUser(user: UserSummary) {
-  if (!confirm(`Сделать ${user.name} администратором?`)) return;
+  const ok = await confirm('Назначить администратором?', `${userDisplayName(user)} получит полный доступ к управлению.`, 'warning');
+  if (!ok) return;
   await apiClient.put(`/users/${user.id}/role`, { role: 'ADMIN' });
   await loadUsers();
 }
 
 async function demoteUser(user: UserSummary) {
-  if (!confirm(`Понизить ${user.name} до USER?`)) return;
+  const ok = await confirm('Понизить до USER?', `${userDisplayName(user)} потеряет права администратора.`, 'warning');
+  if (!ok) return;
   await apiClient.put(`/users/${user.id}/role`, { role: 'USER' });
   await loadUsers();
 }
@@ -220,7 +225,8 @@ async function loadContent() {
 }
 
 async function deleteContent(id: number) {
-  if (!confirm('Удалить этот материал?')) return;
+  const ok = await confirm('Удалить материал?', 'Это действие нельзя отменить.', 'danger');
+  if (!ok) return;
   await apiClient.delete(`/content/${id}`);
   adminContent.items = adminContent.items.filter((i) => i.id !== id);
 }
@@ -244,7 +250,8 @@ async function loadRooms() {
 }
 
 async function deleteRoom(id: number) {
-  if (!confirm('Удалить эту комнату?')) return;
+  const ok = await confirm('Удалить комнату?', 'Участники больше не смогут к ней подключиться.', 'danger');
+  if (!ok) return;
   await apiClient.delete(`/rooms/${id}`);
   adminRooms.items = adminRooms.items.filter((r) => r.id !== id);
 }

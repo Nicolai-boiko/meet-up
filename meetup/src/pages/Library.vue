@@ -208,9 +208,11 @@
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useContentStore } from '../stores/content';
 import { useAuthStore } from '../stores/auth';
+import { useConfirm } from '../composables/useConfirm';
 
 const contentStore = useContentStore();
 const authStore = useAuthStore();
+const { confirm } = useConfirm();
 const search = ref('');
 const isEditing = ref(false);
 const editingId = ref<number | null>(null);
@@ -312,7 +314,8 @@ async function handleSave() {
 
 async function handleDelete() {
   if (!contentStore.current) return;
-  if (!confirm('Удалить этот материал?')) return;
+  const ok = await confirm('Удалить материал?', `«${contentStore.current.title}» будет удалён безвозвратно.`, 'danger');
+  if (!ok) return;
   try {
     await contentStore.remove(contentStore.current.id);
   } catch (e) {
