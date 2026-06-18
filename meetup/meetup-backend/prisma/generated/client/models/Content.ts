@@ -42,6 +42,7 @@ export type ContentMinAggregateOutputType = {
   type: string | null
   body: string | null
   mediaUrl: string | null
+  fileName: string | null
   authorId: number | null
   createdAt: Date | null
 }
@@ -52,6 +53,7 @@ export type ContentMaxAggregateOutputType = {
   type: string | null
   body: string | null
   mediaUrl: string | null
+  fileName: string | null
   authorId: number | null
   createdAt: Date | null
 }
@@ -62,6 +64,7 @@ export type ContentCountAggregateOutputType = {
   type: number
   body: number
   mediaUrl: number
+  fileName: number
   authorId: number
   createdAt: number
   _all: number
@@ -84,6 +87,7 @@ export type ContentMinAggregateInputType = {
   type?: true
   body?: true
   mediaUrl?: true
+  fileName?: true
   authorId?: true
   createdAt?: true
 }
@@ -94,6 +98,7 @@ export type ContentMaxAggregateInputType = {
   type?: true
   body?: true
   mediaUrl?: true
+  fileName?: true
   authorId?: true
   createdAt?: true
 }
@@ -104,6 +109,7 @@ export type ContentCountAggregateInputType = {
   type?: true
   body?: true
   mediaUrl?: true
+  fileName?: true
   authorId?: true
   createdAt?: true
   _all?: true
@@ -201,6 +207,7 @@ export type ContentGroupByOutputType = {
   type: string
   body: string | null
   mediaUrl: string | null
+  fileName: string | null
   authorId: number
   createdAt: Date
   _count: ContentCountAggregateOutputType | null
@@ -234,11 +241,13 @@ export type ContentWhereInput = {
   type?: Prisma.StringFilter<"Content"> | string
   body?: Prisma.StringNullableFilter<"Content"> | string | null
   mediaUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  fileName?: Prisma.StringNullableFilter<"Content"> | string | null
   authorId?: Prisma.IntFilter<"Content"> | number
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contentTags?: Prisma.ContentTagListRelationFilter
   favorites?: Prisma.FavoriteListRelationFilter
+  files?: Prisma.ContentFileListRelationFilter
 }
 
 export type ContentOrderByWithRelationInput = {
@@ -247,11 +256,13 @@ export type ContentOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   body?: Prisma.SortOrderInput | Prisma.SortOrder
   mediaUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
   contentTags?: Prisma.ContentTagOrderByRelationAggregateInput
   favorites?: Prisma.FavoriteOrderByRelationAggregateInput
+  files?: Prisma.ContentFileOrderByRelationAggregateInput
 }
 
 export type ContentWhereUniqueInput = Prisma.AtLeast<{
@@ -263,11 +274,13 @@ export type ContentWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"Content"> | string
   body?: Prisma.StringNullableFilter<"Content"> | string | null
   mediaUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  fileName?: Prisma.StringNullableFilter<"Content"> | string | null
   authorId?: Prisma.IntFilter<"Content"> | number
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contentTags?: Prisma.ContentTagListRelationFilter
   favorites?: Prisma.FavoriteListRelationFilter
+  files?: Prisma.ContentFileListRelationFilter
 }, "id">
 
 export type ContentOrderByWithAggregationInput = {
@@ -276,6 +289,7 @@ export type ContentOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   body?: Prisma.SortOrderInput | Prisma.SortOrder
   mediaUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ContentCountOrderByAggregateInput
@@ -294,6 +308,7 @@ export type ContentScalarWhereWithAggregatesInput = {
   type?: Prisma.StringWithAggregatesFilter<"Content"> | string
   body?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
   mediaUrl?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  fileName?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
   authorId?: Prisma.IntWithAggregatesFilter<"Content"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Content"> | Date | string
 }
@@ -303,10 +318,12 @@ export type ContentCreateInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutContentInput
   contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateInput = {
@@ -315,10 +332,12 @@ export type ContentUncheckedCreateInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   authorId: number
   createdAt?: Date | string
   contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentUpdateInput = {
@@ -326,10 +345,12 @@ export type ContentUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
   contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateInput = {
@@ -338,10 +359,12 @@ export type ContentUncheckedUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateManyInput = {
@@ -350,6 +373,7 @@ export type ContentCreateManyInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   authorId: number
   createdAt?: Date | string
 }
@@ -359,6 +383,7 @@ export type ContentUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -368,6 +393,7 @@ export type ContentUncheckedUpdateManyInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,6 +419,7 @@ export type ContentCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   body?: Prisma.SortOrder
   mediaUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -408,6 +435,7 @@ export type ContentMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   body?: Prisma.SortOrder
   mediaUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -418,6 +446,7 @@ export type ContentMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   body?: Prisma.SortOrder
   mediaUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -497,14 +526,30 @@ export type ContentUpdateOneRequiredWithoutFavoritesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutFavoritesInput, Prisma.ContentUpdateWithoutFavoritesInput>, Prisma.ContentUncheckedUpdateWithoutFavoritesInput>
 }
 
+export type ContentCreateNestedOneWithoutFilesInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutFilesInput, Prisma.ContentUncheckedCreateWithoutFilesInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutFilesInput
+  connect?: Prisma.ContentWhereUniqueInput
+}
+
+export type ContentUpdateOneRequiredWithoutFilesNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutFilesInput, Prisma.ContentUncheckedCreateWithoutFilesInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutFilesInput
+  upsert?: Prisma.ContentUpsertWithoutFilesInput
+  connect?: Prisma.ContentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutFilesInput, Prisma.ContentUpdateWithoutFilesInput>, Prisma.ContentUncheckedUpdateWithoutFilesInput>
+}
+
 export type ContentCreateWithoutAuthorInput = {
   title: string
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
   contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutAuthorInput = {
@@ -513,9 +558,11 @@ export type ContentUncheckedCreateWithoutAuthorInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
   contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutAuthorInput = {
@@ -553,6 +600,7 @@ export type ContentScalarWhereInput = {
   type?: Prisma.StringFilter<"Content"> | string
   body?: Prisma.StringNullableFilter<"Content"> | string | null
   mediaUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  fileName?: Prisma.StringNullableFilter<"Content"> | string | null
   authorId?: Prisma.IntFilter<"Content"> | number
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
 }
@@ -562,9 +610,11 @@ export type ContentCreateWithoutContentTagsInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutContentInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutContentTagsInput = {
@@ -573,9 +623,11 @@ export type ContentUncheckedCreateWithoutContentTagsInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   authorId: number
   createdAt?: Date | string
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutContentTagsInput = {
@@ -599,9 +651,11 @@ export type ContentUpdateWithoutContentTagsInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutContentTagsInput = {
@@ -610,9 +664,11 @@ export type ContentUncheckedUpdateWithoutContentTagsInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateWithoutFavoritesInput = {
@@ -620,9 +676,11 @@ export type ContentCreateWithoutFavoritesInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutContentInput
   contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutFavoritesInput = {
@@ -631,9 +689,11 @@ export type ContentUncheckedCreateWithoutFavoritesInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   authorId: number
   createdAt?: Date | string
   contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
+  files?: Prisma.ContentFileUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutFavoritesInput = {
@@ -657,9 +717,11 @@ export type ContentUpdateWithoutFavoritesInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
   contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutFavoritesInput = {
@@ -668,9 +730,77 @@ export type ContentUncheckedUpdateWithoutFavoritesInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUncheckedUpdateManyWithoutContentNestedInput
+}
+
+export type ContentCreateWithoutFilesInput = {
+  title: string
+  type: string
+  body?: string | null
+  mediaUrl?: string | null
+  fileName?: string | null
+  createdAt?: Date | string
+  author: Prisma.UserCreateNestedOneWithoutContentInput
+  contentTags?: Prisma.ContentTagCreateNestedManyWithoutContentInput
+  favorites?: Prisma.FavoriteCreateNestedManyWithoutContentInput
+}
+
+export type ContentUncheckedCreateWithoutFilesInput = {
+  id?: number
+  title: string
+  type: string
+  body?: string | null
+  mediaUrl?: string | null
+  fileName?: string | null
+  authorId: number
+  createdAt?: Date | string
+  contentTags?: Prisma.ContentTagUncheckedCreateNestedManyWithoutContentInput
+  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutContentInput
+}
+
+export type ContentCreateOrConnectWithoutFilesInput = {
+  where: Prisma.ContentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentCreateWithoutFilesInput, Prisma.ContentUncheckedCreateWithoutFilesInput>
+}
+
+export type ContentUpsertWithoutFilesInput = {
+  update: Prisma.XOR<Prisma.ContentUpdateWithoutFilesInput, Prisma.ContentUncheckedUpdateWithoutFilesInput>
+  create: Prisma.XOR<Prisma.ContentCreateWithoutFilesInput, Prisma.ContentUncheckedCreateWithoutFilesInput>
+  where?: Prisma.ContentWhereInput
+}
+
+export type ContentUpdateToOneWithWhereWithoutFilesInput = {
+  where?: Prisma.ContentWhereInput
+  data: Prisma.XOR<Prisma.ContentUpdateWithoutFilesInput, Prisma.ContentUncheckedUpdateWithoutFilesInput>
+}
+
+export type ContentUpdateWithoutFilesInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  author?: Prisma.UserUpdateOneRequiredWithoutContentNestedInput
+  contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
+  favorites?: Prisma.FavoriteUpdateManyWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateWithoutFilesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
+  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateManyAuthorInput = {
@@ -679,6 +809,7 @@ export type ContentCreateManyAuthorInput = {
   type: string
   body?: string | null
   mediaUrl?: string | null
+  fileName?: string | null
   createdAt?: Date | string
 }
 
@@ -687,9 +818,11 @@ export type ContentUpdateWithoutAuthorInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentTags?: Prisma.ContentTagUpdateManyWithoutContentNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutAuthorInput = {
@@ -698,9 +831,11 @@ export type ContentUncheckedUpdateWithoutAuthorInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentTags?: Prisma.ContentTagUncheckedUpdateManyWithoutContentNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutContentNestedInput
+  files?: Prisma.ContentFileUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateManyWithoutAuthorInput = {
@@ -709,6 +844,7 @@ export type ContentUncheckedUpdateManyWithoutAuthorInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mediaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -720,11 +856,13 @@ export type ContentUncheckedUpdateManyWithoutAuthorInput = {
 export type ContentCountOutputType = {
   contentTags: number
   favorites: number
+  files: number
 }
 
 export type ContentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contentTags?: boolean | ContentCountOutputTypeCountContentTagsArgs
   favorites?: boolean | ContentCountOutputTypeCountFavoritesArgs
+  files?: boolean | ContentCountOutputTypeCountFilesArgs
 }
 
 /**
@@ -751,6 +889,13 @@ export type ContentCountOutputTypeCountFavoritesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.FavoriteWhereInput
 }
 
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeCountFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentFileWhereInput
+}
+
 
 export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -758,11 +903,13 @@ export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   type?: boolean
   body?: boolean
   mediaUrl?: boolean
+  fileName?: boolean
   authorId?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contentTags?: boolean | Prisma.Content$contentTagsArgs<ExtArgs>
   favorites?: boolean | Prisma.Content$favoritesArgs<ExtArgs>
+  files?: boolean | Prisma.Content$filesArgs<ExtArgs>
   _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
@@ -772,6 +919,7 @@ export type ContentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   type?: boolean
   body?: boolean
   mediaUrl?: boolean
+  fileName?: boolean
   authorId?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -783,6 +931,7 @@ export type ContentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   type?: boolean
   body?: boolean
   mediaUrl?: boolean
+  fileName?: boolean
   authorId?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -794,15 +943,17 @@ export type ContentSelectScalar = {
   type?: boolean
   body?: boolean
   mediaUrl?: boolean
+  fileName?: boolean
   authorId?: boolean
   createdAt?: boolean
 }
 
-export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "type" | "body" | "mediaUrl" | "authorId" | "createdAt", ExtArgs["result"]["content"]>
+export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "type" | "body" | "mediaUrl" | "fileName" | "authorId" | "createdAt", ExtArgs["result"]["content"]>
 export type ContentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contentTags?: boolean | Prisma.Content$contentTagsArgs<ExtArgs>
   favorites?: boolean | Prisma.Content$favoritesArgs<ExtArgs>
+  files?: boolean | Prisma.Content$filesArgs<ExtArgs>
   _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -818,6 +969,7 @@ export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     author: Prisma.$UserPayload<ExtArgs>
     contentTags: Prisma.$ContentTagPayload<ExtArgs>[]
     favorites: Prisma.$FavoritePayload<ExtArgs>[]
+    files: Prisma.$ContentFilePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -825,6 +977,7 @@ export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     type: string
     body: string | null
     mediaUrl: string | null
+    fileName: string | null
     authorId: number
     createdAt: Date
   }, ExtArgs["result"]["content"]>
@@ -1224,6 +1377,7 @@ export interface Prisma__ContentClient<T, Null = never, ExtArgs extends runtime.
   author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   contentTags<T extends Prisma.Content$contentTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$contentTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   favorites<T extends Prisma.Content$favoritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  files<T extends Prisma.Content$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1258,6 +1412,7 @@ export interface ContentFieldRefs {
   readonly type: Prisma.FieldRef<"Content", 'String'>
   readonly body: Prisma.FieldRef<"Content", 'String'>
   readonly mediaUrl: Prisma.FieldRef<"Content", 'String'>
+  readonly fileName: Prisma.FieldRef<"Content", 'String'>
   readonly authorId: Prisma.FieldRef<"Content", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Content", 'DateTime'>
 }
@@ -1706,6 +1861,30 @@ export type Content$favoritesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.FavoriteScalarFieldEnum | Prisma.FavoriteScalarFieldEnum[]
+}
+
+/**
+ * Content.files
+ */
+export type Content$filesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentFile
+   */
+  select?: Prisma.ContentFileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentFile
+   */
+  omit?: Prisma.ContentFileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentFileInclude<ExtArgs> | null
+  where?: Prisma.ContentFileWhereInput
+  orderBy?: Prisma.ContentFileOrderByWithRelationInput | Prisma.ContentFileOrderByWithRelationInput[]
+  cursor?: Prisma.ContentFileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentFileScalarFieldEnum | Prisma.ContentFileScalarFieldEnum[]
 }
 
 /**

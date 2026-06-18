@@ -112,12 +112,14 @@ model Content {
   type        String
   body        String?
   mediaUrl    String?
+  fileName    String?
   authorId    Int
   createdAt   DateTime     @default(now())
 
   author      User         @relation(fields: [authorId], references: [id])
   contentTags ContentTag[]
   favorites   Favorite[]
+  files       ContentFile[]
 }
 
 model Favorite {
@@ -129,4 +131,14 @@ model Favorite {
   content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contentId])
+}
+
+model ContentFile {
+  id        Int      @id @default(autoincrement())
+  contentId Int
+  fileName  String
+  filePath  String
+  fileSize  Int?
+  createdAt DateTime @default(now())
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 }

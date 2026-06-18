@@ -94,16 +94,27 @@ export interface Tag {
   name: string;
 }
 
+export interface ContentFile {
+  id: number;
+  contentId: number;
+  fileName: string;
+  filePath: string;
+  fileSize: number | null;
+  createdAt: string;
+}
+
 export interface ContentItem {
   id: number;
   title: string;
   type: string;
   body: string | null;
   mediaUrl: string | null;
+  fileName: string | null;
   authorId: number;
   createdAt: string;
   author?: { id: number; name: string; avatar: string | null };
   tags?: Tag[];
+  files?: ContentFile[];
   isFavorited?: boolean;
 }
 

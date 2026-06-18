@@ -75,7 +75,7 @@
         >
           <div class="flex items-center gap-2">
             <span class="text-lg">
-              {{ item.type === 'video' ? '🎬' : item.type === 'link' ? '🔗' : '📄' }}
+              {{ item.type === 'video' ? '🎬' : item.type === 'link' ? '🔗' : item.type === 'file' ? '📁' : '📄' }}
             </span>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5">
@@ -150,7 +150,7 @@
             <div>
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-2xl">
-                  {{ contentStore.current.type === 'video' ? '🎬' : contentStore.current.type === 'link' ? '🔗' : '📄' }}
+                  {{ contentStore.current.type === 'video' ? '🎬' : contentStore.current.type === 'link' ? '🔗' : contentStore.current.type === 'file' ? '📁' : '📄' }}
                 </span>
                 <h1 class="text-2xl font-bold text-gray-900">{{ contentStore.current.title }}</h1>
               </div>
@@ -188,6 +188,57 @@
             </div>
           </div>
 
+          <!-- Files list -->
+          <div v-if="contentStore.current.files?.length" class="mb-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Файлы</h3>
+            <div class="space-y-2">
+              <div
+                v-for="f in contentStore.current.files"
+                :key="f.id"
+                class="flex items-center justify-between px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg"
+              >
+                <a
+                  :href="`http://localhost:3000${f.filePath}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :download="f.fileName"
+                  class="flex items-center gap-2 text-blue-700 hover:text-blue-900 min-w-0"
+                >
+                  <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-sm font-medium truncate">{{ f.fileName }}</span>
+                  <span v-if="f.fileSize" class="text-xs text-blue-400 shrink-0">{{ formatFileSize(f.fileSize) }}</span>
+                </a>
+                <button
+                  v-if="authStore.isAdmin"
+                  @click="handleDeleteFile(f.id)"
+                  class="ml-2 text-red-400 hover:text-red-600 shrink-0"
+                  title="Удалить файл"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Single file fallback (backward compat) -->
+          <div v-else-if="contentStore.current.type === 'file' && contentStore.current.mediaUrl && !contentStore.current.files?.length" class="mb-6">
+            <a
+              :href="fileDownloadUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              :download="contentStore.current.fileName || 'file'"
+              class="inline-flex items-center gap-2 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-sm font-medium">{{ contentStore.current.fileName || 'Скачать файл' }}</span>
+            </a>
+          </div>
+
           <!-- Body -->
           <div v-if="contentStore.current.body" class="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
             {{ contentStore.current.body }}
@@ -221,6 +272,7 @@
                 <option value="text">Текст</option>
                 <option value="video">Видео</option>
                 <option value="link">Ссылка</option>
+                <option value="file">Файл</option>
               </select>
             </div>
             <div v-if="form.type === 'video' || form.type === 'link'">
@@ -231,6 +283,105 @@
                 placeholder="https://..."
                 class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
+            </div>
+            <div v-if="form.type === 'file'">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Файл</label>
+              <input
+                ref="fileInput"
+                type="file"
+                @change="onFileSelected"
+                class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <div v-if="selectedFile" class="text-xs text-gray-500 mt-1">{{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</div>
+              <div v-else-if="editingId && form.mediaUrl" class="text-xs text-gray-500 mt-1">Текущий файл: {{ form.fileName || 'загружен' }} (новый не выбран)</div>
+            </div>
+            <!-- Files section (create + edit) -->
+            <div>
+              <!-- Edit mode: already saved files -->
+              <div v-if="editingId && editingFiles.length" class="space-y-1">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Файлы записи</label>
+                <div
+                  v-for="f in editingFiles"
+                  :key="f.id"
+                  class="flex items-center justify-between px-3 py-2 bg-gray-50 border rounded-lg"
+                >
+                  <span class="text-sm text-gray-700 truncate">{{ f.fileName }}</span>
+                  <button
+                    type="button"
+                    @click="handleDeleteFile(f.id)"
+                    class="ml-2 text-red-400 hover:text-red-600 shrink-0"
+                    title="Удалить"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- Create mode: pending files (not yet uploaded) -->
+              <div v-if="!editingId && pendingCreateFiles.length" class="space-y-1">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Файлы для загрузки</label>
+                <div
+                  v-for="(f, idx) in pendingCreateFiles"
+                  :key="idx"
+                  class="flex items-center justify-between px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg"
+                >
+                  <span class="text-sm text-gray-700 truncate">{{ f.name }}</span>
+                  <span class="text-xs text-gray-400 shrink-0 mx-2">{{ formatFileSize(f.size) }}</span>
+                  <button
+                    type="button"
+                    @click="pendingCreateFiles.splice(idx, 1)"
+                    class="ml-2 text-red-400 hover:text-red-600 shrink-0"
+                    title="Убрать"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- Edit mode: pending new files (sent on save) -->
+              <div v-if="editingId && pendingEditFiles.length" class="space-y-1 mt-2">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Новые файлы (будут загружены при сохранении)</label>
+                <div
+                  v-for="(f, idx) in pendingEditFiles"
+                  :key="idx"
+                  class="flex items-center justify-between px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg"
+                >
+                  <span class="text-sm text-gray-700 truncate">{{ f.name }}</span>
+                  <span class="text-xs text-gray-400 shrink-0 mx-2">{{ formatFileSize(f.size) }}</span>
+                  <button
+                    type="button"
+                    @click="pendingEditFiles.splice(idx, 1)"
+                    class="ml-2 text-red-400 hover:text-red-600 shrink-0"
+                    title="Убрать"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- Edit mode: add files (collected locally, sent on save) -->
+              <div v-if="editingId" class="mt-2">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Добавить файлы</label>
+                <input
+                  type="file"
+                  multiple
+                  @change="onPendingEditFilesSelected"
+                  class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
+              <!-- Create mode: select files (sent on save) -->
+              <div v-if="!editingId" class="mt-2">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Добавить файлы</label>
+                <input
+                  type="file"
+                  multiple
+                  @change="onPendingFilesSelected"
+                  class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600 mb-1">Теги</label>
@@ -306,7 +457,7 @@ import { useContentStore } from '../stores/content';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
-import type { ContentItem, Tag } from '../types';
+import type { ContentFile, ContentItem, Tag } from '../types';
 
 const contentStore = useContentStore();
 const authStore = useAuthStore();
@@ -319,7 +470,64 @@ const editingId = ref<number | null>(null);
 const saving = ref(false);
 const saveError = ref<string | null>(null);
 
-const form = reactive({ title: '', type: 'text', body: '', mediaUrl: '' });
+const form = reactive({ title: '', type: 'text', body: '', mediaUrl: '', fileName: '' as string | null });
+const selectedFile = ref<File | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
+const pendingCreateFiles = ref<File[]>([]);
+const pendingEditFiles = ref<File[]>([]);
+
+const editingFiles = computed<ContentFile[]>(() => {
+  return contentStore.current?.files ?? [];
+});
+
+function onFileSelected(e: Event) {
+  const input = e.target as HTMLInputElement;
+  selectedFile.value = input.files?.[0] ?? null;
+}
+
+function onPendingFilesSelected(e: Event) {
+  const input = e.target as HTMLInputElement;
+  if (input.files) {
+    for (let i = 0; i < input.files.length; i++) {
+      const f = input.files[i];
+      if (f) pendingCreateFiles.value.push(f);
+    }
+    input.value = '';
+  }
+}
+
+function onPendingEditFilesSelected(e: Event) {
+  const input = e.target as HTMLInputElement;
+  if (input.files) {
+    for (let i = 0; i < input.files.length; i++) {
+      const f = input.files[i];
+      if (f) pendingEditFiles.value.push(f);
+    }
+    input.value = '';
+  }
+}
+
+async function handleDeleteFile(fileId: number) {
+  if (!editingId.value && !contentStore.current) return;
+  const contentId = editingId.value ?? contentStore.current!.id;
+  try {
+    await contentStore.deleteFile(contentId, fileId);
+  } catch (e) {
+    console.error('handleDeleteFile error:', e);
+  }
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} Б`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`;
+}
+
+const fileDownloadUrl = computed(() => {
+  const url = contentStore.current?.mediaUrl;
+  if (!url) return '';
+  return `http://localhost:3000${url}`;
+});
 
 // ── Tags ──
 const allTags = ref<Tag[]>([]);
@@ -428,6 +636,10 @@ function openCreate() {
   form.type = 'text';
   form.body = '';
   form.mediaUrl = '';
+  form.fileName = null;
+  selectedFile.value = null;
+  pendingCreateFiles.value = [];
+  if (fileInput.value) fileInput.value.value = '';
   formTagIds.value = [];
   saveError.value = null;
   isEditing.value = true;
@@ -441,6 +653,10 @@ function openEdit() {
   form.type = c.type;
   form.body = c.body ?? '';
   form.mediaUrl = c.mediaUrl ?? '';
+  form.fileName = c.fileName ?? null;
+  selectedFile.value = null;
+  pendingEditFiles.value = [];
+  if (fileInput.value) fileInput.value.value = '';
   formTagIds.value = (c.tags ?? []).map((t) => t.id);
   saveError.value = null;
   isEditing.value = true;
@@ -449,6 +665,8 @@ function openEdit() {
 function cancelEdit() {
   isEditing.value = false;
   editingId.value = null;
+  pendingCreateFiles.value = [];
+  pendingEditFiles.value = [];
   if (!contentStore.current && contentStore.items.length > 0) {
     const first = contentStore.items[0];
     if (first) contentStore.current = first;
@@ -459,6 +677,7 @@ async function handleSave() {
   saving.value = true;
   saveError.value = null;
   try {
+    const file = selectedFile.value ?? null;
     if (editingId.value) {
       await contentStore.update(editingId.value, {
         title: form.title,
@@ -466,7 +685,10 @@ async function handleSave() {
         body: form.body || null,
         mediaUrl: form.mediaUrl || null,
         tagIds: formTagIds.value,
+        file,
+        files: pendingEditFiles.value.length ? [...pendingEditFiles.value] : undefined,
       });
+      pendingEditFiles.value = [];
     } else {
       await contentStore.create({
         title: form.title,
@@ -474,7 +696,10 @@ async function handleSave() {
         body: form.body || null,
         mediaUrl: form.mediaUrl || null,
         tagIds: formTagIds.value,
+        file,
+        files: pendingCreateFiles.value.length ? [...pendingCreateFiles.value] : undefined,
       });
+      pendingCreateFiles.value = [];
     }
     isEditing.value = false;
     editingId.value = null;
