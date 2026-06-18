@@ -5,6 +5,7 @@ import type { UserCredentials, UserProfile } from '../types';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'));
+  const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'));
   const userId = ref<string | null>(localStorage.getItem('userId'));
   const userRole = ref<string>('USER');
   const profile = ref<UserProfile | null>(null);
@@ -33,50 +34,98 @@ export const useAuthStore = defineStore('auth', () => {
     return '?';
   });
 
-  function setToken(newToken: string, newUserId: string) {
+  function setTokens(newToken: string, newUserId: string, newRefreshToken?: string) {
     token.value = newToken;
     userId.value = newUserId;
     localStorage.setItem('token', newToken);
     localStorage.setItem('userId', newUserId);
+    if (newRefreshToken) {
+      refreshToken.value = newRefreshToken;
+      localStorage.setItem('refreshToken', newRefreshToken);
+    }
     apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
   }
 
   function clearAuthData() {
     token.value = null;
+    refreshToken.value = null;
     userId.value = null;
     userRole.value = 'USER';
     profile.value = null;
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');
     delete apiClient.defaults.headers.common['Authorization'];
   }
 
   async function register(credentials: UserCredentials) {
-    const response = await apiClient.post<{ token: string; userId: number }>(
+    const response = await apiClient.post<{ token: string; refreshToken: string; userId: number }>(
       '/auth/register',
       credentials,
     );
-    setToken(response.data.token, response.data.userId.toString());
+    setTokens(response.data.token, response.data.userId.toString(), response.data.refreshToken);
     await fetchProfile();
   }
 
   async function login(credentials: UserCredentials) {
-    const response = await apiClient.post<{ token: string; userId: string }>('/auth/login', credentials);
-    setToken(response.data.token, response.data.userId.toString());
+    const response = await apiClient.post<{ token: string; refreshToken: string; userId: string }>(
+      '/auth/login',
+      credentials,
+    );
+    setTokens(response.data.token, response.data.userId.toString(), response.data.refreshToken);
     await fetchProfile();
   }
 
-  function logout() {
+  async function refreshAccessToken(): Promise<boolean> {
+    if (!refreshToken.value) return false;
+    try {
+      const response = await apiClient.post<{ token: string; refreshToken: string; userId: number; role: string }>(
+        '/auth/refresh',
+        { refreshToken: refreshToken.value },
+        // Не используем interceptor для этого запроса — бирка чтобы избежать петли
+        { _skipAuthRefresh: true } as any,
+      );
+      setTokens(response.data.token, response.data.userId.toString(), response.data.refreshToken);
+      userRole.value = response.data.role;
+      return true;
+    } catch {
+      clearAuthData();
+      return false;
+    }
+  }
+
+  async function logout() {
+    try {
+      if (refreshToken.value) {
+        await apiClient.post('/auth/logout', { refreshToken: refreshToken.value });
+      }
+    } catch {
+      // Игнорируем ошибки при logout
+    }
     clearAuthData();
   }
 
   async function tryAutoLogin() {
     const storedToken = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+
+    if (storedRefreshToken && storedUserId) {
+      // Пробуем обновить access-токен через refresh
+      refreshToken.value = storedRefreshToken;
+      const ok = await refreshAccessToken();
+      if (ok) {
+        await fetchProfile();
+        authReady.value = true;
+        return;
+      }
+    }
+
     if (storedToken && storedUserId) {
-      setToken(storedToken, storedUserId);
+      setTokens(storedToken, storedUserId);
       await fetchProfile();
     }
+
     authReady.value = true;
   }
 
@@ -111,6 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     token,
+    refreshToken,
     userId,
     userRole,
     profile,
@@ -121,6 +171,7 @@ export const useAuthStore = defineStore('auth', () => {
     initials,
     register,
     login,
+    refreshAccessToken,
     logout,
     tryAutoLogin,
     fetchProfile,
