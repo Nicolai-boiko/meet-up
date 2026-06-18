@@ -1,14 +1,19 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import apiClient from '../api';
-import type { Meetup, MeetingParticipantStatus } from '../types';
+import type { Meetup, MeetingParticipantStatus, PaginatedResponse } from '../types';
 
 export const useMeetupStore = defineStore('meetups', () => {
   const loading = ref(false);
   const items = ref<Meetup[]>([]);
   const selectedUserIds = ref<number[]>([]);
 
-  // Все встречи (включая те, где юзер только приглашён)
+  // Pagination
+  const page = ref(1);
+  const total = ref(0);
+  const limit = 20;
+  const hasMore = ref(false);
+
   const upcomingMeetups = computed(() =>
     items.value
       .filter((m) => new Date(m.startTime) > new Date())
@@ -46,7 +51,6 @@ export const useMeetupStore = defineStore('meetups', () => {
     return meetup.hostId === userId;
   }
 
-  // Для календаря: показываем INVITED (затемнённые) + ACCEPTED, исключаем DECLINED
   const calendarItems = computed(() =>
     items.value.map((m) => ({
       ...m,
@@ -57,17 +61,58 @@ export const useMeetupStore = defineStore('meetups', () => {
   async function fetchMeetups(userIds?: number[]) {
     loading.value = true;
     try {
-      const params: any = {};
+      const params: any = { page: 1, limit };
       const ids = userIds ?? selectedUserIds.value;
       if (ids.length > 0) {
         params.userIds = ids.join(',');
       }
-      const { data } = await apiClient.get<Meetup[]>('/meetups', { params });
-      items.value = data;
+      const { data } = await apiClient.get<PaginatedResponse<Meetup>>('/meetups', { params });
+      items.value = data.items;
+      page.value = data.page;
+      total.value = data.total;
+      hasMore.value = data.page < data.totalPages;
     } catch (error) {
       console.error('Failed to fetch meetups', error);
     } finally {
       loading.value = false;
+    }
+  }
+
+  // Для календаря — загружаем всё (большой limit)
+  async function fetchAllForCalendar(userIds?: number[]) {
+    loading.value = true;
+    try {
+      const params: any = { page: 1, limit: 200 };
+      const ids = userIds ?? selectedUserIds.value;
+      if (ids.length > 0) {
+        params.userIds = ids.join(',');
+      }
+      const { data } = await apiClient.get<PaginatedResponse<Meetup>>('/meetups', { params });
+      items.value = data.items;
+      total.value = data.total;
+      hasMore.value = false;
+    } catch (error) {
+      console.error('Failed to fetch meetups for calendar', error);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchMore() {
+    if (!hasMore.value) return;
+    try {
+      const nextPage = page.value + 1;
+      const params: any = { page: nextPage, limit };
+      if (selectedUserIds.value.length > 0) {
+        params.userIds = selectedUserIds.value.join(',');
+      }
+      const { data } = await apiClient.get<PaginatedResponse<Meetup>>('/meetups', { params });
+      items.value = [...items.value, ...data.items];
+      page.value = data.page;
+      total.value = data.total;
+      hasMore.value = data.page < data.totalPages;
+    } catch (error) {
+      console.error('Failed to fetch more meetups', error);
     }
   }
 
@@ -81,6 +126,7 @@ export const useMeetupStore = defineStore('meetups', () => {
   }) {
     const { data } = await apiClient.post<{ message: string; data: Meetup }>('/meetups', payload);
     items.value.unshift(data.data);
+    total.value++;
     return data.data;
   }
 
@@ -101,6 +147,7 @@ export const useMeetupStore = defineStore('meetups', () => {
   async function deleteMeetup(id: number) {
     await apiClient.delete(`/meetups/${id}`);
     items.value = items.value.filter((m) => m.id !== id);
+    total.value = Math.max(0, total.value - 1);
   }
 
   async function joinMeetup(id: number) {
@@ -128,7 +175,10 @@ export const useMeetupStore = defineStore('meetups', () => {
     pastMeetups,
     calendarItems,
     selectedUserIds,
+    hasMore,
     fetchMeetups,
+    fetchAllForCalendar,
+    fetchMore,
     getMeetupById,
     getParticipantStatus,
     isParticipant,

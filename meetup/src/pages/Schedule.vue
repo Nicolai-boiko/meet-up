@@ -888,11 +888,11 @@ async function loadRooms() {
 }
 
 watch(selectedUserIds, () => {
-  meetupStore.fetchMeetups();
+  meetupStore.fetchAllForCalendar();
 }, { deep: true });
 
 onMounted(() => {
-  meetupStore.fetchMeetups();
+  meetupStore.fetchAllForCalendar();
   loadUsers();
   loadRooms();
 });

@@ -6,6 +6,7 @@
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-semibold text-gray-800">Библиотека</h2>
           <button
+            v-if="authStore.isAdmin"
             @click="openCreate"
             class="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 transition-colors"
             title="Добавить материал"
@@ -51,6 +52,16 @@
         >
           {{ search ? 'Ничего не найдено' : 'Нет материалов' }}
         </div>
+        <!-- Load more -->
+        <div v-if="contentStore.hasMore && !search" class="p-3 border-t border-gray-100">
+          <button
+            @click="loadMore"
+            :disabled="contentStore.loadingMore"
+            class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {{ contentStore.loadingMore ? 'Загрузка...' : `Загрузить ещё (${remainingCount})` }}
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -65,7 +76,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
         <span class="text-lg">Выберите материал из списка слева</span>
-        <button @click="openCreate" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+        <button v-if="authStore.isAdmin" @click="openCreate" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
           Создать новый
         </button>
       </div>
@@ -88,7 +99,7 @@
                 <span>{{ formatDate(contentStore.current.createdAt) }}</span>
               </div>
             </div>
-            <div class="flex gap-2">
+            <div v-if="authStore.isAdmin" class="flex gap-2">
               <button
                 @click="openEdit"
                 class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -196,8 +207,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useContentStore } from '../stores/content';
+import { useAuthStore } from '../stores/auth';
 
 const contentStore = useContentStore();
+const authStore = useAuthStore();
 const search = ref('');
 const isEditing = ref(false);
 const editingId = ref<number | null>(null);
@@ -307,7 +320,15 @@ async function handleDelete() {
   }
 }
 
+const remainingCount = computed(() =>
+  Math.max(0, contentStore.total - contentStore.items.length),
+);
+
+function loadMore() {
+  contentStore.fetchMore();
+}
+
 onMounted(() => {
-  contentStore.fetchAll();
+  contentStore.fetchPage(1);
 });
 </script>

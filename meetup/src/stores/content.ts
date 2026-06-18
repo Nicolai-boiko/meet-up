@@ -1,22 +1,52 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import apiClient from '../api';
-import type { ContentItem } from '../types';
+import type { ContentItem, PaginatedResponse } from '../types';
 
 export const useContentStore = defineStore('content', () => {
   const items = ref<ContentItem[]>([]);
   const current = ref<ContentItem | null>(null);
   const loading = ref(false);
+  const loadingMore = ref(false);
+  const page = ref(1);
+  const total = ref(0);
+  const limit = 20;
 
-  async function fetchAll() {
+  const hasMore = ref(false);
+
+  async function fetchPage(pageNum: number) {
     loading.value = true;
     try {
-      const { data } = await apiClient.get<ContentItem[]>('/content');
-      items.value = data;
+      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', {
+        params: { page: pageNum, limit },
+      });
+      items.value = data.items;
+      page.value = data.page;
+      total.value = data.total;
+      hasMore.value = data.page < data.totalPages;
     } catch (e) {
-      console.error('fetchAll error:', e);
+      console.error('fetchPage error:', e);
     } finally {
       loading.value = false;
+    }
+  }
+
+  async function fetchMore() {
+    if (loadingMore.value || !hasMore.value) return;
+    loadingMore.value = true;
+    try {
+      const nextPage = page.value + 1;
+      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', {
+        params: { page: nextPage, limit },
+      });
+      items.value = [...items.value, ...data.items];
+      page.value = data.page;
+      total.value = data.total;
+      hasMore.value = data.page < data.totalPages;
+    } catch (e) {
+      console.error('fetchMore error:', e);
+    } finally {
+      loadingMore.value = false;
     }
   }
 
@@ -24,7 +54,6 @@ export const useContentStore = defineStore('content', () => {
     try {
       const { data } = await apiClient.get<ContentItem>(`/content/${id}`);
       current.value = data;
-      // Update in list too
       const idx = items.value.findIndex((i) => i.id === id);
       if (idx >= 0) items.value[idx] = data;
     } catch (e) {
@@ -35,6 +64,7 @@ export const useContentStore = defineStore('content', () => {
   async function create(payload: { title: string; type: string; body?: string | null; mediaUrl?: string | null }) {
     const { data } = await apiClient.post<ContentItem>('/content', payload);
     items.value.unshift(data);
+    total.value++;
     current.value = data;
     return data;
   }
@@ -50,8 +80,9 @@ export const useContentStore = defineStore('content', () => {
   async function remove(id: number) {
     await apiClient.delete(`/content/${id}`);
     items.value = items.value.filter((i) => i.id !== id);
+    total.value = Math.max(0, total.value - 1);
     if (current.value?.id === id) current.value = null;
   }
 
-  return { items, current, loading, fetchAll, fetchById, create, update, remove };
+  return { items, current, loading, loadingMore, page, total, limit, hasMore, fetchPage, fetchMore, fetchById, create, update, remove };
 });

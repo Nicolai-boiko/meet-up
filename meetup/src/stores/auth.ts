@@ -6,9 +6,11 @@ import type { UserCredentials, UserProfile } from '../types';
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'));
   const userId = ref<string | null>(localStorage.getItem('userId'));
+  const userRole = ref<string>('USER');
   const profile = ref<UserProfile | null>(null);
 
   const isAuthenticated = computed(() => !!token.value);
+  const isAdmin = computed(() => userRole.value === 'ADMIN');
 
   const displayName = computed(() => {
     if (profile.value) {
@@ -30,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     return '?';
   });
 
-  function setAuthData(newToken: string, newUserId: string) {
+  function setToken(newToken: string, newUserId: string) {
     token.value = newToken;
     userId.value = newUserId;
     localStorage.setItem('token', newToken);
@@ -41,6 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
   function clearAuthData() {
     token.value = null;
     userId.value = null;
+    userRole.value = 'USER';
     profile.value = null;
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
@@ -48,19 +51,17 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(credentials: UserCredentials) {
-    const response = await apiClient.post<{ token: string; userId: number; message: string }>(
+    const response = await apiClient.post<{ token: string; userId: number }>(
       '/auth/register',
       credentials,
     );
-    const { token: newToken, userId: newUserId } = response.data;
-    setAuthData(newToken, newUserId.toString());
+    setToken(response.data.token, response.data.userId.toString());
     await fetchProfile();
   }
 
   async function login(credentials: UserCredentials) {
     const response = await apiClient.post<{ token: string; userId: string }>('/auth/login', credentials);
-    const { token: newToken, userId: newUserId } = response.data;
-    setAuthData(newToken, newUserId.toString());
+    setToken(response.data.token, response.data.userId.toString());
     await fetchProfile();
   }
 
@@ -68,11 +69,12 @@ export const useAuthStore = defineStore('auth', () => {
     clearAuthData();
   }
 
-  function tryAutoLogin() {
+  async function tryAutoLogin() {
     const storedToken = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
     if (storedToken && storedUserId) {
-      setAuthData(storedToken, storedUserId);
+      setToken(storedToken, storedUserId);
+      await fetchProfile();
     }
   }
 
@@ -80,8 +82,10 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await apiClient.get<UserProfile>('/profile');
       profile.value = response.data;
+      userRole.value = response.data.role || 'USER';
     } catch (error) {
       console.error('Failed to fetch profile', error);
+      clearAuthData();
     }
   }
 
@@ -106,8 +110,10 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     token,
     userId,
+    userRole,
     profile,
     isAuthenticated,
+    isAdmin,
     displayName,
     initials,
     register,

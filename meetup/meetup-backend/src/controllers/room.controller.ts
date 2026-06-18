@@ -79,3 +79,14 @@ export const updateRoomStatus = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Ошибка сервера при обновлении комнаты' });
   }
 };
+
+export const deleteRoom = async (_req: Request, res: Response) => {
+  try {
+    const { id } = _req.params;
+    await prisma.room.delete({ where: { id: Number(id) } });
+    res.json({ message: 'Комната удалена' });
+  } catch (error) {
+    console.error('deleteRoom error:', error);
+    res.status(500).json({ message: 'Ошибка сервера при удалении комнаты' });
+  }
+};

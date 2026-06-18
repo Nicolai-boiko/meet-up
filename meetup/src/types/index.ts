@@ -5,6 +5,7 @@ export interface UserSummary {
   avatar: string | null;
   firstName: string | null;
   lastName: string | null;
+  role?: string;
 }
 
 export interface ParticipantInfo extends UserSummary {
@@ -45,6 +46,7 @@ export interface UserProfile {
   id: number;
   email: string;
   name: string;
+  role: string;
   firstName: string | null;
   lastName: string | null;
   birthDate: string | null;
@@ -96,6 +98,14 @@ export interface ContentItem {
   authorId: number;
   createdAt: string;
   author?: { id: number; name: string; avatar: string | null };
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface SignalingPayload {

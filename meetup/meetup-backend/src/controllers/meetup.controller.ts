@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
 import { sendMeetingInviteEmail, sendMeetingUpdatedEmail } from '../services/email';
+import { parsePagination, paginatedResponse } from '../utils/pagination';
 
 interface AuthRequest extends Request {
   user?: { userId: string; email: string };
@@ -31,6 +32,7 @@ function meetingToResponse(m: any) {
 export const getAllMeetups = async (req: Request, res: Response) => {
   try {
     const userIdsParam = req.query.userIds as string | undefined;
+    const { page, limit, skip } = parsePagination(req.query as any);
     const where: any = {};
 
     if (userIdsParam) {
@@ -43,12 +45,18 @@ export const getAllMeetups = async (req: Request, res: Response) => {
       }
     }
 
-    const meetups = await prisma.meeting.findMany({
-      where,
-      include: meetingInclude,
-      orderBy: { startTime: 'asc' },
-    });
-    res.status(200).json(meetups.map(meetingToResponse));
+    const [meetups, total] = await Promise.all([
+      prisma.meeting.findMany({
+        where,
+        skip,
+        take: limit,
+        include: meetingInclude,
+        orderBy: { startTime: 'asc' },
+      }),
+      prisma.meeting.count({ where }),
+    ]);
+
+    res.status(200).json(paginatedResponse(meetups.map(meetingToResponse), total, page, limit));
   } catch (error) {
     console.error('getAllMeetups error:', error);
     res.status(500).json({ message: 'Ошибка сервера' });
