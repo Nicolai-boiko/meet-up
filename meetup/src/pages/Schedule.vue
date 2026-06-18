@@ -2,6 +2,17 @@
   <div class="flex h-full -mx-6 -my-6 bg-white overflow-hidden">
     <!-- Sidebar -->
     <aside class="w-72 border-r border-gray-200 flex flex-col bg-gray-50 shrink-0">
+      <!-- Search -->
+      <div class="p-4 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Поиск</h3>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Название встречи..."
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+        />
+      </div>
+
       <!-- Users filter -->
       <div class="p-4 border-b border-gray-200">
         <h3 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Участники</h3>
@@ -530,6 +541,7 @@ const currentDate = ref(new Date());
 const selectedDay = ref<Date | null>(null);
 const showUserDropdown = ref(false);
 const showParticipantDropdown = ref(false);
+const search = ref('');
 
 // ── Users ──
 const usersList = ref<UserSummary[]>([]);
@@ -616,13 +628,21 @@ const calendarDays = computed<CalendarDay[]>(() => {
   return days;
 });
 
-// Используем calendarItems где DECLINED уже отфильтрованы
+// Используем calendarItems где DECLINED уже отфильтрованы + поиск по названию
+const filteredBySearch = computed(() => {
+  const q = search.value.toLowerCase().trim();
+  if (!q) return meetupStore.calendarItems;
+  return meetupStore.calendarItems.filter((m) =>
+    m.title.toLowerCase().includes(q),
+  );
+});
+
 function getMeetingsForDay(date: Date): Meetup[] {
   const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const dayEnd = new Date(dayStart);
   dayEnd.setDate(dayEnd.getDate() + 1);
 
-  return meetupStore.calendarItems.filter((m) => {
+  return filteredBySearch.value.filter((m) => {
     const start = new Date(m.startTime);
     const end = new Date(m.endTime);
     return start < dayEnd && end > dayStart;
