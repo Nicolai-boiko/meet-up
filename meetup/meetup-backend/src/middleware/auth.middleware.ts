@@ -25,6 +25,19 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   }
 };
 
+export const optionalAuth = (req: AuthRequest, _res: Response, next: NextFunction) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+      req.user = decoded as { userId: string; email: string; role: string };
+    }
+  } catch {
+    // Игнорируем — пользователь просто не авторизован
+  }
+  next();
+};
+
 export const adminMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (req.user?.role !== 'ADMIN') {
     return res.status(403).json({ message: 'Доступ запрещён. Требуются права администратора.' });

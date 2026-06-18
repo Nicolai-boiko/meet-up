@@ -26,6 +26,7 @@ model User {
   meetingParticipations MeetingParticipant[]
   passwordResetTokens  PasswordResetToken[]
   refreshTokens        RefreshToken[]
+  favorites            Favorite[]
 }
 
 model Room {
@@ -116,4 +117,16 @@ model Content {
 
   author      User         @relation(fields: [authorId], references: [id])
   contentTags ContentTag[]
+  favorites   Favorite[]
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  contentId Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
 }

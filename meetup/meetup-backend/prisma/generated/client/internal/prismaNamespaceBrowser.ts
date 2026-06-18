@@ -59,7 +59,8 @@ export const ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   Tag: 'Tag',
   ContentTag: 'ContentTag',
-  Content: 'Content'
+  Content: 'Content',
+  Favorite: 'Favorite'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -182,6 +183,16 @@ export const ContentScalarFieldEnum = {
 } as const
 
 export type ContentScalarFieldEnum = (typeof ContentScalarFieldEnum)[keyof typeof ContentScalarFieldEnum]
+
+
+export const FavoriteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  contentId: 'contentId',
+  createdAt: 'createdAt'
+} as const
+
+export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
 
 
 export const SortOrder = {
