@@ -97,9 +97,18 @@
           <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Пользователь</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Email</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Роль</th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('name')">
+                  Пользователь
+                  <span v-if="userSortBy === 'name'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('email')">
+                  Email
+                  <span v-if="userSortBy === 'email'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none" @click="toggleUserSort('role')">
+                  Роль
+                  <span v-if="userSortBy === 'role'" class="ml-1 text-blue-500">{{ userSortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
                 <th class="text-right px-4 py-3 font-medium text-gray-500">Действия</th>
               </tr>
             </thead>
@@ -421,6 +430,8 @@ async function loadDashboard() {
 
 // ── Users ──
 const searchUsers = ref('');
+const userSortBy = ref('name');
+const userSortOrder = ref<'asc' | 'desc'>('asc');
 const adminUsers = reactive({
   items: [] as UserSummary[],
   loading: false,
@@ -433,7 +444,7 @@ const adminUsers = reactive({
 async function loadUsers(page = 1) {
   adminUsers.loading = true;
   try {
-    const params: any = { page, limit: adminUsers.limit };
+    const params: any = { page, limit: adminUsers.limit, sortBy: userSortBy.value, sortOrder: userSortOrder.value };
     if (searchUsers.value) params.search = searchUsers.value;
     const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
     adminUsers.items = data.items;
@@ -450,7 +461,7 @@ async function loadUsers(page = 1) {
 async function loadMoreUsers() {
   if (!adminUsers.hasMore) return;
   try {
-    const params: any = { page: adminUsers.page + 1, limit: adminUsers.limit };
+    const params: any = { page: adminUsers.page + 1, limit: adminUsers.limit, sortBy: userSortBy.value, sortOrder: userSortOrder.value };
     if (searchUsers.value) params.search = searchUsers.value;
     const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', { params });
     adminUsers.items = [...adminUsers.items, ...data.items];
@@ -460,6 +471,16 @@ async function loadMoreUsers() {
   } catch (e) {
     console.error('loadMoreUsers error:', e);
   }
+}
+
+function toggleUserSort(field: string) {
+  if (userSortBy.value === field) {
+    userSortOrder.value = userSortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    userSortBy.value = field;
+    userSortOrder.value = 'asc';
+  }
+  loadUsers(1);
 }
 
 watch(searchUsers, () => {

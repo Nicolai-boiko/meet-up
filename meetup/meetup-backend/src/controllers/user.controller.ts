@@ -23,13 +23,20 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
         }
       : {};
 
+    // Сортировка
+    const sortBy = (req.query.sortBy as string) || 'name';
+    const sortOrder = (req.query.sortOrder as string) === 'desc' ? 'desc' : 'asc';
+    const allowedSortFields = ['name', 'email', 'role'];
+    const field = allowedSortFields.includes(sortBy) ? sortBy : 'name';
+    const orderBy = { [field]: sortOrder };
+
     const select = {
       id: true, name: true, email: true, avatar: true, firstName: true, lastName: true,
       ...(isAdmin ? { role: true } : {}),
     };
 
     const [users, total] = await Promise.all([
-      prisma.user.findMany({ where, select, skip, take: limit, orderBy: { name: 'asc' } }),
+      prisma.user.findMany({ where, select, skip, take: limit, orderBy }),
       prisma.user.count({ where }),
     ]);
 
