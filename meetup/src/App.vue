@@ -28,6 +28,14 @@
             >
               Расписание
             </router-link>
+            <router-link
+              v-if="authStore.isAdmin"
+              to="/admin"
+              class="px-3 py-2 rounded-lg text-sm font-medium text-yellow-300 hover:text-white hover:bg-blue-700 transition-colors"
+              active-class="bg-blue-700 text-white"
+            >
+              Админ
+            </router-link>
           </template>
         </div>
         <div class="flex items-center gap-4">

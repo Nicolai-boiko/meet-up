@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
+import { parsePagination, paginatedResponse } from '../utils/pagination';
 
 interface AuthRequest extends Request {
   user?: { userId: string; email: string };
@@ -7,13 +8,19 @@ interface AuthRequest extends Request {
 
 const authorSelect = { select: { id: true, name: true, avatar: true } };
 
-export const getAll = async (_req: Request, res: Response) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
-    const items = await prisma.content.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { author: authorSelect },
-    });
-    res.json(items);
+    const { page, limit, skip } = parsePagination(req.query as any);
+    const [items, total] = await Promise.all([
+      prisma.content.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: { author: authorSelect },
+      }),
+      prisma.content.count(),
+    ]);
+    res.json(paginatedResponse(items, total, page, limit));
   } catch (error) {
     console.error('content getAll error:', error);
     res.status(500).json({ message: 'Ошибка сервера' });

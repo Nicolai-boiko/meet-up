@@ -24,12 +24,12 @@ export const register = async (req: Request, res: Response) => {
     });
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
-    res.status(201).json({ message: 'Пользователь создан', token, userId: user.id });
+    res.status(201).json({ message: 'Пользователь создан', token, userId: user.id, role: user.role });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Ошибка сервера при регистрации' });
@@ -55,12 +55,12 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
-    res.json({ token, userId: user.id });
+    res.json({ token, userId: user.id, role: user.role });
   } catch (error) {
     res.status(500).json({ message: 'Ошибка сервера при авторизации' });
   }

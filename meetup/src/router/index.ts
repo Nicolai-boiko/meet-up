@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean;
+    requiresAdmin?: boolean;
   }
 }
 
@@ -54,6 +55,12 @@ const router = createRouter({
       component: () => import('../pages/Schedule.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../pages/Admin.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
   ],
 });
 
@@ -61,6 +68,9 @@ router.beforeEach((to, _from) => {
   const authStore = useAuthStore();
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: 'auth' };
+  }
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    return { name: 'home' };
   }
 });
 
