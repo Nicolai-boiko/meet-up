@@ -89,6 +89,11 @@ export interface Participant {
   isScreenSharing: boolean;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+}
+
 export interface ContentItem {
   id: number;
   title: string;
@@ -98,6 +103,7 @@ export interface ContentItem {
   authorId: number;
   createdAt: string;
   author?: { id: number; name: string; avatar: string | null };
+  tags?: Tag[];
 }
 
 export interface PaginatedResponse<T> {

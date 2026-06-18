@@ -6,15 +6,16 @@ import App from './App.vue';
 import router from './router';
 import { useAuthStore } from './stores/auth';
 
-const app = createApp(App);
-const pinia = createPinia();
-app.use(pinia);
-app.use(router);
+async function bootstrap() {
+  const app = createApp(App);
+  const pinia = createPinia();
+  app.use(pinia);
+  app.use(router);
 
-const authStore = useAuthStore();
-authStore.tryAutoLogin();
-if (authStore.isAuthenticated) {
-  authStore.fetchProfile();
+  const authStore = useAuthStore();
+  await authStore.tryAutoLogin();
+
+  app.mount('#app');
 }
 
-app.mount('#app');
+bootstrap();

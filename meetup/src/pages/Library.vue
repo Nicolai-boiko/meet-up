@@ -22,6 +22,20 @@
           placeholder="Поиск..."
           class="w-full border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+        <!-- Tag filter chips -->
+        <div v-if="allTags.length" class="flex flex-wrap gap-1 mt-2">
+          <button
+            v-for="tag in allTags"
+            :key="tag.id"
+            @click="toggleTagFilter(tag.id)"
+            class="px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors"
+            :class="selectedTagIds.includes(tag.id)
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'"
+          >
+            {{ tag.name }}
+          </button>
+        </div>
       </div>
       <div class="flex-1 overflow-y-auto">
         <div v-if="contentStore.loading" class="p-4 text-center text-gray-500 text-sm">
@@ -42,6 +56,15 @@
               <div class="text-sm font-medium text-gray-800 truncate">{{ item.title }}</div>
               <div class="text-xs text-gray-400 mt-0.5">
                 {{ item.author?.name }} · {{ formatDate(item.createdAt) }}
+              </div>
+              <div v-if="item.tags?.length" class="flex flex-wrap gap-1 mt-1">
+                <span
+                  v-for="tag in item.tags"
+                  :key="tag.id"
+                  class="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700"
+                >
+                  {{ tag.name }}
+                </span>
               </div>
             </div>
           </div>
@@ -172,6 +195,41 @@
               />
             </div>
             <div>
+              <label class="block text-sm font-medium text-gray-600 mb-1">Теги</label>
+              <div class="flex flex-wrap gap-1.5 p-2 border rounded-lg min-h-[38px] bg-white items-center">
+                <span
+                  v-for="tag in allTags"
+                  :key="tag.id"
+                  @click="toggleFormTag(tag.id)"
+                  class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors"
+                  :class="formTagIds.includes(tag.id)
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                >
+                  {{ tag.name }}
+                </span>
+                <span v-if="allTags.length === 0" class="text-xs text-gray-400">Нет тегов</span>
+                <!-- Inline new tag input (admin only) -->
+                <div v-if="authStore.isAdmin" class="flex gap-1 items-center">
+                  <input
+                    v-model="newTagName"
+                    type="text"
+                    placeholder="Новый тег"
+                    class="w-20 px-1.5 py-0.5 text-xs border rounded-full focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    @keydown.enter.prevent="createAndAddTag"
+                  />
+                  <button
+                    v-if="newTagName.trim()"
+                    type="button"
+                    @click="createAndAddTag"
+                    class="w-4 h-4 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] hover:bg-green-600"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div>
               <label class="block text-sm font-medium text-gray-600 mb-1">Содержимое</label>
               <textarea
                 v-model="form.body"
@@ -208,9 +266,13 @@
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useContentStore } from '../stores/content';
 import { useAuthStore } from '../stores/auth';
+import { useConfirm } from '../composables/useConfirm';
+import apiClient from '../api';
+import type { Tag } from '../types';
 
 const contentStore = useContentStore();
 const authStore = useAuthStore();
+const { confirm } = useConfirm();
 const search = ref('');
 const isEditing = ref(false);
 const editingId = ref<number | null>(null);
@@ -218,6 +280,56 @@ const saving = ref(false);
 const saveError = ref<string | null>(null);
 
 const form = reactive({ title: '', type: 'text', body: '', mediaUrl: '' });
+
+// ── Tags ──
+const allTags = ref<Tag[]>([]);
+const selectedTagIds = ref<number[]>([]);
+const formTagIds = ref<number[]>([]);
+
+function toggleTagFilter(tagId: number) {
+  const idx = selectedTagIds.value.indexOf(tagId);
+  if (idx >= 0) {
+    selectedTagIds.value = selectedTagIds.value.filter((id) => id !== tagId);
+  } else {
+    // Один тег за раз для фильтрации
+    selectedTagIds.value = [tagId];
+  }
+  const activeTag = selectedTagIds.value[0];
+  contentStore.fetchPage(1, activeTag);
+}
+
+function toggleFormTag(tagId: number) {
+  const idx = formTagIds.value.indexOf(tagId);
+  if (idx >= 0) {
+    formTagIds.value = formTagIds.value.filter((id) => id !== tagId);
+  } else {
+    formTagIds.value = [...formTagIds.value, tagId];
+  }
+}
+
+const newTagName = ref('');
+
+async function loadTags() {
+  try {
+    const { data } = await apiClient.get<Tag[]>('/tags');
+    allTags.value = data;
+  } catch (e) {
+    console.error('loadTags error:', e);
+  }
+}
+
+async function createAndAddTag() {
+  const name = newTagName.value.trim();
+  if (!name) return;
+  try {
+    const { data: tag } = await apiClient.post<Tag>('/tags', { name });
+    allTags.value.push(tag);
+    formTagIds.value.push(tag.id);
+    newTagName.value = '';
+  } catch (e: any) {
+    console.error('createAndAddTag error:', e);
+  }
+}
 
 const filteredItems = computed(() => {
   const q = search.value.toLowerCase();
@@ -257,6 +369,7 @@ function openCreate() {
   form.type = 'text';
   form.body = '';
   form.mediaUrl = '';
+  formTagIds.value = [];
   saveError.value = null;
   isEditing.value = true;
 }
@@ -269,6 +382,7 @@ function openEdit() {
   form.type = c.type;
   form.body = c.body ?? '';
   form.mediaUrl = c.mediaUrl ?? '';
+  formTagIds.value = (c.tags ?? []).map((t) => t.id);
   saveError.value = null;
   isEditing.value = true;
 }
@@ -292,6 +406,7 @@ async function handleSave() {
         type: form.type,
         body: form.body || null,
         mediaUrl: form.mediaUrl || null,
+        tagIds: formTagIds.value,
       });
     } else {
       await contentStore.create({
@@ -299,6 +414,7 @@ async function handleSave() {
         type: form.type,
         body: form.body || null,
         mediaUrl: form.mediaUrl || null,
+        tagIds: formTagIds.value,
       });
     }
     isEditing.value = false;
@@ -312,7 +428,8 @@ async function handleSave() {
 
 async function handleDelete() {
   if (!contentStore.current) return;
-  if (!confirm('Удалить этот материал?')) return;
+  const ok = await confirm('Удалить материал?', `«${contentStore.current.title}» будет удалён безвозвратно.`, 'danger');
+  if (!ok) return;
   try {
     await contentStore.remove(contentStore.current.id);
   } catch (e) {
@@ -325,10 +442,12 @@ const remainingCount = computed(() =>
 );
 
 function loadMore() {
-  contentStore.fetchMore();
+  const activeTag = selectedTagIds.value[0];
+  contentStore.fetchMore(activeTag);
 }
 
 onMounted(() => {
   contentStore.fetchPage(1);
+  loadTags();
 });
 </script>

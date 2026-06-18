@@ -14,12 +14,12 @@ export const useContentStore = defineStore('content', () => {
 
   const hasMore = ref(false);
 
-  async function fetchPage(pageNum: number) {
+  async function fetchPage(pageNum: number, tagId?: number) {
     loading.value = true;
     try {
-      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', {
-        params: { page: pageNum, limit },
-      });
+      const params: any = { page: pageNum, limit };
+      if (tagId) params.tagId = tagId;
+      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params });
       items.value = data.items;
       page.value = data.page;
       total.value = data.total;
@@ -31,14 +31,14 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
-  async function fetchMore() {
+  async function fetchMore(tagId?: number) {
     if (loadingMore.value || !hasMore.value) return;
     loadingMore.value = true;
     try {
       const nextPage = page.value + 1;
-      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', {
-        params: { page: nextPage, limit },
-      });
+      const params: any = { page: nextPage, limit };
+      if (tagId) params.tagId = tagId;
+      const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params });
       items.value = [...items.value, ...data.items];
       page.value = data.page;
       total.value = data.total;
@@ -61,7 +61,7 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
-  async function create(payload: { title: string; type: string; body?: string | null; mediaUrl?: string | null }) {
+  async function create(payload: { title: string; type: string; body?: string | null; mediaUrl?: string | null; tagIds?: number[] }) {
     const { data } = await apiClient.post<ContentItem>('/content', payload);
     items.value.unshift(data);
     total.value++;
@@ -69,7 +69,7 @@ export const useContentStore = defineStore('content', () => {
     return data;
   }
 
-  async function update(id: number, payload: { title?: string; type?: string; body?: string | null; mediaUrl?: string | null }) {
+  async function update(id: number, payload: { title?: string; type?: string; body?: string | null; mediaUrl?: string | null; tagIds?: number[] }) {
     const { data } = await apiClient.put<ContentItem>(`/content/${id}`, payload);
     current.value = data;
     const idx = items.value.findIndex((i) => i.id === id);

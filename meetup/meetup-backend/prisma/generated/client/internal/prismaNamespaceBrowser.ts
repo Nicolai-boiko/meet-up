@@ -56,6 +56,8 @@ export const ModelName = {
   Meeting: 'Meeting',
   MeetingParticipant: 'MeetingParticipant',
   PasswordResetToken: 'PasswordResetToken',
+  Tag: 'Tag',
+  ContentTag: 'ContentTag',
   Content: 'Content'
 } as const
 
@@ -138,6 +140,23 @@ export const PasswordResetTokenScalarFieldEnum = {
 } as const
 
 export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const ContentTagScalarFieldEnum = {
+  contentId: 'contentId',
+  tagId: 'tagId',
+  id: 'id'
+} as const
+
+export type ContentTagScalarFieldEnum = (typeof ContentTagScalarFieldEnum)[keyof typeof ContentTagScalarFieldEnum]
 
 
 export const ContentScalarFieldEnum = {

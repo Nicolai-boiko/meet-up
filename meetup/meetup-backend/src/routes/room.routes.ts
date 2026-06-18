@@ -9,5 +9,6 @@ router.get('/:slug', RoomController.getRoomBySlug);
 router.post('/', authMiddleware, RoomController.createRoom);
 router.put('/:id', authMiddleware, RoomController.updateRoomStatus);
 router.delete('/:id', authMiddleware, adminMiddleware, RoomController.deleteRoom);
+router.post('/bulk-delete', authMiddleware, adminMiddleware, RoomController.bulkDelete);
 
 export default router;

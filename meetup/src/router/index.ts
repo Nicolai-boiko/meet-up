@@ -64,8 +64,18 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, _from) => {
+router.beforeEach(async (to, _from) => {
   const authStore = useAuthStore();
+
+  // Ждём инициализации auth (tryAutoLogin)
+  if (!authStore.authReady) {
+    await new Promise<void>((resolve) => {
+      const stop = setInterval(() => {
+        if (authStore.authReady) { clearInterval(stop); resolve(); }
+      }, 50);
+    });
+  }
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: 'auth' };
   }

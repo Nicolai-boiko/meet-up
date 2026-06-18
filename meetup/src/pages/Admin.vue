@@ -81,30 +81,63 @@
       <div v-if="activeTab === 'content'">
         <div v-if="adminContent.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
         <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <!-- Bulk action bar -->
+          <div
+            class="flex items-center gap-3 px-4 py-2 border-b transition-colors"
+            :class="selectedContentIds.length ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'"
+          >
+            <template v-if="selectedContentIds.length">
+              <span class="text-sm text-red-700">
+                Выбрано: {{ selectedContentIds.length }} {{ pluralize(selectedContentIds.length, 'материал', 'материала', 'материалов') }}
+              </span>
+              <button
+                @click="deleteSelectedContent"
+                class="px-3 py-1 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Удалить выбранные
+              </button>
+              <button
+                @click="selectedContentIds = []"
+                class="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+              >
+                Отменить
+              </button>
+            </template>
+            <template v-else>
+              <span class="text-sm text-gray-400">Выберите материалы для удаления</span>
+            </template>
+          </div>
           <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th class="w-10 px-2 py-3">
+                  <input
+                    type="checkbox"
+                    :checked="selectedContentIds.length === adminContent.items.length && adminContent.items.length > 0"
+                    @change="toggleAllContent"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Название</th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Тип</th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Автор</th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Дата</th>
-                <th class="text-right px-4 py-3 font-medium text-gray-500"></th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
               <tr v-for="item in adminContent.items" :key="item.id">
+                <td class="w-10 px-2 py-3">
+                  <input
+                    type="checkbox"
+                    :checked="selectedContentIds.includes(item.id)"
+                    @change="toggleContentSelect(item.id)"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </td>
                 <td class="px-4 py-3 font-medium text-gray-800 max-w-48 truncate">{{ item.title }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ item.type }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ item.author?.name }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ formatDate(item.createdAt) }}</td>
-                <td class="px-4 py-3 text-right">
-                  <button
-                    @click="deleteContent(item.id)"
-                    class="text-xs text-red-600 hover:underline"
-                  >
-                    Удалить
-                  </button>
-                </td>
               </tr>
             </tbody>
           </table>
@@ -115,17 +148,58 @@
       <div v-if="activeTab === 'rooms'">
         <div v-if="adminRooms.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
         <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <!-- Bulk action bar -->
+          <div
+            class="flex items-center gap-3 px-4 py-2 border-b transition-colors"
+            :class="selectedRoomIds.length ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'"
+          >
+            <template v-if="selectedRoomIds.length">
+              <span class="text-sm text-red-700">
+                Выбрано: {{ selectedRoomIds.length }} {{ pluralize(selectedRoomIds.length, 'комната', 'комнаты', 'комнат') }}
+              </span>
+              <button
+                @click="deleteSelectedRooms"
+                class="px-3 py-1 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Удалить выбранные
+              </button>
+              <button
+                @click="selectedRoomIds = []"
+                class="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+              >
+                Отменить
+              </button>
+            </template>
+            <template v-else>
+              <span class="text-sm text-gray-400">Выберите комнаты для удаления</span>
+            </template>
+          </div>
           <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th class="w-10 px-2 py-3">
+                  <input
+                    type="checkbox"
+                    :checked="selectedRoomIds.length === adminRooms.items.length && adminRooms.items.length > 0"
+                    @change="toggleAllRooms"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Комната</th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Slug</th>
                 <th class="text-left px-4 py-3 font-medium text-gray-500">Статус</th>
-                <th class="text-right px-4 py-3 font-medium text-gray-500"></th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
               <tr v-for="room in adminRooms.items" :key="room.id">
+                <td class="w-10 px-2 py-3">
+                  <input
+                    type="checkbox"
+                    :checked="selectedRoomIds.includes(room.id)"
+                    @change="toggleRoomSelect(room.id)"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </td>
                 <td class="px-4 py-3 font-medium text-gray-800">{{ room.title }}</td>
                 <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ room.slug }}</td>
                 <td class="px-4 py-3">
@@ -135,14 +209,6 @@
                   >
                     {{ room.isActive ? 'Активна' : 'Неактивна' }}
                   </span>
-                </td>
-                <td class="px-4 py-3 text-right">
-                  <button
-                    @click="deleteRoom(room.id)"
-                    class="text-xs text-red-600 hover:underline"
-                  >
-                    Удалить
-                  </button>
                 </td>
               </tr>
             </tbody>
@@ -158,8 +224,11 @@
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
 import type { UserSummary, ContentItem, Room, PaginatedResponse } from '../types';
+
+const { confirm } = useConfirm();
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -190,13 +259,15 @@ async function loadUsers() {
 }
 
 async function promoteUser(user: UserSummary) {
-  if (!confirm(`Сделать ${user.name} администратором?`)) return;
+  const ok = await confirm('Назначить администратором?', `${userDisplayName(user)} получит полный доступ к управлению.`, 'warning');
+  if (!ok) return;
   await apiClient.put(`/users/${user.id}/role`, { role: 'ADMIN' });
   await loadUsers();
 }
 
 async function demoteUser(user: UserSummary) {
-  if (!confirm(`Понизить ${user.name} до USER?`)) return;
+  const ok = await confirm('Понизить до USER?', `${userDisplayName(user)} потеряет права администратора.`, 'warning');
+  if (!ok) return;
   await apiClient.put(`/users/${user.id}/role`, { role: 'USER' });
   await loadUsers();
 }
@@ -207,22 +278,50 @@ const adminContent = reactive({
   loading: false,
 });
 
+const selectedContentIds = ref<number[]>([]);
+
+function toggleContentSelect(id: number) {
+  const idx = selectedContentIds.value.indexOf(id);
+  if (idx >= 0) {
+    selectedContentIds.value = selectedContentIds.value.filter((i) => i !== id);
+  } else {
+    selectedContentIds.value = [...selectedContentIds.value, id];
+  }
+}
+
+function toggleAllContent() {
+  if (selectedContentIds.value.length === adminContent.items.length) {
+    selectedContentIds.value = [];
+  } else {
+    selectedContentIds.value = adminContent.items.map((i) => i.id);
+  }
+}
+
+async function deleteSelectedContent() {
+  if (!selectedContentIds.value.length) return;
+  const count = selectedContentIds.value.length;
+  const ok = await confirm(
+    `Удалить выбранные материалы?`,
+    `${count} ${pluralize(count, 'материал', 'материала', 'материалов')} будут удалены безвозвратно.`,
+    'danger',
+  );
+  if (!ok) return;
+  await apiClient.post('/content/bulk-delete', { ids: selectedContentIds.value });
+  adminContent.items = adminContent.items.filter((i) => !selectedContentIds.value.includes(i.id));
+  selectedContentIds.value = [];
+}
+
 async function loadContent() {
   adminContent.loading = true;
   try {
     const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params: { limit: 100 } });
     adminContent.items = data.items;
+    selectedContentIds.value = [];
   } catch (e) {
     console.error('loadContent error:', e);
   } finally {
     adminContent.loading = false;
   }
-}
-
-async function deleteContent(id: number) {
-  if (!confirm('Удалить этот материал?')) return;
-  await apiClient.delete(`/content/${id}`);
-  adminContent.items = adminContent.items.filter((i) => i.id !== id);
 }
 
 // ── Rooms ──
@@ -231,22 +330,50 @@ const adminRooms = reactive({
   loading: false,
 });
 
+const selectedRoomIds = ref<number[]>([]);
+
+function toggleRoomSelect(id: number) {
+  const idx = selectedRoomIds.value.indexOf(id);
+  if (idx >= 0) {
+    selectedRoomIds.value = selectedRoomIds.value.filter((i) => i !== id);
+  } else {
+    selectedRoomIds.value = [...selectedRoomIds.value, id];
+  }
+}
+
+function toggleAllRooms() {
+  if (selectedRoomIds.value.length === adminRooms.items.length) {
+    selectedRoomIds.value = [];
+  } else {
+    selectedRoomIds.value = adminRooms.items.map((r) => r.id);
+  }
+}
+
+async function deleteSelectedRooms() {
+  if (!selectedRoomIds.value.length) return;
+  const count = selectedRoomIds.value.length;
+  const ok = await confirm(
+    `Удалить выбранные комнаты?`,
+    `${count} ${pluralize(count, 'комната', 'комнаты', 'комнат')} будут удалены безвозвратно.`,
+    'danger',
+  );
+  if (!ok) return;
+  await apiClient.post('/rooms/bulk-delete', { ids: selectedRoomIds.value });
+  adminRooms.items = adminRooms.items.filter((r) => !selectedRoomIds.value.includes(r.id));
+  selectedRoomIds.value = [];
+}
+
 async function loadRooms() {
   adminRooms.loading = true;
   try {
     const { data } = await apiClient.get<Room[]>('/rooms');
     adminRooms.items = Array.isArray(data) ? data : [];
+    selectedRoomIds.value = [];
   } catch (e) {
     console.error('loadRooms error:', e);
   } finally {
     adminRooms.loading = false;
   }
-}
-
-async function deleteRoom(id: number) {
-  if (!confirm('Удалить эту комнату?')) return;
-  await apiClient.delete(`/rooms/${id}`);
-  adminRooms.items = adminRooms.items.filter((r) => r.id !== id);
 }
 
 // ── Helpers ──
@@ -260,6 +387,15 @@ function userInitials(u: UserSummary): string {
   const f = u.firstName?.charAt(0)?.toUpperCase() ?? '';
   const l = u.lastName?.charAt(0)?.toUpperCase() ?? '';
   return (f || l) ? `${f}${l}` : u.name.charAt(0).toUpperCase();
+}
+
+function pluralize(count: number, one: string, few: string, many: string): string {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod100 >= 11 && mod100 <= 19) return many;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
 }
 
 function formatDate(d: string): string {

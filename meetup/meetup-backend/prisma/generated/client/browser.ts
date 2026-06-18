@@ -43,6 +43,16 @@ export type MeetingParticipant = Prisma.MeetingParticipantModel
  */
 export type PasswordResetToken = Prisma.PasswordResetTokenModel
 /**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model ContentTag
+ * 
+ */
+export type ContentTag = Prisma.ContentTagModel
+/**
  * Model Content
  * 
  */

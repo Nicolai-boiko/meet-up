@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const userId = ref<string | null>(localStorage.getItem('userId'));
   const userRole = ref<string>('USER');
   const profile = ref<UserProfile | null>(null);
+  const authReady = ref(false);
 
   const isAuthenticated = computed(() => !!token.value);
   const isAdmin = computed(() => userRole.value === 'ADMIN');
@@ -76,6 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(storedToken, storedUserId);
       await fetchProfile();
     }
+    authReady.value = true;
   }
 
   async function fetchProfile() {
@@ -112,6 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
     userId,
     userRole,
     profile,
+    authReady,
     isAuthenticated,
     isAdmin,
     displayName,
