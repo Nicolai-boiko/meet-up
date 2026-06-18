@@ -14,10 +14,13 @@ export const useContentStore = defineStore('content', () => {
 
   const hasMore = ref(false);
 
+  const sortBy = ref<string>('createdAt');
+  const sortOrder = ref<string>('desc');
+
   async function fetchPage(pageNum: number, tagId?: number, favorites?: boolean) {
     loading.value = true;
     try {
-      const params: any = { page: pageNum, limit };
+      const params: any = { page: pageNum, limit, sortBy: sortBy.value, sortOrder: sortOrder.value };
       if (tagId) params.tagId = tagId;
       if (favorites) params.favorites = '1';
       const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params });
@@ -37,7 +40,7 @@ export const useContentStore = defineStore('content', () => {
     loadingMore.value = true;
     try {
       const nextPage = page.value + 1;
-      const params: any = { page: nextPage, limit };
+      const params: any = { page: nextPage, limit, sortBy: sortBy.value, sortOrder: sortOrder.value };
       if (tagId) params.tagId = tagId;
       const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', { params });
       items.value = [...items.value, ...data.items];
@@ -94,5 +97,5 @@ export const useContentStore = defineStore('content', () => {
     if (current.value?.id === id) current.value = null;
   }
 
-  return { items, current, loading, loadingMore, page, total, limit, hasMore, fetchPage, fetchMore, fetchById, create, update, remove, toggleFavorite };
+  return { items, current, loading, loadingMore, page, total, limit, hasMore, sortBy, sortOrder, fetchPage, fetchMore, fetchById, create, update, remove, toggleFavorite };
 });

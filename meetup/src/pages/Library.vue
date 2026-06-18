@@ -34,6 +34,19 @@
             </svg>
           </button>
         </div>
+        <!-- Sort -->
+        <div class="mt-2">
+          <select
+            v-model="sortBy"
+            class="w-full border rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-600"
+          >
+            <option value="createdAt_desc">По дате (новые)</option>
+            <option value="createdAt_asc">По дате (старые)</option>
+            <option value="title_asc">По названию (А-Я)</option>
+            <option value="title_desc">По названию (Я-А)</option>
+            <option value="type_asc">По типу</option>
+          </select>
+        </div>
         <!-- Tag filter chips -->
         <div v-if="allTags.length" class="flex flex-wrap gap-1 mt-2">
           <button
@@ -288,7 +301,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue';
+import { ref, computed, onMounted, reactive, watch } from 'vue';
 import { useContentStore } from '../stores/content';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
@@ -300,6 +313,7 @@ const authStore = useAuthStore();
 const { confirm } = useConfirm();
 const search = ref('');
 const showFavorites = ref(false);
+const sortBy = ref('createdAt_desc');
 const isEditing = ref(false);
 const editingId = ref<number | null>(null);
 const saving = ref(false);
@@ -311,6 +325,13 @@ const form = reactive({ title: '', type: 'text', body: '', mediaUrl: '' });
 const allTags = ref<Tag[]>([]);
 const selectedTagIds = ref<number[]>([]);
 const formTagIds = ref<number[]>([]);
+
+watch(sortBy, (val) => {
+  const parts = val.split('_');
+  contentStore.sortBy = parts[0] ?? 'createdAt';
+  contentStore.sortOrder = parts[1] ?? 'desc';
+  fetchFiltered();
+});
 
 function fetchFiltered() {
   const activeTag = selectedTagIds.value[0];

@@ -25,6 +25,13 @@ export const getAll = async (req: Request, res: Response) => {
     const authReq = req as AuthRequest;
     const userId = authReq.user ? Number(authReq.user.userId) : null;
 
+    // Сортировка
+    const sortBy = (req.query.sortBy as string) || 'createdAt';
+    const sortOrder = (req.query.sortOrder as string) === 'asc' ? 'asc' : 'desc';
+    const allowedSortFields = ['createdAt', 'title', 'type'];
+    const field = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const orderBy = { [field]: sortOrder };
+
     const where: any = {};
     if (tagId) {
       where.contentTags = { some: { tagId } };
@@ -44,7 +51,7 @@ export const getAll = async (req: Request, res: Response) => {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         include,
       }),
       prisma.content.count({ where }),
