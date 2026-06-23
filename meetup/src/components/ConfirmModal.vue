@@ -4,7 +4,9 @@
       <div
         v-if="visible"
         class="fixed inset-0 z-[60] flex items-center justify-center"
-        @click.self="cancel"
+        @keydown.escape="cancel"
+        tabindex="-1"
+        ref="modalRef"
       >
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
@@ -62,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 
 export interface ConfirmOptions {
   title: string;
@@ -73,6 +75,7 @@ export interface ConfirmOptions {
 }
 
 const visible = ref(false);
+const modalRef = ref<HTMLElement | null>(null);
 const title = ref('');
 const message = ref('');
 const variant = ref<'danger' | 'warning' | 'info'>('info');
@@ -116,6 +119,13 @@ function show(opts: ConfirmOptions): Promise<boolean> {
     resolvePromise = resolve;
   });
 }
+
+watch(visible, async (val) => {
+  if (val) {
+    await nextTick();
+    modalRef.value?.focus();
+  }
+});
 
 function confirm() {
   visible.value = false;

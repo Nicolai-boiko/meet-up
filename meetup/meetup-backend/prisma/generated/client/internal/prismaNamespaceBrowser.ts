@@ -119,7 +119,10 @@ export const MeetingScalarFieldEnum = {
   endTime: 'endTime',
   createdAt: 'createdAt',
   hostId: 'hostId',
-  roomId: 'roomId'
+  roomId: 'roomId',
+  recurrenceType: 'recurrenceType',
+  recurrenceEndDate: 'recurrenceEndDate',
+  parentMeetingId: 'parentMeetingId'
 } as const
 
 export type MeetingScalarFieldEnum = (typeof MeetingScalarFieldEnum)[keyof typeof MeetingScalarFieldEnum]

@@ -23,6 +23,9 @@ export interface RoomSummary {
   isPrivate?: boolean;
 }
 
+export type RecurrenceScope = 'this' | 'all' | 'future';
+export type RecurrenceType = 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+
 export interface Meetup {
   id: number;
   title: string;
@@ -35,6 +38,9 @@ export interface Meetup {
   host?: UserSummary;
   participants?: ParticipantInfo[];
   room?: RoomSummary | null;
+  recurrenceType: RecurrenceType | null;
+  recurrenceEndDate: string | null;
+  parentMeetingId: number | null;
 }
 
 export interface UserCredentials {

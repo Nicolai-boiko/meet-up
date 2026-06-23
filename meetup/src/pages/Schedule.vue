@@ -114,7 +114,10 @@
             class="w-full text-left p-3 rounded-lg border hover:bg-gray-100 transition-colors"
             :class="meetingBorderClass(m)"
           >
-            <div class="text-sm font-medium text-gray-800 truncate">{{ m.title }}</div>
+            <div class="text-sm font-medium text-gray-800 truncate">
+              <span v-if="isPartOfSeries(m)" title="Повторяющаяся встреча">🔄 </span>
+              {{ m.title }}
+            </div>
             <div class="text-xs text-gray-500 mt-1">
               {{ formatTime(m.startTime) }} – {{ formatTime(m.endTime) }}
             </div>
@@ -229,7 +232,9 @@
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-        @click.self="closeModal"
+        @keydown.escape="closeModal"
+        tabindex="-1"
+        ref="modalRef"
       >
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
           <!-- Modal header -->
@@ -274,6 +279,15 @@
               >
                 Войти
               </router-link>
+            </div>
+
+            <!-- Recurrence info -->
+            <div v-if="isRecurringParent(viewMeeting)" class="bg-purple-50 rounded-lg p-3">
+              <span class="text-purple-600 text-xs uppercase tracking-wide">Повторяется</span>
+              <p class="font-semibold text-purple-800">{{ formatRecurrence(viewMeeting) }}</p>
+            </div>
+            <div v-else-if="isRecurringChild(viewMeeting)" class="bg-gray-50 rounded-lg p-3 text-sm text-gray-500">
+              🔄 Входит в серию повторяющихся встреч
             </div>
 
             <!-- Participants by status -->
@@ -386,6 +400,22 @@
                 </button>
               </template>
             </div>
+
+            <!-- Export to calendar -->
+            <div class="flex gap-2 pt-2 border-t border-gray-200">
+              <button
+                @click="handleExportIcs(viewMeeting!)"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors text-gray-700"
+              >
+                📥 Скачать ICS
+              </button>
+              <button
+                @click="handleGoogleCalendar(viewMeeting!)"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors text-gray-700"
+              >
+                📅 Google Календарь
+              </button>
+            </div>
           </div>
 
           <!-- Edit/Create form -->
@@ -429,6 +459,74 @@
                   required
                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
+              </div>
+            </div>
+
+            <!-- Recurrence -->
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  v-model="recurrenceEnabled"
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-sm font-medium text-gray-600">Повторять</span>
+              </label>
+              <div v-if="recurrenceEnabled" class="mt-3 space-y-3 pl-2 border-l-2 border-blue-200">
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1">Тип повторения</label>
+                  <select
+                    v-model="recurrenceType"
+                    class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="DAILY">Ежедневно</option>
+                    <option value="WEEKLY">Еженедельно</option>
+                    <option value="BIWEEKLY">Раз в 2 недели</option>
+                    <option value="MONTHLY">Ежемесячно</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1">Дата окончания</label>
+                  <input
+                    v-model="recurrenceEndDate"
+                    type="date"
+                    class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Scope (edit mode) -->
+            <div v-if="editingMeeting && isPartOfSeries(editingMeeting)" class="bg-amber-50 rounded-lg p-3">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Применить изменения</label>
+              <div class="flex flex-col gap-1.5">
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    v-model="editScope"
+                    type="radio"
+                    value="this"
+                    class="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>Только эту встречу</span>
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    v-model="editScope"
+                    type="radio"
+                    value="all"
+                    class="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>Все встречи серии</span>
+                </label>
+                <label v-if="isRecurringParent(editingMeeting) || isRecurringChild(editingMeeting)" class="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    v-model="editScope"
+                    type="radio"
+                    value="future"
+                    class="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>Эту и будущие</span>
+                </label>
               </div>
             </div>
 
@@ -525,12 +623,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted, watch } from 'vue';
+import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue';
 import { useMeetupStore } from '../stores/meetup';
 import { useAuthStore } from '../stores/auth';
 import { useConfirm } from '../composables/useConfirm';
 import apiClient from '../api';
-import type { Meetup, Room, UserSummary, ParticipantInfo } from '../types';
+import type { Meetup, Room, UserSummary, ParticipantInfo, RecurrenceType, RecurrenceScope } from '../types';
 
 const meetupStore = useMeetupStore();
 const authStore = useAuthStore();
@@ -573,6 +671,7 @@ const authUserId = computed(() => (authStore.profile?.id ? Number(authStore.prof
 
 // ── Modal state ──
 const showModal = ref(false);
+const modalRef = ref<HTMLElement | null>(null);
 const viewMeeting = ref<Meetup | null>(null);
 const editingMeeting = ref<Meetup | null>(null);
 const saving = ref(false);
@@ -587,6 +686,12 @@ const form = reactive({
 });
 
 const formParticipantIds = ref<number[]>([]);
+
+// Recurrence
+const recurrenceEnabled = ref(false);
+const recurrenceType = ref<RecurrenceType>('WEEKLY');
+const recurrenceEndDate = ref('');
+const editScope = ref<RecurrenceScope>('this');
 
 // ── Rooms ──
 const availableRooms = ref<Room[]>([]);
@@ -787,6 +892,10 @@ function openCreate() {
   form.roomId = null;
   formParticipantIds.value = [];
   formError.value = null;
+  recurrenceEnabled.value = false;
+  recurrenceType.value = 'WEEKLY';
+  recurrenceEndDate.value = '';
+  editScope.value = 'this';
   showModal.value = true;
 }
 
@@ -802,11 +911,24 @@ function openEdit(m: Meetup) {
   form.startTime = toLocalDateTimeStr(new Date(m.startTime));
   form.endTime = toLocalDateTimeStr(new Date(m.endTime));
   form.roomId = m.roomId;
-  // Текущие INVITED + ACCEPTED участники
   formParticipantIds.value = (m.participants ?? [])
     .filter((p) => p.status !== 'DECLINED')
     .map((p) => p.id);
   formError.value = null;
+  // Если это родительская встреча — заполняем recurrence
+  if (isRecurringParent(m)) {
+    recurrenceEnabled.value = true;
+    recurrenceType.value = m.recurrenceType as RecurrenceType;
+    recurrenceEndDate.value = m.recurrenceEndDate
+      ? new Date(m.recurrenceEndDate).toISOString().split('T')[0]!
+      : '';
+    editScope.value = 'this';
+  } else {
+    recurrenceEnabled.value = false;
+    recurrenceType.value = 'WEEKLY';
+    recurrenceEndDate.value = '';
+    editScope.value = 'this';
+  }
   editingMeeting.value = m;
   viewMeeting.value = null;
   showModal.value = true;
@@ -835,7 +957,7 @@ async function handleSave() {
   saving.value = true;
   formError.value = null;
   try {
-    const payload = {
+    const payload: Record<string, unknown> = {
       title: form.title,
       description: form.description || null,
       startTime: new Date(form.startTime).toISOString(),
@@ -845,8 +967,28 @@ async function handleSave() {
     };
 
     if (editingMeeting.value) {
+      // scope только если это часть серии
+      if (isPartOfSeries(editingMeeting.value)) {
+        payload.scope = editScope.value;
+      }
+      if (recurrenceEnabled.value) {
+        payload.recurrenceType = recurrenceType.value;
+        payload.recurrenceEndDate = recurrenceEndDate.value
+          ? new Date(recurrenceEndDate.value).toISOString()
+          : null;
+      } else if (isRecurringParent(editingMeeting.value)) {
+        // Отключаем повторение
+        payload.recurrenceType = null;
+        payload.recurrenceEndDate = null;
+      }
       await meetupStore.updateMeetup(editingMeeting.value.id, payload);
     } else {
+      if (recurrenceEnabled.value) {
+        payload.recurrenceType = recurrenceType.value;
+        payload.recurrenceEndDate = recurrenceEndDate.value
+          ? new Date(recurrenceEndDate.value).toISOString()
+          : null;
+      }
       await meetupStore.createMeetup(payload);
     }
     closeModal();
@@ -858,14 +1000,31 @@ async function handleSave() {
 }
 
 async function handleDelete(m: Meetup) {
-  const ok = await confirm('Удалить встречу?', `«${m.title}» будет удалена. Участники получат уведомление.`, 'danger');
-  if (!ok) return;
-  try {
+  if (isRecurringParent(m)) {
+    // Для родительской встречи — спрашиваем scope
+    const choice = await confirm(
+      'Удалить повторяющуюся встречу?',
+      `«${m.title}» — повторяющаяся встреча. Удалить только эту встречу или всю серию?`,
+      'danger',
+    );
+    if (!choice) return;
+    // Пока для простоты: удаляем только эту (родительскую).
+    // TODO: добавить UI выбора scope для удаления.
+    await meetupStore.deleteMeetup(m.id, 'all');
+  } else if (isRecurringChild(m)) {
+    const ok = await confirm(
+      'Удалить встречу?',
+      `«${m.title}» будет удалена только эта встреча серии.`,
+      'danger',
+    );
+    if (!ok) return;
+    await meetupStore.deleteMeetup(m.id, 'this');
+  } else {
+    const ok = await confirm('Удалить встречу?', `«${m.title}» будет удалена.`, 'danger');
+    if (!ok) return;
     await meetupStore.deleteMeetup(m.id);
-    closeModal();
-  } catch (e: any) {
-    console.error('Delete error:', e);
   }
+  closeModal();
 }
 
 async function handleJoin(m: Meetup) {
@@ -886,9 +1045,87 @@ async function handleDecline(m: Meetup) {
   }
 }
 
+// ── Calendar export ──
+
+function formatGoogleDate(dateStr: string): string {
+  return new Date(dateStr).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+async function handleExportIcs(m: Meetup) {
+  try {
+    const response = await apiClient.get(`/meetups/${m.id}/ics`, {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `meetup-${m.id}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Export ICS failed:', e);
+  }
+}
+
+function handleGoogleCalendar(m: Meetup) {
+  const start = formatGoogleDate(m.startTime);
+  const end = formatGoogleDate(m.endTime);
+  const text = encodeURIComponent(m.title);
+
+  let description = m.description ?? '';
+  if (m.host) {
+    const hostName = [m.host.firstName, m.host.lastName].filter(Boolean).join(' ') || m.host.name;
+    description = description
+      ? `${description}\n\nОрганизатор: ${hostName}`
+      : `Организатор: ${hostName}`;
+  }
+  const details = encodeURIComponent(description);
+
+  let location = '';
+  if (m.room) {
+    const roomUrl = `${window.location.origin}/room/${m.room.slug}${m.room.isPrivate ? `?meetingId=${m.id}` : ''}`;
+    location = encodeURIComponent(`${m.room.title}\n${roomUrl}`);
+  }
+
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${location}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
 function toLocalDateTimeStr(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+// ── Recurrence helpers ──
+const RECURRENCE_LABELS: Record<string, string> = {
+  DAILY: 'Ежедневно',
+  WEEKLY: 'Еженедельно',
+  BIWEEKLY: 'Раз в 2 недели',
+  MONTHLY: 'Ежемесячно',
+};
+
+function isRecurringParent(m: Meetup): boolean {
+  return m.recurrenceType !== null;
+}
+
+function isRecurringChild(m: Meetup): boolean {
+  return m.parentMeetingId !== null;
+}
+
+function isPartOfSeries(m: Meetup): boolean {
+  return isRecurringParent(m) || isRecurringChild(m);
+}
+
+function formatRecurrence(m: Meetup): string {
+  if (!m.recurrenceType) return '';
+  const label = RECURRENCE_LABELS[m.recurrenceType] || m.recurrenceType;
+  if (m.recurrenceEndDate) {
+    const end = new Date(m.recurrenceEndDate);
+    return `${label} до ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  }
+  return label;
 }
 
 // ── Data loading ──
@@ -913,6 +1150,13 @@ async function loadRooms() {
 watch(selectedUserIds, () => {
   meetupStore.fetchAllForCalendar();
 }, { deep: true });
+
+watch(showModal, async (val) => {
+  if (val) {
+    await nextTick();
+    modalRef.value?.focus();
+  }
+});
 
 onMounted(() => {
   meetupStore.fetchAllForCalendar();

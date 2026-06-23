@@ -5,6 +5,7 @@ import { authMiddleware } from '../middleware/auth.middleware';
 const router = Router();
 
 router.get('/', MeetupController.getAllMeetups);
+router.get('/:id/ics', MeetupController.getMeetupIcs);
 router.get('/:id', MeetupController.getMeetupById);
 router.post('/', authMiddleware, MeetupController.createMeetup);
 router.put('/:id', authMiddleware, MeetupController.updateMeetup);

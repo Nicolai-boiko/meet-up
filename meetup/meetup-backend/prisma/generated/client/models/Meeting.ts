@@ -30,12 +30,14 @@ export type MeetingAvgAggregateOutputType = {
   id: number | null
   hostId: number | null
   roomId: number | null
+  parentMeetingId: number | null
 }
 
 export type MeetingSumAggregateOutputType = {
   id: number | null
   hostId: number | null
   roomId: number | null
+  parentMeetingId: number | null
 }
 
 export type MeetingMinAggregateOutputType = {
@@ -47,6 +49,9 @@ export type MeetingMinAggregateOutputType = {
   createdAt: Date | null
   hostId: number | null
   roomId: number | null
+  recurrenceType: string | null
+  recurrenceEndDate: Date | null
+  parentMeetingId: number | null
 }
 
 export type MeetingMaxAggregateOutputType = {
@@ -58,6 +63,9 @@ export type MeetingMaxAggregateOutputType = {
   createdAt: Date | null
   hostId: number | null
   roomId: number | null
+  recurrenceType: string | null
+  recurrenceEndDate: Date | null
+  parentMeetingId: number | null
 }
 
 export type MeetingCountAggregateOutputType = {
@@ -69,6 +77,9 @@ export type MeetingCountAggregateOutputType = {
   createdAt: number
   hostId: number
   roomId: number
+  recurrenceType: number
+  recurrenceEndDate: number
+  parentMeetingId: number
   _all: number
 }
 
@@ -77,12 +88,14 @@ export type MeetingAvgAggregateInputType = {
   id?: true
   hostId?: true
   roomId?: true
+  parentMeetingId?: true
 }
 
 export type MeetingSumAggregateInputType = {
   id?: true
   hostId?: true
   roomId?: true
+  parentMeetingId?: true
 }
 
 export type MeetingMinAggregateInputType = {
@@ -94,6 +107,9 @@ export type MeetingMinAggregateInputType = {
   createdAt?: true
   hostId?: true
   roomId?: true
+  recurrenceType?: true
+  recurrenceEndDate?: true
+  parentMeetingId?: true
 }
 
 export type MeetingMaxAggregateInputType = {
@@ -105,6 +121,9 @@ export type MeetingMaxAggregateInputType = {
   createdAt?: true
   hostId?: true
   roomId?: true
+  recurrenceType?: true
+  recurrenceEndDate?: true
+  parentMeetingId?: true
 }
 
 export type MeetingCountAggregateInputType = {
@@ -116,6 +135,9 @@ export type MeetingCountAggregateInputType = {
   createdAt?: true
   hostId?: true
   roomId?: true
+  recurrenceType?: true
+  recurrenceEndDate?: true
+  parentMeetingId?: true
   _all?: true
 }
 
@@ -214,6 +236,9 @@ export type MeetingGroupByOutputType = {
   createdAt: Date
   hostId: number
   roomId: number | null
+  recurrenceType: string | null
+  recurrenceEndDate: Date | null
+  parentMeetingId: number | null
   _count: MeetingCountAggregateOutputType | null
   _avg: MeetingAvgAggregateOutputType | null
   _sum: MeetingSumAggregateOutputType | null
@@ -248,8 +273,13 @@ export type MeetingWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Meeting"> | Date | string
   hostId?: Prisma.IntFilter<"Meeting"> | number
   roomId?: Prisma.IntNullableFilter<"Meeting"> | number | null
+  recurrenceType?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  recurrenceEndDate?: Prisma.DateTimeNullableFilter<"Meeting"> | Date | string | null
+  parentMeetingId?: Prisma.IntNullableFilter<"Meeting"> | number | null
   host?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
+  parentMeeting?: Prisma.XOR<Prisma.MeetingNullableScalarRelationFilter, Prisma.MeetingWhereInput> | null
+  childMeetings?: Prisma.MeetingListRelationFilter
   meetingParticipants?: Prisma.MeetingParticipantListRelationFilter
 }
 
@@ -262,8 +292,13 @@ export type MeetingOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrenceEndDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrderInput | Prisma.SortOrder
   host?: Prisma.UserOrderByWithRelationInput
   room?: Prisma.RoomOrderByWithRelationInput
+  parentMeeting?: Prisma.MeetingOrderByWithRelationInput
+  childMeetings?: Prisma.MeetingOrderByRelationAggregateInput
   meetingParticipants?: Prisma.MeetingParticipantOrderByRelationAggregateInput
 }
 
@@ -279,8 +314,13 @@ export type MeetingWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Meeting"> | Date | string
   hostId?: Prisma.IntFilter<"Meeting"> | number
   roomId?: Prisma.IntNullableFilter<"Meeting"> | number | null
+  recurrenceType?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  recurrenceEndDate?: Prisma.DateTimeNullableFilter<"Meeting"> | Date | string | null
+  parentMeetingId?: Prisma.IntNullableFilter<"Meeting"> | number | null
   host?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
+  parentMeeting?: Prisma.XOR<Prisma.MeetingNullableScalarRelationFilter, Prisma.MeetingWhereInput> | null
+  childMeetings?: Prisma.MeetingListRelationFilter
   meetingParticipants?: Prisma.MeetingParticipantListRelationFilter
 }, "id">
 
@@ -293,6 +333,9 @@ export type MeetingOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrenceEndDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MeetingCountOrderByAggregateInput
   _avg?: Prisma.MeetingAvgOrderByAggregateInput
   _max?: Prisma.MeetingMaxOrderByAggregateInput
@@ -312,6 +355,9 @@ export type MeetingScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Meeting"> | Date | string
   hostId?: Prisma.IntWithAggregatesFilter<"Meeting"> | number
   roomId?: Prisma.IntNullableWithAggregatesFilter<"Meeting"> | number | null
+  recurrenceType?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
+  recurrenceEndDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Meeting"> | Date | string | null
+  parentMeetingId?: Prisma.IntNullableWithAggregatesFilter<"Meeting"> | number | null
 }
 
 export type MeetingCreateInput = {
@@ -320,8 +366,12 @@ export type MeetingCreateInput = {
   startTime: Date | string
   endTime: Date | string
   createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
   host: Prisma.UserCreateNestedOneWithoutHostedMeetingsInput
   room?: Prisma.RoomCreateNestedOneWithoutMeetingsInput
+  parentMeeting?: Prisma.MeetingCreateNestedOneWithoutChildMeetingsInput
+  childMeetings?: Prisma.MeetingCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
 }
 
@@ -334,6 +384,10 @@ export type MeetingUncheckedCreateInput = {
   createdAt?: Date | string
   hostId: number
   roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
+  childMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
 }
 
@@ -343,8 +397,12 @@ export type MeetingUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   host?: Prisma.UserUpdateOneRequiredWithoutHostedMeetingsNestedInput
   room?: Prisma.RoomUpdateOneWithoutMeetingsNestedInput
+  parentMeeting?: Prisma.MeetingUpdateOneWithoutChildMeetingsNestedInput
+  childMeetings?: Prisma.MeetingUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
 }
 
@@ -357,6 +415,10 @@ export type MeetingUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  childMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
@@ -369,6 +431,9 @@ export type MeetingCreateManyInput = {
   createdAt?: Date | string
   hostId: number
   roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
 }
 
 export type MeetingUpdateManyMutationInput = {
@@ -377,6 +442,8 @@ export type MeetingUpdateManyMutationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MeetingUncheckedUpdateManyInput = {
@@ -388,6 +455,9 @@ export type MeetingUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type MeetingListRelationFilter = {
@@ -400,6 +470,11 @@ export type MeetingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type MeetingNullableScalarRelationFilter = {
+  is?: Prisma.MeetingWhereInput | null
+  isNot?: Prisma.MeetingWhereInput | null
+}
+
 export type MeetingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -409,12 +484,16 @@ export type MeetingCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  recurrenceEndDate?: Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrder
 }
 
 export type MeetingAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrder
 }
 
 export type MeetingMaxOrderByAggregateInput = {
@@ -426,6 +505,9 @@ export type MeetingMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  recurrenceEndDate?: Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrder
 }
 
 export type MeetingMinOrderByAggregateInput = {
@@ -437,12 +519,16 @@ export type MeetingMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  recurrenceEndDate?: Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrder
 }
 
 export type MeetingSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   hostId?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
+  parentMeetingId?: Prisma.SortOrder
 }
 
 export type MeetingScalarRelationFilter = {
@@ -534,12 +620,70 @@ export type MeetingUncheckedUpdateManyWithoutRoomNestedInput = {
   deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
 }
 
+export type MeetingCreateNestedOneWithoutChildMeetingsInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutChildMeetingsInput, Prisma.MeetingUncheckedCreateWithoutChildMeetingsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutChildMeetingsInput
+  connect?: Prisma.MeetingWhereUniqueInput
+}
+
+export type MeetingCreateNestedManyWithoutParentMeetingInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput> | Prisma.MeetingCreateWithoutParentMeetingInput[] | Prisma.MeetingUncheckedCreateWithoutParentMeetingInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutParentMeetingInput | Prisma.MeetingCreateOrConnectWithoutParentMeetingInput[]
+  createMany?: Prisma.MeetingCreateManyParentMeetingInputEnvelope
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+}
+
+export type MeetingUncheckedCreateNestedManyWithoutParentMeetingInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput> | Prisma.MeetingCreateWithoutParentMeetingInput[] | Prisma.MeetingUncheckedCreateWithoutParentMeetingInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutParentMeetingInput | Prisma.MeetingCreateOrConnectWithoutParentMeetingInput[]
+  createMany?: Prisma.MeetingCreateManyParentMeetingInputEnvelope
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+}
+
+export type MeetingUpdateOneWithoutChildMeetingsNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutChildMeetingsInput, Prisma.MeetingUncheckedCreateWithoutChildMeetingsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutChildMeetingsInput
+  upsert?: Prisma.MeetingUpsertWithoutChildMeetingsInput
+  disconnect?: Prisma.MeetingWhereInput | boolean
+  delete?: Prisma.MeetingWhereInput | boolean
+  connect?: Prisma.MeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingUpdateToOneWithWhereWithoutChildMeetingsInput, Prisma.MeetingUpdateWithoutChildMeetingsInput>, Prisma.MeetingUncheckedUpdateWithoutChildMeetingsInput>
+}
+
+export type MeetingUpdateManyWithoutParentMeetingNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput> | Prisma.MeetingCreateWithoutParentMeetingInput[] | Prisma.MeetingUncheckedCreateWithoutParentMeetingInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutParentMeetingInput | Prisma.MeetingCreateOrConnectWithoutParentMeetingInput[]
+  upsert?: Prisma.MeetingUpsertWithWhereUniqueWithoutParentMeetingInput | Prisma.MeetingUpsertWithWhereUniqueWithoutParentMeetingInput[]
+  createMany?: Prisma.MeetingCreateManyParentMeetingInputEnvelope
+  set?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  disconnect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  delete?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  update?: Prisma.MeetingUpdateWithWhereUniqueWithoutParentMeetingInput | Prisma.MeetingUpdateWithWhereUniqueWithoutParentMeetingInput[]
+  updateMany?: Prisma.MeetingUpdateManyWithWhereWithoutParentMeetingInput | Prisma.MeetingUpdateManyWithWhereWithoutParentMeetingInput[]
+  deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput> | Prisma.MeetingCreateWithoutParentMeetingInput[] | Prisma.MeetingUncheckedCreateWithoutParentMeetingInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutParentMeetingInput | Prisma.MeetingCreateOrConnectWithoutParentMeetingInput[]
+  upsert?: Prisma.MeetingUpsertWithWhereUniqueWithoutParentMeetingInput | Prisma.MeetingUpsertWithWhereUniqueWithoutParentMeetingInput[]
+  createMany?: Prisma.MeetingCreateManyParentMeetingInputEnvelope
+  set?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  disconnect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  delete?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  update?: Prisma.MeetingUpdateWithWhereUniqueWithoutParentMeetingInput | Prisma.MeetingUpdateWithWhereUniqueWithoutParentMeetingInput[]
+  updateMany?: Prisma.MeetingUpdateManyWithWhereWithoutParentMeetingInput | Prisma.MeetingUpdateManyWithWhereWithoutParentMeetingInput[]
+  deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
 }
 
 export type MeetingCreateNestedOneWithoutMeetingParticipantsInput = {
@@ -562,7 +706,11 @@ export type MeetingCreateWithoutHostInput = {
   startTime: Date | string
   endTime: Date | string
   createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
   room?: Prisma.RoomCreateNestedOneWithoutMeetingsInput
+  parentMeeting?: Prisma.MeetingCreateNestedOneWithoutChildMeetingsInput
+  childMeetings?: Prisma.MeetingCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
 }
 
@@ -574,6 +722,10 @@ export type MeetingUncheckedCreateWithoutHostInput = {
   endTime: Date | string
   createdAt?: Date | string
   roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
+  childMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
 }
 
@@ -615,6 +767,9 @@ export type MeetingScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Meeting"> | Date | string
   hostId?: Prisma.IntFilter<"Meeting"> | number
   roomId?: Prisma.IntNullableFilter<"Meeting"> | number | null
+  recurrenceType?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  recurrenceEndDate?: Prisma.DateTimeNullableFilter<"Meeting"> | Date | string | null
+  parentMeetingId?: Prisma.IntNullableFilter<"Meeting"> | number | null
 }
 
 export type MeetingCreateWithoutRoomInput = {
@@ -623,7 +778,11 @@ export type MeetingCreateWithoutRoomInput = {
   startTime: Date | string
   endTime: Date | string
   createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
   host: Prisma.UserCreateNestedOneWithoutHostedMeetingsInput
+  parentMeeting?: Prisma.MeetingCreateNestedOneWithoutChildMeetingsInput
+  childMeetings?: Prisma.MeetingCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
 }
 
@@ -635,6 +794,10 @@ export type MeetingUncheckedCreateWithoutRoomInput = {
   endTime: Date | string
   createdAt?: Date | string
   hostId: number
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
+  childMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParentMeetingInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
 }
 
@@ -664,14 +827,147 @@ export type MeetingUpdateManyWithWhereWithoutRoomInput = {
   data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutRoomInput>
 }
 
+export type MeetingCreateWithoutChildMeetingsInput = {
+  title: string
+  description?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  host: Prisma.UserCreateNestedOneWithoutHostedMeetingsInput
+  room?: Prisma.RoomCreateNestedOneWithoutMeetingsInput
+  parentMeeting?: Prisma.MeetingCreateNestedOneWithoutChildMeetingsInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutChildMeetingsInput = {
+  id?: number
+  title: string
+  description?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  createdAt?: Date | string
+  hostId: number
+  roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutChildMeetingsInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutChildMeetingsInput, Prisma.MeetingUncheckedCreateWithoutChildMeetingsInput>
+}
+
+export type MeetingCreateWithoutParentMeetingInput = {
+  title: string
+  description?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  host: Prisma.UserCreateNestedOneWithoutHostedMeetingsInput
+  room?: Prisma.RoomCreateNestedOneWithoutMeetingsInput
+  childMeetings?: Prisma.MeetingCreateNestedManyWithoutParentMeetingInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutParentMeetingInput = {
+  id?: number
+  title: string
+  description?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  createdAt?: Date | string
+  hostId: number
+  roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  childMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParentMeetingInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutParentMeetingInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput>
+}
+
+export type MeetingCreateManyParentMeetingInputEnvelope = {
+  data: Prisma.MeetingCreateManyParentMeetingInput | Prisma.MeetingCreateManyParentMeetingInput[]
+  skipDuplicates?: boolean
+}
+
+export type MeetingUpsertWithoutChildMeetingsInput = {
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutChildMeetingsInput, Prisma.MeetingUncheckedUpdateWithoutChildMeetingsInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutChildMeetingsInput, Prisma.MeetingUncheckedCreateWithoutChildMeetingsInput>
+  where?: Prisma.MeetingWhereInput
+}
+
+export type MeetingUpdateToOneWithWhereWithoutChildMeetingsInput = {
+  where?: Prisma.MeetingWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutChildMeetingsInput, Prisma.MeetingUncheckedUpdateWithoutChildMeetingsInput>
+}
+
+export type MeetingUpdateWithoutChildMeetingsInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  host?: Prisma.UserUpdateOneRequiredWithoutHostedMeetingsNestedInput
+  room?: Prisma.RoomUpdateOneWithoutMeetingsNestedInput
+  parentMeeting?: Prisma.MeetingUpdateOneWithoutChildMeetingsNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutChildMeetingsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hostId?: Prisma.IntFieldUpdateOperationsInput | number
+  roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUpsertWithWhereUniqueWithoutParentMeetingInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutParentMeetingInput, Prisma.MeetingUncheckedUpdateWithoutParentMeetingInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutParentMeetingInput, Prisma.MeetingUncheckedCreateWithoutParentMeetingInput>
+}
+
+export type MeetingUpdateWithWhereUniqueWithoutParentMeetingInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutParentMeetingInput, Prisma.MeetingUncheckedUpdateWithoutParentMeetingInput>
+}
+
+export type MeetingUpdateManyWithWhereWithoutParentMeetingInput = {
+  where: Prisma.MeetingScalarWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingInput>
+}
+
 export type MeetingCreateWithoutMeetingParticipantsInput = {
   title: string
   description?: string | null
   startTime: Date | string
   endTime: Date | string
   createdAt?: Date | string
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
   host: Prisma.UserCreateNestedOneWithoutHostedMeetingsInput
   room?: Prisma.RoomCreateNestedOneWithoutMeetingsInput
+  parentMeeting?: Prisma.MeetingCreateNestedOneWithoutChildMeetingsInput
+  childMeetings?: Prisma.MeetingCreateNestedManyWithoutParentMeetingInput
 }
 
 export type MeetingUncheckedCreateWithoutMeetingParticipantsInput = {
@@ -683,6 +979,10 @@ export type MeetingUncheckedCreateWithoutMeetingParticipantsInput = {
   createdAt?: Date | string
   hostId: number
   roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
+  childMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutParentMeetingInput
 }
 
 export type MeetingCreateOrConnectWithoutMeetingParticipantsInput = {
@@ -707,8 +1007,12 @@ export type MeetingUpdateWithoutMeetingParticipantsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   host?: Prisma.UserUpdateOneRequiredWithoutHostedMeetingsNestedInput
   room?: Prisma.RoomUpdateOneWithoutMeetingsNestedInput
+  parentMeeting?: Prisma.MeetingUpdateOneWithoutChildMeetingsNestedInput
+  childMeetings?: Prisma.MeetingUpdateManyWithoutParentMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutMeetingParticipantsInput = {
@@ -720,6 +1024,10 @@ export type MeetingUncheckedUpdateWithoutMeetingParticipantsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
   roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  childMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput
 }
 
 export type MeetingCreateManyHostInput = {
@@ -730,6 +1038,9 @@ export type MeetingCreateManyHostInput = {
   endTime: Date | string
   createdAt?: Date | string
   roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
 }
 
 export type MeetingUpdateWithoutHostInput = {
@@ -738,7 +1049,11 @@ export type MeetingUpdateWithoutHostInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   room?: Prisma.RoomUpdateOneWithoutMeetingsNestedInput
+  parentMeeting?: Prisma.MeetingUpdateOneWithoutChildMeetingsNestedInput
+  childMeetings?: Prisma.MeetingUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
 }
 
@@ -750,6 +1065,10 @@ export type MeetingUncheckedUpdateWithoutHostInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  childMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
@@ -761,6 +1080,9 @@ export type MeetingUncheckedUpdateManyWithoutHostInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type MeetingCreateManyRoomInput = {
@@ -771,6 +1093,9 @@ export type MeetingCreateManyRoomInput = {
   endTime: Date | string
   createdAt?: Date | string
   hostId: number
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+  parentMeetingId?: number | null
 }
 
 export type MeetingUpdateWithoutRoomInput = {
@@ -779,7 +1104,11 @@ export type MeetingUpdateWithoutRoomInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   host?: Prisma.UserUpdateOneRequiredWithoutHostedMeetingsNestedInput
+  parentMeeting?: Prisma.MeetingUpdateOneWithoutChildMeetingsNestedInput
+  childMeetings?: Prisma.MeetingUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
 }
 
@@ -791,6 +1120,10 @@ export type MeetingUncheckedUpdateWithoutRoomInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  childMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput
   meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
@@ -802,6 +1135,64 @@ export type MeetingUncheckedUpdateManyWithoutRoomInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hostId?: Prisma.IntFieldUpdateOperationsInput | number
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentMeetingId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type MeetingCreateManyParentMeetingInput = {
+  id?: number
+  title: string
+  description?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  createdAt?: Date | string
+  hostId: number
+  roomId?: number | null
+  recurrenceType?: string | null
+  recurrenceEndDate?: Date | string | null
+}
+
+export type MeetingUpdateWithoutParentMeetingInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  host?: Prisma.UserUpdateOneRequiredWithoutHostedMeetingsNestedInput
+  room?: Prisma.RoomUpdateOneWithoutMeetingsNestedInput
+  childMeetings?: Prisma.MeetingUpdateManyWithoutParentMeetingNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutParentMeetingInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hostId?: Prisma.IntFieldUpdateOperationsInput | number
+  roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  childMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutParentMeetingNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateManyWithoutParentMeetingInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hostId?: Prisma.IntFieldUpdateOperationsInput | number
+  roomId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recurrenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrenceEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -810,10 +1201,12 @@ export type MeetingUncheckedUpdateManyWithoutRoomInput = {
  */
 
 export type MeetingCountOutputType = {
+  childMeetings: number
   meetingParticipants: number
 }
 
 export type MeetingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  childMeetings?: boolean | MeetingCountOutputTypeCountChildMeetingsArgs
   meetingParticipants?: boolean | MeetingCountOutputTypeCountMeetingParticipantsArgs
 }
 
@@ -825,6 +1218,13 @@ export type MeetingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the MeetingCountOutputType
    */
   select?: Prisma.MeetingCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MeetingCountOutputType without action
+ */
+export type MeetingCountOutputTypeCountChildMeetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingWhereInput
 }
 
 /**
@@ -844,8 +1244,13 @@ export type MeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   hostId?: boolean
   roomId?: boolean
+  recurrenceType?: boolean
+  recurrenceEndDate?: boolean
+  parentMeetingId?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
+  childMeetings?: boolean | Prisma.Meeting$childMeetingsArgs<ExtArgs>
   meetingParticipants?: boolean | Prisma.Meeting$meetingParticipantsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
@@ -859,8 +1264,12 @@ export type MeetingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   hostId?: boolean
   roomId?: boolean
+  recurrenceType?: boolean
+  recurrenceEndDate?: boolean
+  parentMeetingId?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
 export type MeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -872,8 +1281,12 @@ export type MeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   hostId?: boolean
   roomId?: boolean
+  recurrenceType?: boolean
+  recurrenceEndDate?: boolean
+  parentMeetingId?: boolean
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
 export type MeetingSelectScalar = {
@@ -885,22 +1298,29 @@ export type MeetingSelectScalar = {
   createdAt?: boolean
   hostId?: boolean
   roomId?: boolean
+  recurrenceType?: boolean
+  recurrenceEndDate?: boolean
+  parentMeetingId?: boolean
 }
 
-export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "startTime" | "endTime" | "createdAt" | "hostId" | "roomId", ExtArgs["result"]["meeting"]>
+export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "startTime" | "endTime" | "createdAt" | "hostId" | "roomId" | "recurrenceType" | "recurrenceEndDate" | "parentMeetingId", ExtArgs["result"]["meeting"]>
 export type MeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
+  childMeetings?: boolean | Prisma.Meeting$childMeetingsArgs<ExtArgs>
   meetingParticipants?: boolean | Prisma.Meeting$meetingParticipantsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
 }
 export type MeetingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   room?: boolean | Prisma.Meeting$roomArgs<ExtArgs>
+  parentMeeting?: boolean | Prisma.Meeting$parentMeetingArgs<ExtArgs>
 }
 
 export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -908,6 +1328,8 @@ export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     host: Prisma.$UserPayload<ExtArgs>
     room: Prisma.$RoomPayload<ExtArgs> | null
+    parentMeeting: Prisma.$MeetingPayload<ExtArgs> | null
+    childMeetings: Prisma.$MeetingPayload<ExtArgs>[]
     meetingParticipants: Prisma.$MeetingParticipantPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -919,6 +1341,9 @@ export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     createdAt: Date
     hostId: number
     roomId: number | null
+    recurrenceType: string | null
+    recurrenceEndDate: Date | null
+    parentMeetingId: number | null
   }, ExtArgs["result"]["meeting"]>
   composites: {}
 }
@@ -1315,6 +1740,8 @@ export interface Prisma__MeetingClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   host<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   room<T extends Prisma.Meeting$roomArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$roomArgs<ExtArgs>>): Prisma.Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  parentMeeting<T extends Prisma.Meeting$parentMeetingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$parentMeetingArgs<ExtArgs>>): Prisma.Prisma__MeetingClient<runtime.Types.Result.GetResult<Prisma.$MeetingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  childMeetings<T extends Prisma.Meeting$childMeetingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$childMeetingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meetingParticipants<T extends Prisma.Meeting$meetingParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$meetingParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1353,6 +1780,9 @@ export interface MeetingFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Meeting", 'DateTime'>
   readonly hostId: Prisma.FieldRef<"Meeting", 'Int'>
   readonly roomId: Prisma.FieldRef<"Meeting", 'Int'>
+  readonly recurrenceType: Prisma.FieldRef<"Meeting", 'String'>
+  readonly recurrenceEndDate: Prisma.FieldRef<"Meeting", 'DateTime'>
+  readonly parentMeetingId: Prisma.FieldRef<"Meeting", 'Int'>
 }
     
 
@@ -1770,6 +2200,49 @@ export type Meeting$roomArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.RoomInclude<ExtArgs> | null
   where?: Prisma.RoomWhereInput
+}
+
+/**
+ * Meeting.parentMeeting
+ */
+export type Meeting$parentMeetingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Meeting
+   */
+  select?: Prisma.MeetingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Meeting
+   */
+  omit?: Prisma.MeetingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingInclude<ExtArgs> | null
+  where?: Prisma.MeetingWhereInput
+}
+
+/**
+ * Meeting.childMeetings
+ */
+export type Meeting$childMeetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Meeting
+   */
+  select?: Prisma.MeetingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Meeting
+   */
+  omit?: Prisma.MeetingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingInclude<ExtArgs> | null
+  where?: Prisma.MeetingWhereInput
+  orderBy?: Prisma.MeetingOrderByWithRelationInput | Prisma.MeetingOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingScalarFieldEnum | Prisma.MeetingScalarFieldEnum[]
 }
 
 /**

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import apiClient from '../api';
-import type { Meetup, MeetingParticipantStatus, PaginatedResponse } from '../types';
+import type { Meetup, MeetingParticipantStatus, PaginatedResponse, RecurrenceType, RecurrenceScope } from '../types';
 
 export const useMeetupStore = defineStore('meetups', () => {
   const loading = ref(false);
@@ -123,6 +123,8 @@ export const useMeetupStore = defineStore('meetups', () => {
     endTime: string;
     roomId?: number | null;
     participantIds?: number[];
+    recurrenceType?: RecurrenceType | null;
+    recurrenceEndDate?: string | null;
   }) {
     const { data } = await apiClient.post<{ message: string; data: Meetup }>('/meetups', payload);
     items.value.unshift(data.data);
@@ -137,17 +139,29 @@ export const useMeetupStore = defineStore('meetups', () => {
     endTime?: string;
     roomId?: number | null;
     participantIds?: number[];
+    scope?: RecurrenceScope;
+    recurrenceType?: RecurrenceType | null;
+    recurrenceEndDate?: string | null;
   }) {
     const { data } = await apiClient.put<{ message: string; data: Meetup }>(`/meetups/${id}`, payload);
-    const idx = items.value.findIndex((m) => m.id === id);
-    if (idx >= 0) items.value[idx] = data.data;
+    // При scope=all/future нужно перезагрузить все встречи, т.к. сервер мог создать/удалить множество записей
+    if (payload.scope && payload.scope !== 'this') {
+      await fetchAllForCalendar();
+    } else {
+      const idx = items.value.findIndex((m) => m.id === id);
+      if (idx >= 0) items.value[idx] = data.data;
+    }
     return data.data;
   }
 
-  async function deleteMeetup(id: number) {
-    await apiClient.delete(`/meetups/${id}`);
-    items.value = items.value.filter((m) => m.id !== id);
-    total.value = Math.max(0, total.value - 1);
+  async function deleteMeetup(id: number, scope?: RecurrenceScope) {
+    await apiClient.delete(`/meetups/${id}`, { data: { scope } });
+    if (scope && scope !== 'this') {
+      await fetchAllForCalendar();
+    } else {
+      items.value = items.value.filter((m) => m.id !== id);
+      total.value = Math.max(0, total.value - 1);
+    }
   }
 
   async function joinMeetup(id: number) {

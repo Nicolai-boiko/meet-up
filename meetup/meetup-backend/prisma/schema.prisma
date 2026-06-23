@@ -58,6 +58,14 @@ model Meeting {
   roomId      Int?
   room        Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
 
+  // Recurring meetings
+  recurrenceType    String?   // "DAILY" | "WEEKLY" | "BIWEEKLY" | "MONTHLY"
+  recurrenceEndDate DateTime?
+  parentMeetingId   Int?
+
+  parentMeeting     Meeting?  @relation("MeetingRecurrence", fields: [parentMeetingId], references: [id], onDelete: Cascade)
+  childMeetings     Meeting[] @relation("MeetingRecurrence")
+
   meetingParticipants MeetingParticipant[]
 }
 
