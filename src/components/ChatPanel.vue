@@ -17,7 +17,7 @@ const props = defineProps<{
   ownSocketId: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   send: [text: string]
 }>()
 

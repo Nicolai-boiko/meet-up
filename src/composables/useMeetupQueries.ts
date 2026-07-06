@@ -4,9 +4,9 @@ import type { Meetup, PaginatedResponse } from '../types'
 import type { MeetupQueryParams } from '../interfaces'
 
 export const meetupKeys = {
-  all: ['meetups'] as const,
-  list: (params: MeetupQueryParams) => ['meetups', 'list', params] as const,
-  byId: (id: number) => ['meetups', 'detail', id] as const,
+  all: ['meetups'],
+  list: (params: MeetupQueryParams) => ['meetups', 'list', params],
+  byId: (id: number) => ['meetups', 'detail', id],
 }
 
 export function useMeetupList(params: () => MeetupQueryParams) {
