@@ -15,7 +15,7 @@ defineProps<{
       'bg-green-100 text-green-700': variant === 'green',
       'bg-red-100 text-red-700': variant === 'red',
       'bg-amber-100 text-amber-700': variant === 'amber',
-      'bg-gray-100 text-gray-700': variant === 'gray',
+      'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white': variant === 'gray',
       'bg-indigo-100 text-indigo-700': variant === 'indigo',
     }"
   >

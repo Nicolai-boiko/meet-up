@@ -1,12 +1,12 @@
 <template>
-  <div class="h-full -mx-6 -my-6 bg-gray-50 flex flex-col overflow-hidden">
+  <div class="h-full -mx-6 -my-6 bg-gray-50 dark:bg-gray-950 flex flex-col overflow-hidden">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200 px-6 py-4 shrink-0">
-      <h1 class="text-xl font-bold text-gray-800">Админ-панель</h1>
+    <div class="bg-white dark:bg-gray-900 border-b border-gray-200 px-6 py-4 shrink-0">
+      <h1 class="text-xl font-bold text-gray-800 dark:text-white">{{ $t('admin.title') }}</h1>
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white border-b border-gray-200 px-6 flex gap-0 shrink-0">
+    <div class="bg-white dark:bg-gray-900 border-b border-gray-200 px-6 flex gap-0 shrink-0">
       <button
         v-for="tab in tabs"
         :key="tab.key"
@@ -26,39 +26,49 @@
     <div class="flex-1 overflow-y-auto p-6">
       <!-- Dashboard Tab -->
       <div v-if="activeTab === 'dashboard'">
-        <div v-if="dashLoading" class="text-center text-gray-500 py-8">Загрузка...</div>
+        <div v-if="dashLoading" class="text-center text-gray-500 dark:text-white py-8">
+          {{ $t('admin.loading') }}
+        </div>
         <template v-else-if="dashStats">
           <!-- Stat cards -->
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
               <div class="text-xs text-blue-500 uppercase tracking-wide font-medium mb-1">
-                Пользователей
+                {{ $t('admin.totalUsers') }}
               </div>
-              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.users }}</div>
+              <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                {{ dashStats.totals.users }}
+              </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
               <div class="text-xs text-green-500 uppercase tracking-wide font-medium mb-1">
-                Материалов
+                {{ $t('admin.totalContent') }}
               </div>
-              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.content }}</div>
+              <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                {{ dashStats.totals.content }}
+              </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
               <div class="text-xs text-amber-500 uppercase tracking-wide font-medium mb-1">
-                Встреч
+                {{ $t('admin.totalMeetings') }}
               </div>
-              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.meetings }}</div>
+              <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                {{ dashStats.totals.meetings }}
+              </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
               <div class="text-xs text-indigo-500 uppercase tracking-wide font-medium mb-1">
-                Файлов
+                {{ $t('admin.totalFiles') }}
               </div>
-              <div class="text-2xl font-bold text-gray-800">{{ dashStats.totals.files }}</div>
+              <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                {{ dashStats.totals.files }}
+              </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
               <div class="text-xs text-teal-500 uppercase tracking-wide font-medium mb-1">
-                Объём
+                {{ $t('admin.totalStorage') }}
               </div>
-              <div class="text-2xl font-bold text-gray-800">
+              <div class="text-2xl font-bold text-gray-800 dark:text-white">
                 {{ formatStorage(dashStats.totals.totalStorage) }}
               </div>
             </div>
@@ -66,9 +76,11 @@
           <!-- Charts grid -->
           <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <!-- New users per day — Line -->
-            <div class="bg-white rounded-xl shadow-sm p-5">
-              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Новые пользователи (30 дн)
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <h3
+                class="text-sm font-semibold text-gray-500 dark:text-white uppercase tracking-wide mb-3"
+              >
+                {{ $t('admin.newUsersChart') }}
               </h3>
               <Line
                 v-if="usersChartData"
@@ -76,12 +88,19 @@
                 :options="lineChartOptions"
                 class="max-h-64"
               />
-              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+              <div
+                v-else
+                class="text-gray-400 dark:text-white dark:text-white text-sm text-center py-8"
+              >
+                {{ $t('admin.noData') }}
+              </div>
             </div>
             <!-- Top 5 authors — Bar -->
-            <div class="bg-white rounded-xl shadow-sm p-5">
-              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Топ-5 авторов
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <h3
+                class="text-sm font-semibold text-gray-500 dark:text-white uppercase tracking-wide mb-3"
+              >
+                {{ $t('admin.topAuthors') }}
               </h3>
               <Bar
                 v-if="authorsChartData"
@@ -89,12 +108,19 @@
                 :options="barChartOptions"
                 class="max-h-64"
               />
-              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+              <div
+                v-else
+                class="text-gray-400 dark:text-white dark:text-white text-sm text-center py-8"
+              >
+                {{ $t('admin.noData') }}
+              </div>
             </div>
             <!-- Content by type — Doughnut -->
-            <div class="bg-white rounded-xl shadow-sm p-5">
-              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Материалы по типам
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <h3
+                class="text-sm font-semibold text-gray-500 dark:text-white uppercase tracking-wide mb-3"
+              >
+                {{ $t('admin.contentByType') }}
               </h3>
               <Doughnut
                 v-if="typeChartData"
@@ -102,12 +128,19 @@
                 :options="doughnutChartOptions"
                 class="max-h-64"
               />
-              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+              <div
+                v-else
+                class="text-gray-400 dark:text-white dark:text-white text-sm text-center py-8"
+              >
+                {{ $t('admin.noData') }}
+              </div>
             </div>
             <!-- Content by tag — Doughnut -->
-            <div class="bg-white rounded-xl shadow-sm p-5">
-              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Материалы по тегам
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <h3
+                class="text-sm font-semibold text-gray-500 dark:text-white uppercase tracking-wide mb-3"
+              >
+                {{ $t('admin.contentByTag') }}
               </h3>
               <Doughnut
                 v-if="tagsChartData"
@@ -115,7 +148,12 @@
                 :options="doughnutChartOptions"
                 class="max-h-64"
               />
-              <div v-else class="text-gray-400 text-sm text-center py-8">Нет данных</div>
+              <div
+                v-else
+                class="text-gray-400 dark:text-white dark:text-white text-sm text-center py-8"
+              >
+                {{ $t('admin.noData') }}
+              </div>
             </div>
           </div>
         </template>
@@ -128,27 +166,29 @@
           <input
             v-model="searchUsers"
             type="text"
-            placeholder="Поиск по имени или email..."
+            :placeholder="$t('admin.searchUsers')"
             class="w-full max-w-md border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div v-if="adminUsers.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
+        <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-hidden">
+          <div v-if="adminUsers.loading" class="text-center text-gray-500 dark:text-white py-8">
+            {{ $t('admin.loading') }}
+          </div>
           <template v-else>
             <table class="w-full text-sm">
-              <thead class="bg-gray-50 border-b border-gray-200">
+              <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200">
                 <tr>
                   <th
-                    class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none"
+                    class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white cursor-pointer hover:text-gray-700 dark:text-white select-none"
                     @click="toggleUserSort('name')"
                   >
-                    Пользователь
+                    {{ $t('admin.userCol') }}
                     <span v-if="userSortBy === 'name'" class="ml-1 text-blue-500">{{
                       userSortOrder === 'asc' ? '↑' : '↓'
                     }}</span>
                   </th>
                   <th
-                    class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none"
+                    class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white cursor-pointer hover:text-gray-700 dark:text-white select-none"
                     @click="toggleUserSort('email')"
                   >
                     Email
@@ -157,15 +197,17 @@
                     }}</span>
                   </th>
                   <th
-                    class="text-left px-4 py-3 font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none"
+                    class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white cursor-pointer hover:text-gray-700 dark:text-white select-none"
                     @click="toggleUserSort('role')"
                   >
-                    Роль
+                    {{ $t('admin.roleCol') }}
                     <span v-if="userSortBy === 'role'" class="ml-1 text-blue-500">{{
                       userSortOrder === 'asc' ? '↑' : '↓'
                     }}</span>
                   </th>
-                  <th class="text-right px-4 py-3 font-medium text-gray-500">Действия</th>
+                  <th class="text-right px-4 py-3 font-medium text-gray-500 dark:text-white">
+                    {{ $t('admin.actions') }}
+                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
@@ -183,17 +225,19 @@
                       >
                         {{ userInitials(user) }}
                       </div>
-                      <span class="font-medium text-gray-800">{{ userDisplayName(user) }}</span>
+                      <span class="font-medium text-gray-800 dark:text-white">{{
+                        userDisplayName(user)
+                      }}</span>
                     </div>
                   </td>
-                  <td class="px-4 py-3 text-gray-500">{{ user.email }}</td>
+                  <td class="px-4 py-3 text-gray-500 dark:text-white">{{ user.email }}</td>
                   <td class="px-4 py-3">
                     <span
                       class="px-2 py-0.5 text-xs rounded-full font-medium"
                       :class="
                         user.role === 'ADMIN'
                           ? 'bg-purple-100 text-purple-700'
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-white'
                       "
                     >
                       {{ user.role }}
@@ -222,7 +266,7 @@
             <div v-if="adminUsers.hasMore" class="p-3 border-t border-gray-100">
               <button
                 @click="loadMoreUsers"
-                class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white rounded-lg transition-colors"
               >
                 Загрузить ещё ({{ adminUsers.total - adminUsers.items.length }})
               </button>
@@ -233,13 +277,17 @@
 
       <!-- Content Tab -->
       <div v-if="activeTab === 'content'">
-        <div v-if="adminContent.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
-        <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div v-if="adminContent.loading" class="text-center text-gray-500 dark:text-white py-8">
+          {{ $t('admin.loading') }}
+        </div>
+        <div v-else class="bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-hidden">
           <!-- Bulk action bar -->
           <div
             class="flex items-center gap-3 px-4 py-2 border-b transition-colors"
             :class="
-              selectedContentIds.length ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'
+              selectedContentIds.length
+                ? 'bg-red-50 border-red-200'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
             "
           >
             <template v-if="selectedContentIds.length">
@@ -255,17 +303,19 @@
               </button>
               <button
                 @click="selectedContentIds = []"
-                class="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+                class="px-3 py-1 text-xs text-gray-500 dark:text-white hover:text-gray-700 dark:text-white"
               >
                 Отменить
               </button>
             </template>
             <template v-else>
-              <span class="text-sm text-gray-400">Выберите материалы для удаления</span>
+              <span class="text-sm text-gray-400 dark:text-white">{{
+                $t('admin.selectToDelete')
+              }}</span>
             </template>
           </div>
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200">
               <tr>
                 <th class="w-10 px-2 py-3">
                   <input
@@ -278,10 +328,18 @@
                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Название</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Тип</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Автор</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Дата</th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.nameCol') }}
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.typeCol') }}
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.authorCol') }}
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.dateCol') }}
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -294,12 +352,14 @@
                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
-                <td class="px-4 py-3 font-medium text-gray-800 max-w-48 truncate">
+                <td class="px-4 py-3 font-medium text-gray-800 dark:text-white max-w-48 truncate">
                   {{ item.title }}
                 </td>
-                <td class="px-4 py-3 text-gray-500">{{ item.type }}</td>
-                <td class="px-4 py-3 text-gray-500">{{ item.author?.name }}</td>
-                <td class="px-4 py-3 text-gray-500">{{ formatDate(item.createdAt) }}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-white">{{ item.type }}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-white">{{ item.author?.name }}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-white">
+                  {{ formatDate(item.createdAt) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -308,13 +368,17 @@
 
       <!-- Rooms Tab -->
       <div v-if="activeTab === 'rooms'">
-        <div v-if="adminRooms.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
-        <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div v-if="adminRooms.loading" class="text-center text-gray-500 dark:text-white py-8">
+          {{ $t('admin.loading') }}
+        </div>
+        <div v-else class="bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-hidden">
           <!-- Bulk action bar -->
           <div
             class="flex items-center gap-3 px-4 py-2 border-b transition-colors"
             :class="
-              selectedRoomIds.length ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'
+              selectedRoomIds.length
+                ? 'bg-red-50 border-red-200'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
             "
           >
             <template v-if="selectedRoomIds.length">
@@ -330,17 +394,19 @@
               </button>
               <button
                 @click="selectedRoomIds = []"
-                class="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+                class="px-3 py-1 text-xs text-gray-500 dark:text-white hover:text-gray-700 dark:text-white"
               >
                 Отменить
               </button>
             </template>
             <template v-else>
-              <span class="text-sm text-gray-400">Выберите комнаты для удаления</span>
+              <span class="text-sm text-gray-400 dark:text-white">{{
+                $t('admin.selectToDeleteRooms')
+              }}</span>
             </template>
           </div>
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200">
               <tr>
                 <th class="w-10 px-2 py-3">
                   <input
@@ -353,9 +419,15 @@
                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Комната</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Slug</th>
-                <th class="text-left px-4 py-3 font-medium text-gray-500">Статус</th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.roomCol') }}
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.nameCol') }}
+                </th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-white">
+                  {{ $t('admin.statusCol') }}
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -368,8 +440,12 @@
                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
-                <td class="px-4 py-3 font-medium text-gray-800">{{ room.title }}</td>
-                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ room.slug }}</td>
+                <td class="px-4 py-3 font-medium text-gray-800 dark:text-white">
+                  {{ room.title }}
+                </td>
+                <td class="px-4 py-3 text-gray-500 dark:text-white font-mono text-xs">
+                  {{ room.slug }}
+                </td>
                 <td class="px-4 py-3">
                   <span
                     class="px-2 py-0.5 text-xs rounded-full font-medium"
@@ -377,7 +453,7 @@
                       room.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
                     "
                   >
-                    {{ room.isActive ? 'Активна' : 'Неактивна' }}
+                    {{ room.isActive ? t('admin.active') : t('admin.inactive') }}
                   </span>
                 </td>
               </tr>
@@ -392,8 +468,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
 import { useConfirm } from '../composables/useConfirm'
+
+const { t } = useI18n()
 import apiClient from '../api'
 import type { UserSummary, ContentItem, Room, PaginatedResponse, AdminStats } from '../types'
 import { Line, Bar, Doughnut } from 'vue-chartjs'
@@ -427,12 +506,15 @@ const { confirm } = useConfirm()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const tabs = [
-  { key: 'dashboard', label: 'Дашборд' },
-  { key: 'users', label: 'Пользователи' },
-  { key: 'content', label: 'Библиотека' },
-  { key: 'rooms', label: 'Комнаты' },
-] as const
+const tabs = computed(
+  () =>
+    [
+      { key: 'dashboard', label: t('admin.tabDashboard') },
+      { key: 'users', label: t('admin.tabUsers') },
+      { key: 'content', label: t('admin.tabContent') },
+      { key: 'rooms', label: t('admin.tabRooms') },
+    ] as const,
+)
 const activeTab = ref<'dashboard' | 'users' | 'content' | 'rooms'>('dashboard')
 
 function switchTab(tab: typeof activeTab.value) {
@@ -447,12 +529,12 @@ function switchTab(tab: typeof activeTab.value) {
 const dashLoading = ref(false)
 const dashStats = ref<AdminStats | null>(null)
 
-const TYPE_LABELS: Record<string, string> = {
-  text: 'Текст',
-  video: 'Видео',
-  link: 'Ссылка',
-  file: 'Файл',
-}
+const TYPE_LABELS = computed(() => ({
+  text: t('library.typeText'),
+  video: t('library.typeVideo'),
+  link: t('library.typeLink'),
+  file: t('library.typeFile'),
+}))
 
 const chartColors = [
   '#3b82f6',
@@ -476,7 +558,7 @@ const barChartOptions = {
   maintainAspectRatio: false,
   plugins: { legend: { display: false } },
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const hBarChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -489,11 +571,14 @@ const usersChartData = computed(() => {
   if (!dashStats.value?.usersByDay.length) return null
   return {
     labels: dashStats.value.usersByDay.map((d) =>
-      new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+      new Date(d.date).toLocaleDateString(t('admin.localeCode') || 'ru-RU', {
+        day: 'numeric',
+        month: 'short',
+      }),
     ),
     datasets: [
       {
-        label: 'Пользователей',
+        label: t('admin.chartUsers'),
         data: dashStats.value.usersByDay.map((d) => d.count),
         borderColor: '#3b82f6',
         backgroundColor: '#3b82f633',
@@ -507,10 +592,10 @@ const usersChartData = computed(() => {
 const typeChartData = computed(() => {
   if (!dashStats.value?.contentByType.length) return null
   return {
-    labels: dashStats.value.contentByType.map((c) => TYPE_LABELS[c.type] ?? c.type),
+    labels: dashStats.value.contentByType.map((c) => TYPE_LABELS.value[c.type] ?? c.type),
     datasets: [
       {
-        label: 'Материалов',
+        label: t('admin.chartMaterials'),
         data: dashStats.value.contentByType.map((c) => c.count),
         backgroundColor: chartBg.slice(0, dashStats.value.contentByType.length),
         borderColor: chartColors.slice(0, dashStats.value.contentByType.length),
@@ -526,7 +611,7 @@ const authorsChartData = computed(() => {
     labels: dashStats.value.topAuthors.map((a) => a.name),
     datasets: [
       {
-        label: 'Материалов',
+        label: t('admin.chartMaterials'),
         data: dashStats.value.topAuthors.map((a) => a.count),
         backgroundColor: chartBg.slice(0, dashStats.value.topAuthors.length),
       },
@@ -540,7 +625,7 @@ const tagsChartData = computed(() => {
     labels: dashStats.value.contentByTag.map((t) => t.tagName),
     datasets: [
       {
-        label: 'Материалов',
+        label: t('admin.chartMaterials'),
         data: dashStats.value.contentByTag.map((t) => t.count),
         backgroundColor: chartBg,
         borderColor: chartColors,
@@ -642,8 +727,8 @@ watch(searchUsers, () => {
 
 async function promoteUser(user: UserSummary) {
   const ok = await confirm(
-    'Назначить администратором?',
-    `${userDisplayName(user)} получит полный доступ к управлению.`,
+    t('admin.promoteConfirm'),
+    t('admin.promoteDesc', { name: userDisplayName(user) }),
     'warning',
   )
   if (!ok) return
@@ -653,8 +738,8 @@ async function promoteUser(user: UserSummary) {
 
 async function demoteUser(user: UserSummary) {
   const ok = await confirm(
-    'Понизить до USER?',
-    `${userDisplayName(user)} потеряет права администратора.`,
+    t('admin.demoteConfirm'),
+    t('admin.demoteDesc', { name: userDisplayName(user) }),
     'warning',
   )
   if (!ok) return
@@ -691,8 +776,8 @@ async function deleteSelectedContent() {
   if (!selectedContentIds.value.length) return
   const count = selectedContentIds.value.length
   const ok = await confirm(
-    `Удалить выбранные материалы?`,
-    `${count} ${pluralize(count, 'материал', 'материала', 'материалов')} будут удалены безвозвратно.`,
+    t('admin.deleteContentConfirm'),
+    t('admin.deleteContentDesc', { count: String(count) }),
     'danger',
   )
   if (!ok) return
@@ -745,8 +830,8 @@ async function deleteSelectedRooms() {
   if (!selectedRoomIds.value.length) return
   const count = selectedRoomIds.value.length
   const ok = await confirm(
-    `Удалить выбранные комнаты?`,
-    `${count} ${pluralize(count, 'комната', 'комнаты', 'комнат')} будут удалены безвозвратно.`,
+    t('admin.deleteRoomsConfirm'),
+    t('admin.deleteRoomsDesc', { count: String(count) }),
     'danger',
   )
   if (!ok) return

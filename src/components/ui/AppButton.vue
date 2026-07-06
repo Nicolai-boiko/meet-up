@@ -21,7 +21,8 @@ defineProps<{
         variant === 'primary' || !variant,
       'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400': variant === 'secondary',
       'bg-red-500 text-white hover:bg-red-600 focus:ring-red-400': variant === 'danger',
-      'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-300': variant === 'ghost',
+      'bg-transparent text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-gray-300':
+        variant === 'ghost',
     }"
   >
     <span

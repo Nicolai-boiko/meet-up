@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { VueQueryPlugin } from '@tanstack/vue-query'
+import { i18n } from './plugins/i18n'
 import './assets/css/style.css'
 
 import App from './App.vue'
@@ -12,6 +13,7 @@ async function bootstrap() {
   const pinia = createPinia()
   app.use(pinia)
   app.use(router)
+  app.use(i18n)
   app.use(VueQueryPlugin, {
     queryClientConfig: { defaultOptions: { queries: { staleTime: 30_000, retry: 1 } } },
   })

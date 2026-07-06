@@ -6,7 +6,7 @@
     >
       <div class="flex items-center gap-4">
         <router-link to="/home" class="text-gray-400 hover:text-white transition-colors">
-          ← Назад
+          {{ $t('video.back') }}
         </router-link>
         <h1 class="text-white text-lg font-semibold truncate max-w-md">
           {{ roomTitle }}
@@ -23,11 +23,11 @@
         </span>
         <div v-if="isConnecting" class="flex items-center gap-1">
           <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
-          Подключение...
+          {{ $t('video.connecting') }}
         </div>
         <div v-else class="flex items-center gap-1">
           <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-          В эфире
+          {{ $t('video.live') }}
         </div>
       </div>
     </header>
@@ -45,12 +45,12 @@
           </svg>
           <h2 class="text-lg font-semibold text-white">{{ roomTitle }}</h2>
         </div>
-        <p class="text-gray-400 text-sm mb-4">Эта комната защищена паролем</p>
+        <p class="text-gray-400 text-sm mb-4">{{ $t('video.passwordProtected') }}</p>
         <form @submit.prevent="handleRoomPassword" class="space-y-3">
           <input
             v-model="roomPassword"
             type="password"
-            placeholder="Введите пароль"
+            :placeholder="$t('video.enterPassword')"
             class="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             @keyup.enter="handleRoomPassword"
           />
@@ -60,7 +60,7 @@
             :disabled="!roomPassword.trim()"
             class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm font-medium"
           >
-            Войти
+            {{ $t('video.join') }}
           </button>
         </form>
       </div>
@@ -78,9 +78,7 @@
           clip-rule="evenodd"
         />
       </svg>
-      <span class="text-red-300 text-sm"
-        >Комната не найдена. Проверьте ссылку или создайте новую.</span
-      >
+      <span class="text-red-300 text-sm">{{ $t('video.roomNotFoundDesc') }}</span>
       <router-link to="/create-call" class="text-red-300 text-sm underline hover:text-red-200"
         >← К созданию комнат</router-link
       >
@@ -91,19 +89,19 @@
       v-if="!localStream && !isConnecting"
       class="bg-yellow-500/15 border-b border-yellow-500/30 px-4 py-2 flex items-center justify-between shrink-0"
     >
-      <span class="text-yellow-300 text-sm">Вы подключены без камеры и микрофона</span>
+      <span class="text-yellow-300 text-sm">{{ $t('video.camMic') }}</span>
       <div class="flex gap-2">
         <button
           @click="enableMedia({ audio: true, video: false })"
           class="px-3 py-1 text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 rounded-md hover:bg-yellow-500/30 transition-colors"
         >
-          Только микрофон
+          {{ $t('video.micOnly') }}
         </button>
         <button
           @click="enableMedia({ audio: true, video: true })"
           class="px-3 py-1 text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 rounded-md hover:bg-yellow-500/30 transition-colors"
         >
-          Камера и микрофон
+          {{ $t('video.camMic') }}
         </button>
       </div>
     </div>
@@ -255,7 +253,7 @@
                     d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"
                   />
                 </svg>
-                <span>Ожидание участников...</span>
+                <span>{{ $t('video.waiting') }}</span>
               </div>
             </div>
             <!-- Self-view PiP -->
@@ -327,7 +325,7 @@
       >
         <!-- Chat header -->
         <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between shrink-0">
-          <h3 class="text-white text-sm font-semibold">Чат</h3>
+          <h3 class="text-white text-sm font-semibold">{{ $t('video.chat') }}</h3>
           <button @click="toggleChat" class="text-gray-400 hover:text-white transition-colors">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -424,11 +422,7 @@
               : 'bg-gray-600 hover:bg-gray-500',
         ]"
         :title="
-          !localStream
-            ? 'Нет доступа к микрофону'
-            : isMuted
-              ? 'Включить микрофон'
-              : 'Выключить микрофон'
+          !localStream ? $t('video.micNoAccess') : isMuted ? $t('video.micOn') : $t('video.micOff')
         "
       >
         <svg v-if="!isMuted" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -458,10 +452,10 @@
         ]"
         :title="
           !localStream
-            ? 'Нет доступа к камере'
+            ? $t('video.camNoAccess')
             : isVideoOff
-              ? 'Включить камеру'
-              : 'Выключить камеру'
+              ? $t('video.camOn')
+              : $t('video.camOff')
         "
       >
         <svg v-if="!isVideoOff" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

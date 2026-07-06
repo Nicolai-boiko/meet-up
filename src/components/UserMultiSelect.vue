@@ -39,7 +39,7 @@ function displayName(u: UserSummary) {
   <div class="relative">
     <button
       @click="open = !open"
-      class="w-full border rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white hover:border-blue-400 transition-colors"
+      class="w-full border dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white dark:bg-gray-800 dark:text-white hover:border-blue-400 transition-colors"
     >
       <span class="truncate">
         {{ modelValue.length ? `Выбрано: ${modelValue.length}` : (label ?? 'Все пользователи') }}
@@ -54,12 +54,12 @@ function displayName(u: UserSummary) {
     </button>
     <div
       v-if="open"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
+      class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
     >
       <label
         v-for="user in users"
         :key="user.id"
-        class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+        class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white cursor-pointer text-sm"
       >
         <input
           type="checkbox"

@@ -47,10 +47,12 @@ function formatTime(ts: string) {
 
 <template>
   <aside class="w-72 bg-gray-800 border-l border-gray-700 flex flex-col shrink-0">
-    <div class="px-3 py-2 border-b border-gray-700 text-gray-200 text-sm font-semibold">Чат</div>
+    <div class="px-3 py-2 border-b border-gray-700 text-gray-200 text-sm font-semibold">
+      {{ $t('video.chat') }}
+    </div>
     <div ref="listRef" class="flex-1 overflow-y-auto p-3 space-y-3">
       <div v-if="messages.length === 0" class="text-gray-500 text-sm text-center py-8">
-        Сообщений пока нет
+        {{ $t('video.noMessages') }}
       </div>
       <div
         v-for="msg in messages"
@@ -75,7 +77,7 @@ function formatTime(ts: string) {
       <input
         v-model="text"
         type="text"
-        placeholder="Сообщение..."
+        :placeholder="$t('video.messagePlaceholder')"
         class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button

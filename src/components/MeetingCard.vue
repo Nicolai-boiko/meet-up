@@ -18,7 +18,7 @@ function formatTime(ts: string) {
 <template>
   <button
     @click="$emit('click', meeting)"
-    class="w-full text-left border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+    class="w-full text-left border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
   >
     <h3 class="font-semibold text-gray-800 text-sm">{{ meeting.title }}</h3>
     <p class="text-xs text-gray-500 mt-1">
@@ -26,7 +26,7 @@ function formatTime(ts: string) {
     </p>
     <p
       v-if="showDescription && meeting.description"
-      class="text-gray-600 text-xs mt-2 line-clamp-2"
+      class="text-gray-600 dark:text-white text-xs mt-2 line-clamp-2"
     >
       {{ meeting.description }}
     </p>

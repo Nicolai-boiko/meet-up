@@ -10,7 +10,7 @@ const typeIcons: Record<string, string> = { video: '🎬', link: '🔗', file: '
 <template>
   <div
     @click="$emit('select', item)"
-    class="px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors"
+    class="px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': active }"
   >
     <div class="flex items-center gap-2">

@@ -15,7 +15,7 @@ const colorMap = {
 </script>
 
 <template>
-  <div class="bg-white rounded-xl shadow-sm p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
     <div class="text-xs uppercase tracking-wide font-medium mb-1" :class="colorMap[color]">
       {{ label }}
     </div>

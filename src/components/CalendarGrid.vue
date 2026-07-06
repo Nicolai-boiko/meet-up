@@ -18,8 +18,6 @@ const emit = defineEmits<{
   selectDay: [day: CalendarDay]
 }>()
 
-const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
-
 function isToday(d: Date) {
   return d.toDateString() === props.today.toDateString()
 }
@@ -34,18 +32,18 @@ function isSelected(d: Date) {
       v-for="(day, idx) in days"
       :key="idx"
       @click="emit('selectDay', day)"
-      class="border-r border-b border-gray-100 p-1.5 cursor-pointer hover:bg-blue-50/30 transition-colors relative"
+      class="border-r border-b border-gray-100 dark:border-gray-800 p-1.5 cursor-pointer hover:bg-blue-50/30 dark:hover:bg-blue-900/30 dark:hover:bg-blue-900/20 transition-colors relative"
       :class="[
-        day.isCurrentMonth ? 'bg-white' : 'bg-gray-50/50',
-        isToday(day.date) ? 'bg-blue-50/60' : '',
+        day.isCurrentMonth ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50 dark:bg-gray-800/50',
+        isToday(day.date) ? 'bg-blue-50/60 dark:bg-blue-900/40' : '',
         isSelected(day.date) ? 'ring-2 ring-inset ring-blue-400' : '',
       ]"
     >
       <span
         class="inline-flex items-center justify-center w-7 h-7 text-sm rounded-full"
         :class="[
-          isToday(day.date) ? 'bg-blue-600 text-white font-bold' : 'text-gray-700',
-          !day.isCurrentMonth ? 'text-gray-300' : '',
+          isToday(day.date) ? 'bg-blue-600 text-white font-bold' : 'text-gray-700 dark:text-white',
+          !day.isCurrentMonth ? 'text-gray-300 dark:text-white' : '',
         ]"
       >
         {{ day.dayNumber }}

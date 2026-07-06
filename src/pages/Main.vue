@@ -1,17 +1,16 @@
 <template>
-  <div class="h-full -mx-6 -my-6 flex flex-col overflow-auto">
+  <div class="h-full -mx-6 -my-6 flex flex-col overflow-auto bg-white dark:bg-gray-950">
     <!-- Hero -->
     <section
       class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 px-6 py-16 max-w-5xl mx-auto"
     >
       <div class="flex-1 text-center lg:text-left">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-          Встречи, знания,<br />
-          <span class="text-blue-600">коммуникация</span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+          {{ $t('home.heroTitle') }}<br />
+          <span class="text-blue-600">{{ $t('home.heroHighlight') }}</span>
         </h1>
-        <p class="mt-6 text-lg text-gray-500 max-w-lg leading-relaxed">
-          Платформа для видео-конференций, обмена полезными материалами и организации встреч.
-          Создавайте комнаты для созвонов, делитесь знаниями в библиотеке и планируйте митапы.
+        <p class="mt-6 text-lg text-gray-500 dark:text-white max-w-lg leading-relaxed">
+          {{ $t('home.heroSubtitle') }}
         </p>
         <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
           <router-link
@@ -19,20 +18,20 @@
             to="/create-call"
             class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
           >
-            Создать звонок
+            {{ $t('home.createCall') }}
           </router-link>
           <router-link
             v-else
             to="/auth"
             class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
           >
-            Начать сейчас
+            {{ $t('home.startNow') }}
           </router-link>
           <router-link
             to="/library"
-            class="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-blue-300 hover:text-blue-600 transition-colors"
+            class="px-8 py-3 border-2 border-gray-300 text-gray-700 dark:text-white font-semibold rounded-xl hover:border-blue-300 hover:text-blue-600 transition-colors"
           >
-            Библиотека
+            {{ $t('home.libraryBtn') }}
           </router-link>
         </div>
       </div>
@@ -87,11 +86,11 @@
     </section>
 
     <!-- Feature cards -->
-    <section class="bg-gray-50 border-t border-gray-200 px-6 py-12">
+    <section class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 px-6 py-12">
       <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
         <router-link
           to="/create-call"
-          class="bg-white rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
+          class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
         >
           <div
             class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4"
@@ -102,14 +101,14 @@
               />
             </svg>
           </div>
-          <h3 class="font-semibold text-gray-800 mb-2">Видео-звонки</h3>
-          <p class="text-sm text-gray-500">
-            Создавайте комнаты и общайтесь с участниками в реальном времени.
-          </p>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">
+            {{ $t('home.videoCalls') }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-white">{{ $t('home.videoCallsDesc') }}</p>
         </router-link>
         <router-link
           to="/library"
-          class="bg-white rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
+          class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
         >
           <div
             class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4"
@@ -120,14 +119,14 @@
               />
             </svg>
           </div>
-          <h3 class="font-semibold text-gray-800 mb-2">Библиотека знаний</h3>
-          <p class="text-sm text-gray-500">
-            Храните и делитесь полезными материалами, статьями и видео.
-          </p>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">
+            {{ $t('home.knowledgeLibrary') }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-white">{{ $t('home.knowledgeLibraryDesc') }}</p>
         </router-link>
         <router-link
           to="/schedule"
-          class="bg-white rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
+          class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm text-center hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer block"
         >
           <div
             class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4"
@@ -140,8 +139,10 @@
               />
             </svg>
           </div>
-          <h3 class="font-semibold text-gray-800 mb-2">Расписание</h3>
-          <p class="text-sm text-gray-500">Планируйте встречи и митапы с удобным календарём.</p>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">
+            {{ $t('home.scheduleCard') }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-white">{{ $t('home.scheduleCardDesc') }}</p>
         </router-link>
       </div>
     </section>
@@ -149,13 +150,15 @@
     <!-- Upcoming meetups preview -->
     <section
       v-if="authStore.isAuthenticated && upcomingMeetups.length"
-      class="bg-white border-t border-gray-200 px-6 py-12"
+      class="bg-white dark:bg-gray-900 border-t border-gray-200 px-6 py-12"
     >
       <div class="max-w-5xl mx-auto">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-bold text-gray-800">Ближайшие встречи</h2>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+            {{ $t('home.upcomingMeetings') }}
+          </h2>
           <router-link to="/schedule" class="text-sm text-blue-600 hover:underline font-medium">
-            Все встречи →
+            {{ $t('home.allMeetings') }}
           </router-link>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -166,21 +169,25 @@
             @click="goToSchedule"
           >
             <div class="flex items-start justify-between gap-2">
-              <h3 class="font-semibold text-gray-800 text-sm truncate">{{ m.title }}</h3>
+              <h3 class="font-semibold text-gray-800 dark:text-white text-sm truncate">
+                {{ m.title }}
+              </h3>
               <span
                 v-if="m.room"
                 class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded shrink-0"
                 >🎥</span
               >
             </div>
-            <p class="text-xs text-gray-500 mt-1.5">
+            <p class="text-xs text-gray-500 dark:text-white mt-1.5">
               {{ formatMeetupDate(m.startTime) }}
             </p>
             <p v-if="m.description" class="text-xs text-gray-400 mt-1 line-clamp-2">
               {{ m.description }}
             </p>
             <div class="flex items-center gap-1 mt-2">
-              <span class="text-xs text-gray-500">{{ m.host?.name || 'Неизвестный' }}</span>
+              <span class="text-xs text-gray-500 dark:text-white">{{
+                m.host?.name || 'Неизвестный'
+              }}</span>
               <span v-if="m.participants?.length" class="text-xs text-gray-400">
                 · {{ m.participants.length }} участ.
               </span>

@@ -24,7 +24,7 @@ const emit = defineEmits<{
       :disabled="disabled"
       :required="required"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-      class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+      class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
       :class="{ 'border-red-400 focus:ring-red-400': error }"
     />
     <p v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</p>

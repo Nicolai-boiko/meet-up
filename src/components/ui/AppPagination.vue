@@ -17,7 +17,7 @@ const emit = defineEmits<{
     <button
       @click="emit('loadMore')"
       :disabled="loading"
-      class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+      class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white rounded-lg transition-colors disabled:opacity-50"
     >
       {{
         loading

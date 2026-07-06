@@ -1,33 +1,45 @@
 <template>
-  <div class="flex h-full -mx-6 -my-6 bg-white overflow-hidden">
+  <div class="flex h-full -mx-6 -my-6 bg-white dark:bg-gray-900 overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-72 border-r border-gray-200 flex flex-col bg-gray-50 shrink-0">
+    <aside
+      class="w-72 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900 shrink-0"
+    >
       <!-- Search -->
       <div class="p-4 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Поиск</h3>
+        <h3
+          class="text-sm font-semibold text-gray-600 dark:text-white mb-3 uppercase tracking-wide"
+        >
+          {{ $t('schedule.search') }}
+        </h3>
         <input
           v-model="search"
           type="text"
-          placeholder="Название встречи..."
-          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+          :placeholder="$t('schedule.searchPlaceholder')"
+          class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800"
         />
       </div>
 
       <!-- Users filter -->
-      <div class="p-4 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Участники</h3>
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3
+          class="text-sm font-semibold text-gray-600 dark:text-white mb-3 uppercase tracking-wide"
+        >
+          {{ $t('schedule.participants') }}
+        </h3>
         <div class="relative">
           <button
             @click="showUserDropdown = !showUserDropdown"
-            class="w-full border rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white hover:border-blue-400 transition-colors"
+            class="w-full border dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white dark:bg-gray-800 dark:text-white hover:border-blue-400 transition-colors"
           >
             <span class="truncate">
               {{
-                selectedUserIds.length ? `Выбрано: ${selectedUserIds.length}` : 'Все пользователи'
+                selectedUserIds.length
+                  ? `Выбрано: ${selectedUserIds.length}`
+                  : $t('schedule.allUsers')
               }}
             </span>
             <svg
-              class="w-4 h-4 text-gray-400 shrink-0 ml-2"
+              class="w-4 h-4 text-gray-400 dark:text-white shrink-0 ml-2"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -40,12 +52,12 @@
           </button>
           <div
             v-if="showUserDropdown"
-            class="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
+            class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
           >
             <label
               v-for="user in filterableUsers"
               :key="user.id"
-              class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+              class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white cursor-pointer text-sm dark:text-white"
             >
               <input
                 type="checkbox"
@@ -62,10 +74,13 @@
               >
                 {{ userInitials(user) }}
               </div>
-              <span class="truncate">{{ userDisplayName(user) }}</span>
+              <span class="truncate dark:text-white">{{ userDisplayName(user) }}</span>
             </label>
-            <div v-if="filterableUsers.length === 0" class="px-3 py-2 text-sm text-gray-400">
-              Загрузка...
+            <div
+              v-if="filterableUsers.length === 0"
+              class="px-3 py-2 text-sm text-gray-400 dark:text-white"
+            >
+              {{ $t('common.loading') }}
             </div>
           </div>
         </div>
@@ -74,31 +89,33 @@
           @click="clearUsers"
           class="mt-2 text-xs text-blue-600 hover:underline"
         >
-          Сбросить фильтр
+          {{ $t('schedule.resetFilter') }}
         </button>
       </div>
 
       <!-- Legend -->
       <div class="p-4 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-          Обозначения
+        <h3
+          class="text-sm font-semibold text-gray-600 dark:text-white mb-2 uppercase tracking-wide"
+        >
+          {{ $t('schedule.legend') }}
         </h3>
-        <div class="space-y-1.5 text-xs text-gray-500">
+        <div class="space-y-1.5 text-xs text-gray-500 dark:text-white">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500 shrink-0"></span>
-            Организатор
+            {{ $t('schedule.legendHost') }}
           </div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-green-500 shrink-0"></span>
-            Участвуете
+            {{ $t('schedule.legendParticipating') }}
           </div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-gray-300 shrink-0"></span>
-            Ожидает ответа
+            {{ $t('schedule.legendPending') }}
           </div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-purple-500 shrink-0"></span>
-            Другие встречи
+            {{ $t('schedule.legendOther') }}
           </div>
         </div>
       </div>
@@ -106,10 +123,13 @@
       <!-- Selected day meetings -->
       <div v-if="selectedDay" class="flex-1 overflow-y-auto p-4">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-white uppercase tracking-wide">
             {{ formatDayHeader(selectedDay) }}
           </h3>
-          <button @click="selectedDay = null" class="text-gray-400 hover:text-gray-600">
+          <button
+            @click="selectedDay = null"
+            class="text-gray-400 dark:text-white hover:text-gray-600 dark:text-white"
+          >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -124,18 +144,20 @@
             v-for="m in selectedDayMeetings"
             :key="m.id"
             @click="openDetail(m)"
-            class="w-full text-left p-3 rounded-lg border hover:bg-gray-100 transition-colors"
+            class="w-full text-left p-3 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             :class="meetingBorderClass(m)"
           >
-            <div class="text-sm font-medium text-gray-800 truncate">
-              <span v-if="isPartOfSeries(m)" title="Повторяющаяся встреча">🔄 </span>
+            <div class="text-sm font-medium text-gray-800 dark:text-white truncate">
+              <span v-if="isPartOfSeries(m)" :title="$t('schedule.recurring')">🔄 </span>
               {{ m.title }}
             </div>
-            <div class="text-xs text-gray-500 mt-1">
+            <div class="text-xs text-gray-500 dark:text-white mt-1">
               {{ formatTime(m.startTime) }} – {{ formatTime(m.endTime) }}
             </div>
             <div class="flex items-center gap-1 mt-1">
-              <span class="text-xs text-gray-500">{{ m.host?.name || 'Неизвестный' }}</span>
+              <span class="text-xs text-gray-500 dark:text-white">{{
+                m.host?.name || $t('common.error')
+              }}</span>
               <span v-if="m.room" class="text-xs text-blue-600">🎥</span>
               <span
                 v-if="authUserId && isInvitedForDay(m)"
@@ -146,15 +168,17 @@
             </div>
           </button>
         </div>
-        <div v-else class="text-center text-gray-400 text-sm py-8">Нет встреч на этот день</div>
+        <div v-else class="text-center text-gray-400 dark:text-white text-sm py-8">
+          {{ $t('schedule.noMeetings') }}
+        </div>
       </div>
 
       <!-- No day selected -->
       <div
         v-else
-        class="flex-1 flex items-center justify-center text-gray-400 text-sm p-4 text-center"
+        class="flex-1 flex items-center justify-center text-gray-400 dark:text-white text-sm p-4 text-center"
       >
-        Выберите день в календаре, чтобы увидеть встречи
+        {{ $t('schedule.selectDay') }}
       </div>
     </aside>
 
@@ -163,8 +187,15 @@
       <!-- Toolbar -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
         <div class="flex items-center gap-3">
-          <button @click="prevMonth" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+          <button
+            @click="prevMonth"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <svg
+              class="w-5 h-5 text-gray-600 dark:text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path
                 fill-rule="evenodd"
                 d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -172,11 +203,18 @@
               />
             </svg>
           </button>
-          <h2 class="text-lg font-bold text-gray-800 min-w-40 text-center">
+          <h2 class="text-lg font-bold text-gray-800 dark:text-white min-w-40 text-center">
             {{ monthLabel }}
           </h2>
-          <button @click="nextMonth" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+          <button
+            @click="nextMonth"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <svg
+              class="w-5 h-5 text-gray-600 dark:text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path
                 fill-rule="evenodd"
                 d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -186,16 +224,16 @@
           </button>
           <button
             @click="goToday"
-            class="ml-2 px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            class="ml-2 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
-            Сегодня
+            {{ $t('schedule.today') }}
           </button>
         </div>
         <button
           @click="openCreate"
           class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
         >
-          + Новая встреча
+          {{ $t('schedule.newMeeting') }}
         </button>
       </div>
 
@@ -204,7 +242,7 @@
         <div
           v-for="day in dayNames"
           :key="day"
-          class="py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide"
+          class="py-2 text-center text-xs font-semibold text-gray-500 dark:text-white uppercase tracking-wide"
         >
           {{ day }}
         </div>
@@ -216,9 +254,9 @@
           v-for="(day, idx) in calendarDays"
           :key="idx"
           @click="selectDay(day)"
-          class="border-r border-b border-gray-100 p-1.5 cursor-pointer hover:bg-blue-50/30 transition-colors relative"
+          class="border-r border-b border-gray-100 p-1.5 cursor-pointer hover:bg-blue-50/30 dark:hover:bg-blue-900/30 transition-colors relative"
           :class="[
-            day.isCurrentMonth ? 'bg-white' : 'bg-gray-50/50',
+            day.isCurrentMonth ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50',
             isToday(day.date) ? 'bg-blue-50/60' : '',
             isSelectedDay(day.date) ? 'ring-2 ring-inset ring-blue-400' : '',
           ]"
@@ -226,7 +264,9 @@
           <span
             class="inline-flex items-center justify-center w-7 h-7 text-sm rounded-full"
             :class="[
-              isToday(day.date) ? 'bg-blue-600 text-white font-bold' : 'text-gray-700',
+              isToday(day.date)
+                ? 'bg-blue-600 text-white font-bold'
+                : 'text-gray-700 dark:text-white',
               !day.isCurrentMonth ? 'text-gray-300' : '',
             ]"
           >
@@ -241,7 +281,10 @@
               :class="meetingDotClass(m)"
               :title="m.title"
             ></div>
-            <div v-if="day.meetings.length > 3" class="text-[10px] text-gray-400 pl-0.5">
+            <div
+              v-if="day.meetings.length > 3"
+              class="text-[10px] text-gray-400 dark:text-white pl-0.5"
+            >
               +{{ day.meetings.length - 3 }}
             </div>
           </div>
@@ -259,14 +302,23 @@
         ref="modalRef"
       >
         <div
-          class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+          class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
         >
           <!-- Modal header -->
           <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800">
-              {{ editingMeeting ? 'Редактирование' : viewMeeting ? 'Встреча' : 'Новая встреча' }}
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white">
+              {{
+                editingMeeting
+                  ? $t('schedule.edit')
+                  : viewMeeting
+                    ? $t('schedule.view')
+                    : $t('schedule.create')
+              }}
             </h3>
-            <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+            <button
+              @click="closeModal"
+              class="text-gray-400 dark:text-white hover:text-gray-600 dark:text-white"
+            >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
@@ -281,21 +333,30 @@
           <div v-if="viewMeeting && !editingMeeting" class="p-6 space-y-4">
             <div>
               <h2 class="text-xl font-bold text-gray-900">{{ viewMeeting.title }}</h2>
-              <p v-if="viewMeeting.description" class="text-gray-600 mt-2 whitespace-pre-wrap">
+              <p
+                v-if="viewMeeting.description"
+                class="text-gray-600 dark:text-white mt-2 whitespace-pre-wrap"
+              >
                 {{ viewMeeting.description }}
               </p>
             </div>
 
             <div class="grid grid-cols-2 gap-4 text-sm">
-              <div class="bg-gray-50 rounded-lg p-3">
-                <span class="text-gray-500 block text-xs uppercase tracking-wide mb-1">Начало</span>
-                <span class="font-semibold text-gray-800">{{
+              <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                <span
+                  class="text-gray-500 dark:text-white block text-xs uppercase tracking-wide mb-1"
+                  >{{ $t('schedule.start') }}</span
+                >
+                <span class="font-semibold text-gray-800 dark:text-white">{{
                   formatDateTime(viewMeeting.startTime)
                 }}</span>
               </div>
-              <div class="bg-gray-50 rounded-lg p-3">
-                <span class="text-gray-500 block text-xs uppercase tracking-wide mb-1">Конец</span>
-                <span class="font-semibold text-gray-800">{{
+              <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                <span
+                  class="text-gray-500 dark:text-white block text-xs uppercase tracking-wide mb-1"
+                  >{{ $t('schedule.end') }}</span
+                >
+                <span class="font-semibold text-gray-800 dark:text-white">{{
                   formatDateTime(viewMeeting.endTime)
                 }}</span>
               </div>
@@ -307,33 +368,39 @@
               class="bg-blue-50 rounded-lg p-3 flex items-center justify-between"
             >
               <div>
-                <span class="text-blue-600 text-xs uppercase tracking-wide">Видео-комната</span>
+                <span class="text-blue-600 text-xs uppercase tracking-wide">{{
+                  $t('schedule.room')
+                }}</span>
                 <p class="font-semibold text-blue-800">{{ viewMeeting.room.title }}</p>
               </div>
               <router-link
                 :to="`/room/${viewMeeting.room.slug}${viewMeeting.room.isPrivate ? `?meetingId=${viewMeeting.id}` : ''}`"
                 class="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Войти
+                {{ $t('schedule.enter') }}
               </router-link>
             </div>
 
             <!-- Recurrence info -->
             <div v-if="isRecurringParent(viewMeeting)" class="bg-purple-50 rounded-lg p-3">
-              <span class="text-purple-600 text-xs uppercase tracking-wide">Повторяется</span>
+              <span class="text-purple-600 text-xs uppercase tracking-wide">{{
+                $t('schedule.recurrence')
+              }}</span>
               <p class="font-semibold text-purple-800">{{ formatRecurrence(viewMeeting) }}</p>
             </div>
             <div
               v-else-if="isRecurringChild(viewMeeting)"
-              class="bg-gray-50 rounded-lg p-3 text-sm text-gray-500"
+              class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-sm text-gray-500 dark:text-white"
             >
-              🔄 Входит в серию повторяющихся встреч
+              🔄 {{ $t('schedule.partOfSeries') }}
             </div>
 
             <!-- Participants by status -->
             <div>
-              <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">
-                Участники
+              <h4
+                class="text-sm font-semibold text-gray-600 dark:text-white uppercase tracking-wide mb-2"
+              >
+                {{ $t('schedule.participantsSection') }}
               </h4>
               <div class="space-y-2">
                 <!-- Host -->
@@ -355,12 +422,14 @@
                   <span class="font-medium text-blue-800">{{
                     userDisplayName(viewMeeting.host)
                   }}</span>
-                  <span class="text-blue-500 text-xs">· Организатор</span>
+                  <span class="text-blue-500 text-xs">· {{ $t('schedule.legendHost') }}</span>
                 </div>
 
                 <!-- Accepted -->
                 <template v-if="acceptedParticipants.length">
-                  <div class="text-xs text-gray-400 font-medium mt-1">Приняли</div>
+                  <div class="text-xs text-gray-400 dark:text-white font-medium mt-1">
+                    {{ $t('schedule.accepted') }}
+                  </div>
                   <div class="flex flex-wrap gap-2">
                     <div
                       v-for="p in acceptedParticipants"
@@ -385,7 +454,9 @@
 
                 <!-- Invited -->
                 <template v-if="invitedParticipants.length">
-                  <div class="text-xs text-gray-400 font-medium mt-1">Ожидают ответа</div>
+                  <div class="text-xs text-gray-400 dark:text-white font-medium mt-1">
+                    {{ $t('schedule.invited') }}
+                  </div>
                   <div class="flex flex-wrap gap-2">
                     <div
                       v-for="p in invitedParticipants"
@@ -410,7 +481,9 @@
 
                 <!-- Declined -->
                 <template v-if="declinedParticipants.length">
-                  <div class="text-xs text-gray-400 font-medium mt-1">Отказались</div>
+                  <div class="text-xs text-gray-400 dark:text-white font-medium mt-1">
+                    {{ $t('schedule.declined') }}
+                  </div>
                   <div class="flex flex-wrap gap-2">
                     <div
                       v-for="p in declinedParticipants"
@@ -433,8 +506,10 @@
                   </div>
                 </template>
 
-                <span v-if="!viewMeeting.participants?.length" class="text-sm text-gray-400"
-                  >Нет участников</span
+                <span
+                  v-if="!viewMeeting.participants?.length"
+                  class="text-sm text-gray-400 dark:text-white"
+                  >{{ $t('schedule.participants') }}</span
                 >
               </div>
             </div>
@@ -444,15 +519,15 @@
               <template v-if="authUserId && isMeetingHost(viewMeeting)">
                 <button
                   @click="openEdit(viewMeeting)"
-                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors"
+                  class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-sm transition-colors"
                 >
-                  Редактировать
+                  {{ $t('common.edit') }}
                 </button>
                 <button
                   @click="handleDelete(viewMeeting)"
                   class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm transition-colors"
                 >
-                  Удалить
+                  {{ $t('common.delete') }}
                 </button>
               </template>
               <template v-else-if="authUserId && isMeetingParticipant(viewMeeting)">
@@ -468,13 +543,13 @@
                   @click="handleJoin(viewMeeting)"
                   class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm transition-colors"
                 >
-                  Принять
+                  {{ $t('schedule.accept') }}
                 </button>
                 <button
                   @click="handleDecline(viewMeeting)"
                   class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm transition-colors"
                 >
-                  Отказаться
+                  {{ $t('schedule.decline') }}
                 </button>
               </template>
               <template v-else-if="authUserId">
@@ -482,7 +557,7 @@
                   @click="handleJoin(viewMeeting)"
                   class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm transition-colors"
                 >
-                  Я пойду
+                  {{ $t('schedule.join') }}
                 </button>
               </template>
             </div>
@@ -491,15 +566,15 @@
             <div class="flex gap-2 pt-2 border-t border-gray-200">
               <button
                 @click="handleExportIcs(viewMeeting!)"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors text-gray-700"
+                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-sm transition-colors text-gray-700 dark:text-white"
               >
-                📥 Скачать ICS
+                📥 {{ $t('schedule.downloadIcs') }}
               </button>
               <button
                 @click="handleGoogleCalendar(viewMeeting!)"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors text-gray-700"
+                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-sm transition-colors text-gray-700 dark:text-white"
               >
-                📅 Google Календарь
+                📅 {{ $t('schedule.googleCalendar') }}
               </button>
             </div>
           </div>
@@ -507,76 +582,93 @@
           <!-- Edit/Create form -->
           <form v-else @submit.prevent="handleSave" class="p-6 space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Название *</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('schedule.formTitleLabel')
+              }}</label>
               <input
                 v-model="form.title"
                 type="text"
                 required
-                placeholder="Название встречи"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                :placeholder="$t('schedule.formTitlePlaceholder')"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Описание</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('schedule.description')
+              }}</label>
               <textarea
                 v-model="form.description"
                 rows="3"
-                placeholder="О чём встреча..."
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                :placeholder="$t('schedule.formDescPlaceholder')"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               ></textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-medium text-gray-600 mb-1">Начало *</label>
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('schedule.formStart')
+                }}</label>
                 <input
                   v-model="form.startTime"
                   type="datetime-local"
                   required
-                  class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-600 mb-1">Конец *</label>
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('schedule.formEnd')
+                }}</label>
                 <input
                   v-model="form.endTime"
                   type="datetime-local"
                   required
-                  class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
             </div>
 
             <!-- Recurrence -->
             <div>
-              <label class="flex items-center gap-2 cursor-pointer">
+              <div class="flex items-center gap-2">
                 <input
+                  id="recurrence-enabled"
                   v-model="recurrenceEnabled"
                   type="checkbox"
-                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                 />
-                <span class="text-sm font-medium text-gray-600">Повторять</span>
-              </label>
+                <label
+                  for="recurrence-enabled"
+                  class="text-sm font-medium text-gray-600 dark:text-white cursor-pointer"
+                  >{{ $t('schedule.recurrence') }}</label
+                >
+              </div>
               <div v-if="recurrenceEnabled" class="mt-3 space-y-3 pl-2 border-l-2 border-blue-200">
                 <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">Тип повторения</label>
+                  <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                    $t('schedule.recurrenceType')
+                  }}</label>
                   <select
                     v-model="recurrenceType"
-                    class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   >
-                    <option value="DAILY">Ежедневно</option>
-                    <option value="WEEKLY">Еженедельно</option>
-                    <option value="BIWEEKLY">Раз в 2 недели</option>
-                    <option value="MONTHLY">Ежемесячно</option>
+                    <option value="DAILY">{{ $t('schedule.daily') }}</option>
+                    <option value="WEEKLY">{{ $t('schedule.weekly') }}</option>
+                    <option value="BIWEEKLY">{{ $t('schedule.biweekly') }}</option>
+                    <option value="MONTHLY">{{ $t('schedule.monthly') }}</option>
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">Дата окончания</label>
+                  <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                    $t('schedule.recurrenceEnd')
+                  }}</label>
                   <input
                     v-model="recurrenceEndDate"
                     type="date"
-                    class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
               </div>
@@ -587,9 +679,9 @@
               v-if="editingMeeting && isPartOfSeries(editingMeeting)"
               class="bg-amber-50 rounded-lg p-3"
             >
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Применить изменения</label
-              >
+              <label class="block text-sm font-medium text-gray-700 dark:text-white mb-2">{{
+                $t('common.save')
+              }}</label>
               <div class="flex flex-col gap-1.5">
                 <label class="flex items-center gap-2 text-sm cursor-pointer">
                   <input
@@ -598,7 +690,7 @@
                     value="this"
                     class="text-blue-600 focus:ring-blue-500"
                   />
-                  <span>Только эту встречу</span>
+                  <span>{{ $t('schedule.scopeThis') }}</span>
                 </label>
                 <label class="flex items-center gap-2 text-sm cursor-pointer">
                   <input
@@ -607,7 +699,7 @@
                     value="all"
                     class="text-blue-600 focus:ring-blue-500"
                   />
-                  <span>Все встречи серии</span>
+                  <span>{{ $t('schedule.scopeAll') }}</span>
                 </label>
                 <label
                   v-if="isRecurringParent(editingMeeting) || isRecurringChild(editingMeeting)"
@@ -619,19 +711,21 @@
                     value="future"
                     class="text-blue-600 focus:ring-blue-500"
                   />
-                  <span>Эту и будущие</span>
+                  <span>{{ $t('schedule.scopeFuture') }}</span>
                 </label>
               </div>
             </div>
 
             <!-- Room linking -->
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Видео-комната</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('schedule.room')
+              }}</label>
               <select
                 v-model="form.roomId"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
-                <option :value="null">Без комнаты</option>
+                <option :value="null">{{ $t('schedule.roomSelect') }}</option>
                 <option v-for="room in availableRooms" :key="room.id" :value="room.id">
                   {{ room.title }} ({{ room.slug }})
                 </option>
@@ -640,24 +734,24 @@
 
             <!-- Participant selector -->
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1"
-                >Пригласить участников</label
-              >
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('schedule.inviteParticipants')
+              }}</label>
               <div class="relative">
                 <button
                   type="button"
                   @click="showParticipantDropdown = !showParticipantDropdown"
-                  class="w-full border rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white hover:border-blue-400 transition-colors"
+                  class="w-full border dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white dark:bg-gray-800 dark:text-white hover:border-blue-400 transition-colors"
                 >
                   <span class="truncate">
                     {{
                       formParticipantIds.length
                         ? `Выбрано: ${formParticipantIds.length}`
-                        : 'Выберите участников...'
+                        : $t('schedule.selectParticipantsPlaceholder')
                     }}
                   </span>
                   <svg
-                    class="w-4 h-4 text-gray-400 shrink-0 ml-2"
+                    class="w-4 h-4 text-gray-400 dark:text-white shrink-0 ml-2"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -670,12 +764,12 @@
                 </button>
                 <div
                   v-if="showParticipantDropdown"
-                  class="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg z-30 max-h-48 overflow-y-auto"
+                  class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg shadow-lg z-30 max-h-48 overflow-y-auto dark:text-white"
                 >
                   <label
                     v-for="user in availableParticipants"
                     :key="user.id"
-                    class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                    class="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white cursor-pointer text-sm dark:text-white"
                   >
                     <input
                       type="checkbox"
@@ -692,11 +786,11 @@
                     >
                       {{ userInitials(user) }}
                     </div>
-                    <span class="truncate">{{ userDisplayName(user) }}</span>
+                    <span class="truncate dark:text-white">{{ userDisplayName(user) }}</span>
                   </label>
                   <div
                     v-if="availableParticipants.length === 0"
-                    class="px-3 py-2 text-sm text-gray-400"
+                    class="px-3 py-2 text-sm text-gray-400 dark:text-white"
                   >
                     Нет доступных пользователей
                   </div>
@@ -713,14 +807,14 @@
                 :disabled="saving || !!timeError"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium transition-colors"
               >
-                {{ saving ? 'Сохранение...' : 'Сохранить' }}
+                {{ saving ? $t('schedule.saving') : $t('schedule.save') }}
               </button>
               <button
                 type="button"
                 @click="cancelEdit"
-                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors"
+                class="px-6 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-sm transition-colors"
               >
-                Отмена
+                {{ $t('common.cancel') }}
               </button>
             </div>
           </form>
@@ -732,6 +826,7 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMeetupStore } from '../stores/meetup'
 import { useAuthStore } from '../stores/auth'
 import { useConfirm } from '../composables/useConfirm'
@@ -803,10 +898,19 @@ const editScope = ref<RecurrenceScope>('this')
 const availableRooms = ref<Room[]>([])
 
 // ── Helpers ──
-const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+const { locale } = useI18n()
+const dateLocale = computed(() => (locale.value === 'en' ? 'en-US' : 'ru-RU'))
+const dayNames = computed(() => {
+  const base = new Date(2024, 0, 1) // Monday
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(base)
+    d.setDate(base.getDate() + i)
+    return d.toLocaleDateString(dateLocale.value, { weekday: 'short' })
+  })
+})
 
 const monthLabel = computed(() => {
-  return currentDate.value.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
+  return currentDate.value.toLocaleDateString(dateLocale.value, { month: 'long', year: 'numeric' })
 })
 
 interface CalendarDay {
@@ -885,16 +989,19 @@ function isSelectedDay(d: Date): boolean {
 }
 
 function formatDayHeader(d: Date): string {
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' })
+  return d.toLocaleDateString(dateLocale.value, { day: 'numeric', month: 'long', weekday: 'short' })
 }
 
 function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  return new Date(dateStr).toLocaleTimeString(dateLocale.value, {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 function formatDateTime(dateStr: string): string {
   const d = new Date(dateStr)
-  return d.toLocaleDateString('ru-RU', {
+  return d.toLocaleDateString(dateLocale.value, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -1250,7 +1357,7 @@ function formatRecurrence(m: Meetup): string {
   const label = RECURRENCE_LABELS[m.recurrenceType] || m.recurrenceType
   if (m.recurrenceEndDate) {
     const end = new Date(m.recurrenceEndDate)
-    return `${label} до ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`
+    return `${label} — ${end.toLocaleDateString(dateLocale.value, { day: 'numeric', month: 'long', year: 'numeric' })}`
   }
   return label
 }
