@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 import './assets/css/style.css'
 
 import App from './App.vue'
@@ -11,6 +12,9 @@ async function bootstrap() {
   const pinia = createPinia()
   app.use(pinia)
   app.use(router)
+  app.use(VueQueryPlugin, {
+    queryClientConfig: { defaultOptions: { queries: { staleTime: 30_000, retry: 1 } } },
+  })
 
   const authStore = useAuthStore()
   await authStore.tryAutoLogin()

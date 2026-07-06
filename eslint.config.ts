@@ -26,6 +26,9 @@ export default defineConfigWithVueTs(
     name: 'app/custom-rules',
     rules: {
       'vue/multi-word-component-names': 'off',
+      // vue/no-unused-vars понимает использование в <template>
+      '@typescript-eslint/no-unused-vars': 'off',
+      'vue/no-unused-vars': 'error',
     },
   },
 
