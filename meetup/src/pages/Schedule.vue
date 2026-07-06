@@ -22,10 +22,20 @@
             class="w-full border rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white hover:border-blue-400 transition-colors"
           >
             <span class="truncate">
-              {{ selectedUserIds.length ? `Выбрано: ${selectedUserIds.length}` : 'Все пользователи' }}
+              {{
+                selectedUserIds.length ? `Выбрано: ${selectedUserIds.length}` : 'Все пользователи'
+              }}
             </span>
-            <svg class="w-4 h-4 text-gray-400 shrink-0 ml-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <svg
+              class="w-4 h-4 text-gray-400 shrink-0 ml-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
           <div
@@ -43,10 +53,7 @@
                 @change="toggleUser(user.id)"
                 class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <div
-                v-if="user.avatar"
-                class="w-5 h-5 rounded-full overflow-hidden shrink-0"
-              >
+              <div v-if="user.avatar" class="w-5 h-5 rounded-full overflow-hidden shrink-0">
                 <img :src="user.avatar" class="w-full h-full object-cover" />
               </div>
               <div
@@ -73,7 +80,9 @@
 
       <!-- Legend -->
       <div class="p-4 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Обозначения</h3>
+        <h3 class="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+          Обозначения
+        </h3>
         <div class="space-y-1.5 text-xs text-gray-500">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500 shrink-0"></span>
@@ -102,7 +111,11 @@
           </h3>
           <button @click="selectedDay = null" class="text-gray-400 hover:text-gray-600">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
         </div>
@@ -133,13 +146,14 @@
             </div>
           </button>
         </div>
-        <div v-else class="text-center text-gray-400 text-sm py-8">
-          Нет встреч на этот день
-        </div>
+        <div v-else class="text-center text-gray-400 text-sm py-8">Нет встреч на этот день</div>
       </div>
 
       <!-- No day selected -->
-      <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm p-4 text-center">
+      <div
+        v-else
+        class="flex-1 flex items-center justify-center text-gray-400 text-sm p-4 text-center"
+      >
         Выберите день в календаре, чтобы увидеть встречи
       </div>
     </aside>
@@ -151,7 +165,11 @@
         <div class="flex items-center gap-3">
           <button @click="prevMonth" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
             <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
           <h2 class="text-lg font-bold text-gray-800 min-w-40 text-center">
@@ -159,7 +177,11 @@
           </h2>
           <button @click="nextMonth" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
             <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
           <button
@@ -236,7 +258,9 @@
         tabindex="-1"
         ref="modalRef"
       >
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+        >
           <!-- Modal header -->
           <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-bold text-gray-800">
@@ -244,7 +268,11 @@
             </h3>
             <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
               </svg>
             </button>
           </div>
@@ -253,22 +281,31 @@
           <div v-if="viewMeeting && !editingMeeting" class="p-6 space-y-4">
             <div>
               <h2 class="text-xl font-bold text-gray-900">{{ viewMeeting.title }}</h2>
-              <p v-if="viewMeeting.description" class="text-gray-600 mt-2 whitespace-pre-wrap">{{ viewMeeting.description }}</p>
+              <p v-if="viewMeeting.description" class="text-gray-600 mt-2 whitespace-pre-wrap">
+                {{ viewMeeting.description }}
+              </p>
             </div>
 
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="bg-gray-50 rounded-lg p-3">
                 <span class="text-gray-500 block text-xs uppercase tracking-wide mb-1">Начало</span>
-                <span class="font-semibold text-gray-800">{{ formatDateTime(viewMeeting.startTime) }}</span>
+                <span class="font-semibold text-gray-800">{{
+                  formatDateTime(viewMeeting.startTime)
+                }}</span>
               </div>
               <div class="bg-gray-50 rounded-lg p-3">
                 <span class="text-gray-500 block text-xs uppercase tracking-wide mb-1">Конец</span>
-                <span class="font-semibold text-gray-800">{{ formatDateTime(viewMeeting.endTime) }}</span>
+                <span class="font-semibold text-gray-800">{{
+                  formatDateTime(viewMeeting.endTime)
+                }}</span>
               </div>
             </div>
 
             <!-- Room link -->
-            <div v-if="viewMeeting.room" class="bg-blue-50 rounded-lg p-3 flex items-center justify-between">
+            <div
+              v-if="viewMeeting.room"
+              class="bg-blue-50 rounded-lg p-3 flex items-center justify-between"
+            >
               <div>
                 <span class="text-blue-600 text-xs uppercase tracking-wide">Видео-комната</span>
                 <p class="font-semibold text-blue-800">{{ viewMeeting.room.title }}</p>
@@ -286,7 +323,10 @@
               <span class="text-purple-600 text-xs uppercase tracking-wide">Повторяется</span>
               <p class="font-semibold text-purple-800">{{ formatRecurrence(viewMeeting) }}</p>
             </div>
-            <div v-else-if="isRecurringChild(viewMeeting)" class="bg-gray-50 rounded-lg p-3 text-sm text-gray-500">
+            <div
+              v-else-if="isRecurringChild(viewMeeting)"
+              class="bg-gray-50 rounded-lg p-3 text-sm text-gray-500"
+            >
               🔄 Входит в серию повторяющихся встреч
             </div>
 
@@ -301,9 +341,20 @@
                   v-if="viewMeeting.host"
                   class="flex items-center gap-2 px-3 py-1.5 bg-blue-100 rounded-full text-sm"
                 >
-                  <img v-if="viewMeeting.host?.avatar" :src="viewMeeting.host.avatar" class="w-5 h-5 rounded-full object-cover shrink-0" />
-                  <div v-else class="w-5 h-5 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{{ userInitials(viewMeeting.host!) }}</div>
-                  <span class="font-medium text-blue-800">{{ userDisplayName(viewMeeting.host) }}</span>
+                  <img
+                    v-if="viewMeeting.host?.avatar"
+                    :src="viewMeeting.host.avatar"
+                    class="w-5 h-5 rounded-full object-cover shrink-0"
+                  />
+                  <div
+                    v-else
+                    class="w-5 h-5 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+                  >
+                    {{ userInitials(viewMeeting.host!) }}
+                  </div>
+                  <span class="font-medium text-blue-800">{{
+                    userDisplayName(viewMeeting.host)
+                  }}</span>
                   <span class="text-blue-500 text-xs">· Организатор</span>
                 </div>
 
@@ -316,8 +367,17 @@
                       :key="p.id"
                       class="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full text-sm"
                     >
-                      <img v-if="p.avatar" :src="p.avatar" class="w-5 h-5 rounded-full object-cover shrink-0" />
-                      <div v-else class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{{ userInitials(p) }}</div>
+                      <img
+                        v-if="p.avatar"
+                        :src="p.avatar"
+                        class="w-5 h-5 rounded-full object-cover shrink-0"
+                      />
+                      <div
+                        v-else
+                        class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+                      >
+                        {{ userInitials(p) }}
+                      </div>
                       <span class="text-green-800">{{ userDisplayName(p) }}</span>
                     </div>
                   </div>
@@ -332,8 +392,17 @@
                       :key="p.id"
                       class="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full text-sm"
                     >
-                      <img v-if="p.avatar" :src="p.avatar" class="w-5 h-5 rounded-full object-cover shrink-0" />
-                      <div v-else class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{{ userInitials(p) }}</div>
+                      <img
+                        v-if="p.avatar"
+                        :src="p.avatar"
+                        class="w-5 h-5 rounded-full object-cover shrink-0"
+                      />
+                      <div
+                        v-else
+                        class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+                      >
+                        {{ userInitials(p) }}
+                      </div>
                       <span class="text-amber-700">{{ userDisplayName(p) }}</span>
                     </div>
                   </div>
@@ -348,24 +417,41 @@
                       :key="p.id"
                       class="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full text-sm opacity-60"
                     >
-                      <img v-if="p.avatar" :src="p.avatar" class="w-5 h-5 rounded-full object-cover shrink-0" />
-                      <div v-else class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{{ userInitials(p) }}</div>
+                      <img
+                        v-if="p.avatar"
+                        :src="p.avatar"
+                        class="w-5 h-5 rounded-full object-cover shrink-0"
+                      />
+                      <div
+                        v-else
+                        class="w-5 h-5 rounded-full bg-gray-400 flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+                      >
+                        {{ userInitials(p) }}
+                      </div>
                       <span class="text-red-700 line-through">{{ userDisplayName(p) }}</span>
                     </div>
                   </div>
                 </template>
 
-                <span v-if="!viewMeeting.participants?.length" class="text-sm text-gray-400">Нет участников</span>
+                <span v-if="!viewMeeting.participants?.length" class="text-sm text-gray-400"
+                  >Нет участников</span
+                >
               </div>
             </div>
 
             <!-- Actions -->
             <div class="flex gap-2 pt-2 border-t border-gray-200">
               <template v-if="authUserId && isMeetingHost(viewMeeting)">
-                <button @click="openEdit(viewMeeting)" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors">
+                <button
+                  @click="openEdit(viewMeeting)"
+                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors"
+                >
                   Редактировать
                 </button>
-                <button @click="handleDelete(viewMeeting)" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm transition-colors">
+                <button
+                  @click="handleDelete(viewMeeting)"
+                  class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm transition-colors"
+                >
                   Удалить
                 </button>
               </template>
@@ -497,8 +583,13 @@
             </div>
 
             <!-- Scope (edit mode) -->
-            <div v-if="editingMeeting && isPartOfSeries(editingMeeting)" class="bg-amber-50 rounded-lg p-3">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Применить изменения</label>
+            <div
+              v-if="editingMeeting && isPartOfSeries(editingMeeting)"
+              class="bg-amber-50 rounded-lg p-3"
+            >
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Применить изменения</label
+              >
               <div class="flex flex-col gap-1.5">
                 <label class="flex items-center gap-2 text-sm cursor-pointer">
                   <input
@@ -518,7 +609,10 @@
                   />
                   <span>Все встречи серии</span>
                 </label>
-                <label v-if="isRecurringParent(editingMeeting) || isRecurringChild(editingMeeting)" class="flex items-center gap-2 text-sm cursor-pointer">
+                <label
+                  v-if="isRecurringParent(editingMeeting) || isRecurringChild(editingMeeting)"
+                  class="flex items-center gap-2 text-sm cursor-pointer"
+                >
                   <input
                     v-model="editScope"
                     type="radio"
@@ -546,7 +640,9 @@
 
             <!-- Participant selector -->
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Пригласить участников</label>
+              <label class="block text-sm font-medium text-gray-600 mb-1"
+                >Пригласить участников</label
+              >
               <div class="relative">
                 <button
                   type="button"
@@ -554,10 +650,22 @@
                   class="w-full border rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white hover:border-blue-400 transition-colors"
                 >
                   <span class="truncate">
-                    {{ formParticipantIds.length ? `Выбрано: ${formParticipantIds.length}` : 'Выберите участников...' }}
+                    {{
+                      formParticipantIds.length
+                        ? `Выбрано: ${formParticipantIds.length}`
+                        : 'Выберите участников...'
+                    }}
                   </span>
-                  <svg class="w-4 h-4 text-gray-400 shrink-0 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  <svg
+                    class="w-4 h-4 text-gray-400 shrink-0 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                 </button>
                 <div
@@ -575,10 +683,7 @@
                       @change="toggleFormParticipant(user.id)"
                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <div
-                      v-if="user.avatar"
-                      class="w-5 h-5 rounded-full overflow-hidden shrink-0"
-                    >
+                    <div v-if="user.avatar" class="w-5 h-5 rounded-full overflow-hidden shrink-0">
                       <img :src="user.avatar" class="w-full h-full object-cover" />
                     </div>
                     <div
@@ -589,7 +694,10 @@
                     </div>
                     <span class="truncate">{{ userDisplayName(user) }}</span>
                   </label>
-                  <div v-if="availableParticipants.length === 0" class="px-3 py-2 text-sm text-gray-400">
+                  <div
+                    v-if="availableParticipants.length === 0"
+                    class="px-3 py-2 text-sm text-gray-400"
+                  >
                     Нет доступных пользователей
                   </div>
                 </div>
@@ -623,59 +731,57 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue';
-import { useMeetupStore } from '../stores/meetup';
-import { useAuthStore } from '../stores/auth';
-import { useConfirm } from '../composables/useConfirm';
-import apiClient from '../api';
-import type { Meetup, Room, UserSummary, ParticipantInfo, RecurrenceType, RecurrenceScope } from '../types';
+import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue'
+import { useMeetupStore } from '../stores/meetup'
+import { useAuthStore } from '../stores/auth'
+import { useConfirm } from '../composables/useConfirm'
+import apiClient from '../api'
+import type { Meetup, Room, UserSummary, RecurrenceType, RecurrenceScope } from '../types'
 
-const meetupStore = useMeetupStore();
-const authStore = useAuthStore();
-const { confirm } = useConfirm();
+const meetupStore = useMeetupStore()
+const authStore = useAuthStore()
+const { confirm } = useConfirm()
 
 // ── Calendar state ──
-const currentDate = ref(new Date());
-const selectedDay = ref<Date | null>(null);
-const showUserDropdown = ref(false);
-const showParticipantDropdown = ref(false);
-const search = ref('');
+const currentDate = ref(new Date())
+const selectedDay = ref<Date | null>(null)
+const showUserDropdown = ref(false)
+const showParticipantDropdown = ref(false)
+const search = ref('')
 
 // ── Users ──
-const usersList = ref<UserSummary[]>([]);
+const usersList = ref<UserSummary[]>([])
 // Для фильтра в сайдбаре — исключаем текущего пользователя
-const filterableUsers = computed(() =>
-  usersList.value.filter((u) => u.id !== authUserId.value),
-);
+const filterableUsers = computed(() => usersList.value.filter((u) => u.id !== authUserId.value))
 
 // Для формы создания — все кроме себя
 const availableParticipants = computed(() =>
   usersList.value.filter((u) => u.id !== authUserId.value),
-);
+)
 
 // Валидация времени
 const timeError = computed(() => {
-  if (!form.startTime || !form.endTime) return null;
+  if (!form.startTime || !form.endTime) return null
   if (new Date(form.endTime) <= new Date(form.startTime)) {
-    return 'Время окончания должно быть позже времени начала';
+    return 'Время окончания должно быть позже времени начала'
   }
-  return null;
-});
+  return null
+})
 
 const selectedUserIds = computed({
   get: () => meetupStore.selectedUserIds,
   set: (ids) => meetupStore.setSelectedUsers(ids),
-});
+})
 
-const authUserId = computed(() => (authStore.profile?.id ? Number(authStore.profile.id) : null));
+const authUserId = computed(() => (authStore.profile?.id ? Number(authStore.profile.id) : null))
 
 // ── Modal state ──
-const showModal = ref(false);
-const modalRef = ref<HTMLElement | null>(null);
-const viewMeeting = ref<Meetup | null>(null);
-const editingMeeting = ref<Meetup | null>(null);
-const saving = ref(false);
-const formError = ref<string | null>(null);
+const showModal = ref(false)
+const modalRef = ref<HTMLElement | null>(null)
+const viewMeeting = ref<Meetup | null>(null)
+const editingMeeting = ref<Meetup | null>(null)
+const saving = ref(false)
+const formError = ref<string | null>(null)
 
 const form = reactive({
   title: '',
@@ -683,319 +789,337 @@ const form = reactive({
   startTime: '',
   endTime: '',
   roomId: null as number | null,
-});
+})
 
-const formParticipantIds = ref<number[]>([]);
+const formParticipantIds = ref<number[]>([])
 
 // Recurrence
-const recurrenceEnabled = ref(false);
-const recurrenceType = ref<RecurrenceType>('WEEKLY');
-const recurrenceEndDate = ref('');
-const editScope = ref<RecurrenceScope>('this');
+const recurrenceEnabled = ref(false)
+const recurrenceType = ref<RecurrenceType>('WEEKLY')
+const recurrenceEndDate = ref('')
+const editScope = ref<RecurrenceScope>('this')
 
 // ── Rooms ──
-const availableRooms = ref<Room[]>([]);
+const availableRooms = ref<Room[]>([])
 
 // ── Helpers ──
-const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
 const monthLabel = computed(() => {
-  return currentDate.value.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-});
+  return currentDate.value.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
+})
 
 interface CalendarDay {
-  date: Date;
-  dayNumber: number;
-  isCurrentMonth: boolean;
-  meetings: Meetup[];
+  date: Date
+  dayNumber: number
+  isCurrentMonth: boolean
+  meetings: Meetup[]
 }
 
 const calendarDays = computed<CalendarDay[]>(() => {
-  const year = currentDate.value.getFullYear();
-  const month = currentDate.value.getMonth();
-  const firstDay = new Date(year, month, 1);
-  let start = new Date(firstDay);
-  const dayOfWeek = firstDay.getDay();
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  start = new Date(year, month, 1 + mondayOffset);
+  const year = currentDate.value.getFullYear()
+  const month = currentDate.value.getMonth()
+  const firstDay = new Date(year, month, 1)
+  let start = new Date(firstDay)
+  const dayOfWeek = firstDay.getDay()
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+  start = new Date(year, month, 1 + mondayOffset)
 
-  const days: CalendarDay[] = [];
+  const days: CalendarDay[] = []
   for (let i = 0; i < 42; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
     days.push({
       date: new Date(d),
       dayNumber: d.getDate(),
       isCurrentMonth: d.getMonth() === month,
       meetings: getMeetingsForDay(d),
-    });
+    })
   }
-  return days;
-});
+  return days
+})
 
 // Используем calendarItems где DECLINED уже отфильтрованы + поиск по названию
 const filteredBySearch = computed(() => {
-  const q = search.value.toLowerCase().trim();
-  if (!q) return meetupStore.calendarItems;
-  return meetupStore.calendarItems.filter((m) =>
-    m.title.toLowerCase().includes(q),
-  );
-});
+  const q = search.value.toLowerCase().trim()
+  if (!q) return meetupStore.calendarItems
+  return meetupStore.calendarItems.filter((m) => m.title.toLowerCase().includes(q))
+})
 
 function getMeetingsForDay(date: Date): Meetup[] {
-  const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const dayEnd = new Date(dayStart);
-  dayEnd.setDate(dayEnd.getDate() + 1);
+  const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const dayEnd = new Date(dayStart)
+  dayEnd.setDate(dayEnd.getDate() + 1)
 
   return filteredBySearch.value.filter((m) => {
-    const start = new Date(m.startTime);
-    const end = new Date(m.endTime);
-    return start < dayEnd && end > dayStart;
-  });
+    const start = new Date(m.startTime)
+    const end = new Date(m.endTime)
+    return start < dayEnd && end > dayStart
+  })
 }
 
 const selectedDayMeetings = computed(() => {
-  if (!selectedDay.value) return [];
-  return getMeetingsForDay(selectedDay.value);
-});
+  if (!selectedDay.value) return []
+  return getMeetingsForDay(selectedDay.value)
+})
 
 // ── Participant grouping for detail view ──
-const acceptedParticipants = computed(() =>
-  viewMeeting.value?.participants?.filter((p) => p.status === 'ACCEPTED') ?? [],
-);
-const invitedParticipants = computed(() =>
-  viewMeeting.value?.participants?.filter((p) => p.status === 'INVITED') ?? [],
-);
-const declinedParticipants = computed(() =>
-  viewMeeting.value?.participants?.filter((p) => p.status === 'DECLINED') ?? [],
-);
+const acceptedParticipants = computed(
+  () => viewMeeting.value?.participants?.filter((p) => p.status === 'ACCEPTED') ?? [],
+)
+const invitedParticipants = computed(
+  () => viewMeeting.value?.participants?.filter((p) => p.status === 'INVITED') ?? [],
+)
+const declinedParticipants = computed(
+  () => viewMeeting.value?.participants?.filter((p) => p.status === 'DECLINED') ?? [],
+)
 
 // ── Date helpers ──
 function isToday(d: Date): boolean {
-  const now = new Date();
-  return d.toDateString() === now.toDateString();
+  const now = new Date()
+  return d.toDateString() === now.toDateString()
 }
 
 function isSelectedDay(d: Date): boolean {
-  return selectedDay.value?.toDateString() === d.toDateString();
+  return selectedDay.value?.toDateString() === d.toDateString()
 }
 
 function formatDayHeader(d: Date): string {
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' })
 }
 
 function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  return new Date(dateStr).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatDateTime(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
-function userDisplayName(u: UserSummary | { name: string; firstName?: string | null; lastName?: string | null }): string {
-  const first = (u as any).firstName;
-  const last = (u as any).lastName;
-  if (first && last) return `${first} ${last}`;
-  if (first) return first;
-  return u.name;
+function userDisplayName(
+  u: UserSummary | { name: string; firstName?: string | null; lastName?: string | null },
+): string {
+  const first = ('firstName' in u ? u.firstName : undefined) ?? null
+  const last = ('lastName' in u ? u.lastName : undefined) ?? null
+  if (first && last) return `${first} ${last}`
+  if (first) return first
+  return u.name
 }
 
 function userInitials(u: UserSummary): string {
-  const f = u.firstName?.charAt(0)?.toUpperCase() ?? '';
-  const l = u.lastName?.charAt(0)?.toUpperCase() ?? '';
-  if (f || l) return `${f}${l}`;
-  return u.name.charAt(0).toUpperCase();
+  const f = u.firstName?.charAt(0)?.toUpperCase() ?? ''
+  const l = u.lastName?.charAt(0)?.toUpperCase() ?? ''
+  if (f || l) return `${f}${l}`
+  return u.name.charAt(0).toUpperCase()
 }
 
 // ── Meeting status checks ──
 function isMeetingHost(m: Meetup): boolean {
-  return authUserId.value !== null && m.hostId === authUserId.value;
+  return authUserId.value !== null && m.hostId === authUserId.value
 }
 
 function isMeetingParticipant(m: Meetup): boolean {
-  return authUserId.value !== null && meetupStore.isParticipant(m, authUserId.value);
+  return authUserId.value !== null && meetupStore.isParticipant(m, authUserId.value)
 }
 
 function isMeetingInvited(m: Meetup): boolean {
-  return authUserId.value !== null && meetupStore.isInvited(m, authUserId.value);
+  return authUserId.value !== null && meetupStore.isInvited(m, authUserId.value)
 }
 
 function isInvitedForDay(m: Meetup): boolean {
-  return authUserId.value !== null && meetupStore.isInvited(m, authUserId.value);
+  return authUserId.value !== null && meetupStore.isInvited(m, authUserId.value)
 }
 
 // ── Colors ──
 function meetingDotClass(m: Meetup): string {
-  if (authUserId.value && isMeetingHost(m)) return 'bg-blue-500';
-  if (authUserId.value && isMeetingParticipant(m)) return 'bg-green-500';
-  if (authUserId.value && isMeetingInvited(m)) return 'bg-gray-300';
-  return 'bg-purple-500';
+  if (authUserId.value && isMeetingHost(m)) return 'bg-blue-500'
+  if (authUserId.value && isMeetingParticipant(m)) return 'bg-green-500'
+  if (authUserId.value && isMeetingInvited(m)) return 'bg-gray-300'
+  return 'bg-purple-500'
 }
 
 function meetingBorderClass(m: Meetup): string {
-  if (authUserId.value && isMeetingHost(m)) return 'border-l-4 border-l-blue-500';
-  if (authUserId.value && isMeetingParticipant(m)) return 'border-l-4 border-l-green-500';
-  if (authUserId.value && isMeetingInvited(m)) return 'border-l-4 border-l-amber-400 opacity-70';
-  return 'border-l-4 border-l-purple-500';
+  if (authUserId.value && isMeetingHost(m)) return 'border-l-4 border-l-blue-500'
+  if (authUserId.value && isMeetingParticipant(m)) return 'border-l-4 border-l-green-500'
+  if (authUserId.value && isMeetingInvited(m)) return 'border-l-4 border-l-amber-400 opacity-70'
+  return 'border-l-4 border-l-purple-500'
 }
 
 // ── Navigation ──
 function prevMonth() {
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1);
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1)
 }
 function nextMonth() {
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1)
 }
 function goToday() {
-  currentDate.value = new Date();
-  selectedDay.value = new Date();
+  currentDate.value = new Date()
+  selectedDay.value = new Date()
 }
 function selectDay(day: CalendarDay) {
-  if (day.isCurrentMonth) selectedDay.value = day.date;
+  if (day.isCurrentMonth) selectedDay.value = day.date
 }
 
 // ── User filter ──
 function toggleUser(userId: number) {
-  const idx = selectedUserIds.value.indexOf(userId);
+  const idx = selectedUserIds.value.indexOf(userId)
   if (idx >= 0) {
-    selectedUserIds.value = selectedUserIds.value.filter((id) => id !== userId);
+    selectedUserIds.value = selectedUserIds.value.filter((id) => id !== userId)
   } else {
-    selectedUserIds.value = [...selectedUserIds.value, userId];
+    selectedUserIds.value = [...selectedUserIds.value, userId]
   }
 }
 function clearUsers() {
-  selectedUserIds.value = [];
-  showUserDropdown.value = false;
+  selectedUserIds.value = []
+  showUserDropdown.value = false
 }
 
 // ── Form participant selector ──
 function toggleFormParticipant(userId: number) {
-  const idx = formParticipantIds.value.indexOf(userId);
+  const idx = formParticipantIds.value.indexOf(userId)
   if (idx >= 0) {
-    formParticipantIds.value = formParticipantIds.value.filter((id) => id !== userId);
+    formParticipantIds.value = formParticipantIds.value.filter((id) => id !== userId)
   } else {
-    formParticipantIds.value = [...formParticipantIds.value, userId];
+    formParticipantIds.value = [...formParticipantIds.value, userId]
   }
 }
 
 // ── Modal ──
 function openCreate() {
-  viewMeeting.value = null;
-  editingMeeting.value = null;
-  form.title = '';
-  form.description = '';
-  form.startTime = toLocalDateTimeStr(new Date());
-  const end = new Date();
-  end.setHours(end.getHours() + 1);
-  form.endTime = toLocalDateTimeStr(end);
-  form.roomId = null;
-  formParticipantIds.value = [];
-  formError.value = null;
-  recurrenceEnabled.value = false;
-  recurrenceType.value = 'WEEKLY';
-  recurrenceEndDate.value = '';
-  editScope.value = 'this';
-  showModal.value = true;
+  viewMeeting.value = null
+  editingMeeting.value = null
+  form.title = ''
+  form.description = ''
+  form.startTime = toLocalDateTimeStr(new Date())
+  const end = new Date()
+  end.setHours(end.getHours() + 1)
+  form.endTime = toLocalDateTimeStr(end)
+  form.roomId = null
+  formParticipantIds.value = []
+  formError.value = null
+  recurrenceEnabled.value = false
+  recurrenceType.value = 'WEEKLY'
+  recurrenceEndDate.value = ''
+  editScope.value = 'this'
+  showModal.value = true
 }
 
 function openDetail(m: Meetup) {
-  viewMeeting.value = meetupStore.getMeetupById(m.id) ?? m;
-  editingMeeting.value = null;
-  showModal.value = true;
+  viewMeeting.value = meetupStore.getMeetupById(m.id) ?? m
+  editingMeeting.value = null
+  showModal.value = true
 }
 
 function openEdit(m: Meetup) {
-  form.title = m.title;
-  form.description = m.description ?? '';
-  form.startTime = toLocalDateTimeStr(new Date(m.startTime));
-  form.endTime = toLocalDateTimeStr(new Date(m.endTime));
-  form.roomId = m.roomId;
+  form.title = m.title
+  form.description = m.description ?? ''
+  form.startTime = toLocalDateTimeStr(new Date(m.startTime))
+  form.endTime = toLocalDateTimeStr(new Date(m.endTime))
+  form.roomId = m.roomId
   formParticipantIds.value = (m.participants ?? [])
     .filter((p) => p.status !== 'DECLINED')
-    .map((p) => p.id);
-  formError.value = null;
+    .map((p) => p.id)
+  formError.value = null
   // Если это родительская встреча — заполняем recurrence
   if (isRecurringParent(m)) {
-    recurrenceEnabled.value = true;
-    recurrenceType.value = m.recurrenceType as RecurrenceType;
+    recurrenceEnabled.value = true
+    recurrenceType.value = m.recurrenceType as RecurrenceType
     recurrenceEndDate.value = m.recurrenceEndDate
       ? new Date(m.recurrenceEndDate).toISOString().split('T')[0]!
-      : '';
-    editScope.value = 'this';
+      : ''
+    editScope.value = 'this'
   } else {
-    recurrenceEnabled.value = false;
-    recurrenceType.value = 'WEEKLY';
-    recurrenceEndDate.value = '';
-    editScope.value = 'this';
+    recurrenceEnabled.value = false
+    recurrenceType.value = 'WEEKLY'
+    recurrenceEndDate.value = ''
+    editScope.value = 'this'
   }
-  editingMeeting.value = m;
-  viewMeeting.value = null;
-  showModal.value = true;
+  editingMeeting.value = m
+  viewMeeting.value = null
+  showModal.value = true
 }
 
 function cancelEdit() {
   if (viewMeeting.value) {
-    editingMeeting.value = null;
+    editingMeeting.value = null
   } else {
-    closeModal();
+    closeModal()
   }
 }
 
 function closeModal() {
-  showModal.value = false;
-  viewMeeting.value = null;
-  editingMeeting.value = null;
-  showParticipantDropdown.value = false;
+  showModal.value = false
+  viewMeeting.value = null
+  editingMeeting.value = null
+  showParticipantDropdown.value = false
 }
 
 async function handleSave() {
   if (!form.title || !form.startTime || !form.endTime) {
-    formError.value = 'Название, начало и конец обязательны';
-    return;
+    formError.value = 'Название, начало и конец обязательны'
+    return
   }
-  saving.value = true;
-  formError.value = null;
+  saving.value = true
+  formError.value = null
   try {
-    const payload: Record<string, unknown> = {
+    const payload: {
+      title: string
+      description: string | null
+      startTime: string
+      endTime: string
+      roomId: number | null
+      participantIds: number[]
+      scope?: string
+      recurrenceType?: string | null
+      recurrenceEndDate?: string | null
+    } = {
       title: form.title,
       description: form.description || null,
       startTime: new Date(form.startTime).toISOString(),
       endTime: new Date(form.endTime).toISOString(),
       roomId: form.roomId,
       participantIds: formParticipantIds.value,
-    };
+    }
 
     if (editingMeeting.value) {
       // scope только если это часть серии
       if (isPartOfSeries(editingMeeting.value)) {
-        payload.scope = editScope.value;
+        payload.scope = editScope.value
       }
       if (recurrenceEnabled.value) {
-        payload.recurrenceType = recurrenceType.value;
+        payload.recurrenceType = recurrenceType.value
         payload.recurrenceEndDate = recurrenceEndDate.value
           ? new Date(recurrenceEndDate.value).toISOString()
-          : null;
+          : null
       } else if (isRecurringParent(editingMeeting.value)) {
         // Отключаем повторение
-        payload.recurrenceType = null;
-        payload.recurrenceEndDate = null;
+        payload.recurrenceType = null
+        payload.recurrenceEndDate = null
       }
-      await meetupStore.updateMeetup(editingMeeting.value.id, payload);
+      await meetupStore.updateMeetup(editingMeeting.value.id, payload)
     } else {
       if (recurrenceEnabled.value) {
-        payload.recurrenceType = recurrenceType.value;
+        payload.recurrenceType = recurrenceType.value
         payload.recurrenceEndDate = recurrenceEndDate.value
           ? new Date(recurrenceEndDate.value).toISOString()
-          : null;
+          : null
       }
-      await meetupStore.createMeetup(payload);
+      await meetupStore.createMeetup(payload)
     }
-    closeModal();
-  } catch (e: any) {
-    formError.value = e.response?.data?.message || 'Ошибка сохранения';
+    closeModal()
+  } catch (e: unknown) {
+    formError.value =
+      (e as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      'Ошибка сохранения'
   } finally {
-    saving.value = false;
+    saving.value = false
   }
 }
 
@@ -1006,96 +1130,99 @@ async function handleDelete(m: Meetup) {
       'Удалить повторяющуюся встречу?',
       `«${m.title}» — повторяющаяся встреча. Удалить только эту встречу или всю серию?`,
       'danger',
-    );
-    if (!choice) return;
+    )
+    if (!choice) return
     // Пока для простоты: удаляем только эту (родительскую).
     // TODO: добавить UI выбора scope для удаления.
-    await meetupStore.deleteMeetup(m.id, 'all');
+    await meetupStore.deleteMeetup(m.id, 'all')
   } else if (isRecurringChild(m)) {
     const ok = await confirm(
       'Удалить встречу?',
       `«${m.title}» будет удалена только эта встреча серии.`,
       'danger',
-    );
-    if (!ok) return;
-    await meetupStore.deleteMeetup(m.id, 'this');
+    )
+    if (!ok) return
+    await meetupStore.deleteMeetup(m.id, 'this')
   } else {
-    const ok = await confirm('Удалить встречу?', `«${m.title}» будет удалена.`, 'danger');
-    if (!ok) return;
-    await meetupStore.deleteMeetup(m.id);
+    const ok = await confirm('Удалить встречу?', `«${m.title}» будет удалена.`, 'danger')
+    if (!ok) return
+    await meetupStore.deleteMeetup(m.id)
   }
-  closeModal();
+  closeModal()
 }
 
 async function handleJoin(m: Meetup) {
   try {
-    await meetupStore.joinMeetup(m.id);
-    viewMeeting.value = meetupStore.getMeetupById(m.id);
-  } catch (e: any) {
-    console.error('Join error:', e);
+    await meetupStore.joinMeetup(m.id)
+    viewMeeting.value = meetupStore.getMeetupById(m.id)
+  } catch (e: unknown) {
+    console.error('Join error:', e)
   }
 }
 
 async function handleDecline(m: Meetup) {
   try {
-    await meetupStore.declineMeetup(m.id);
-    viewMeeting.value = meetupStore.getMeetupById(m.id);
-  } catch (e: any) {
-    console.error('Decline error:', e);
+    await meetupStore.declineMeetup(m.id)
+    viewMeeting.value = meetupStore.getMeetupById(m.id)
+  } catch (e: unknown) {
+    console.error('Decline error:', e)
   }
 }
 
 // ── Calendar export ──
 
 function formatGoogleDate(dateStr: string): string {
-  return new Date(dateStr).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  return new Date(dateStr)
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, '')
 }
 
 async function handleExportIcs(m: Meetup) {
   try {
     const response = await apiClient.get(`/meetups/${m.id}/ics`, {
       responseType: 'blob',
-    });
-    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `meetup-${m.id}.ics`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    })
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `meetup-${m.id}.ics`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
   } catch (e) {
-    console.error('Export ICS failed:', e);
+    console.error('Export ICS failed:', e)
   }
 }
 
 function handleGoogleCalendar(m: Meetup) {
-  const start = formatGoogleDate(m.startTime);
-  const end = formatGoogleDate(m.endTime);
-  const text = encodeURIComponent(m.title);
+  const start = formatGoogleDate(m.startTime)
+  const end = formatGoogleDate(m.endTime)
+  const text = encodeURIComponent(m.title)
 
-  let description = m.description ?? '';
+  let description = m.description ?? ''
   if (m.host) {
-    const hostName = [m.host.firstName, m.host.lastName].filter(Boolean).join(' ') || m.host.name;
+    const hostName = [m.host.firstName, m.host.lastName].filter(Boolean).join(' ') || m.host.name
     description = description
       ? `${description}\n\nОрганизатор: ${hostName}`
-      : `Организатор: ${hostName}`;
+      : `Организатор: ${hostName}`
   }
-  const details = encodeURIComponent(description);
+  const details = encodeURIComponent(description)
 
-  let location = '';
+  let location = ''
   if (m.room) {
-    const roomUrl = `${window.location.origin}/room/${m.room.slug}${m.room.isPrivate ? `?meetingId=${m.id}` : ''}`;
-    location = encodeURIComponent(`${m.room.title}\n${roomUrl}`);
+    const roomUrl = `${window.location.origin}/room/${m.room.slug}${m.room.isPrivate ? `?meetingId=${m.id}` : ''}`
+    location = encodeURIComponent(`${m.room.title}\n${roomUrl}`)
   }
 
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${location}`;
-  window.open(url, '_blank', 'noopener,noreferrer');
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${location}`
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 
 function toLocalDateTimeStr(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 // ── Recurrence helpers ──
@@ -1104,63 +1231,69 @@ const RECURRENCE_LABELS: Record<string, string> = {
   WEEKLY: 'Еженедельно',
   BIWEEKLY: 'Раз в 2 недели',
   MONTHLY: 'Ежемесячно',
-};
+}
 
 function isRecurringParent(m: Meetup): boolean {
-  return m.recurrenceType !== null;
+  return m.recurrenceType !== null
 }
 
 function isRecurringChild(m: Meetup): boolean {
-  return m.parentMeetingId !== null;
+  return m.parentMeetingId !== null
 }
 
 function isPartOfSeries(m: Meetup): boolean {
-  return isRecurringParent(m) || isRecurringChild(m);
+  return isRecurringParent(m) || isRecurringChild(m)
 }
 
 function formatRecurrence(m: Meetup): string {
-  if (!m.recurrenceType) return '';
-  const label = RECURRENCE_LABELS[m.recurrenceType] || m.recurrenceType;
+  if (!m.recurrenceType) return ''
+  const label = RECURRENCE_LABELS[m.recurrenceType] || m.recurrenceType
   if (m.recurrenceEndDate) {
-    const end = new Date(m.recurrenceEndDate);
-    return `${label} до ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    const end = new Date(m.recurrenceEndDate)
+    return `${label} до ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`
   }
-  return label;
+  return label
 }
 
 // ── Data loading ──
 async function loadUsers() {
   try {
-    const { data } = await apiClient.get<{ items: UserSummary[] }>('/users', { params: { limit: 1000 } });
-    usersList.value = data.items;
+    const { data } = await apiClient.get<{ items: UserSummary[] }>('/users', {
+      params: { limit: 1000 },
+    })
+    usersList.value = data.items
   } catch (e) {
-    console.error('Failed to load users', e);
+    console.error('Failed to load users', e)
   }
 }
 
 async function loadRooms() {
   try {
-    const { data } = await apiClient.get<Room[]>('/rooms');
-    availableRooms.value = Array.isArray(data) ? data : [];
-  } catch (e) {
-    availableRooms.value = [];
+    const { data } = await apiClient.get<Room[]>('/rooms')
+    availableRooms.value = Array.isArray(data) ? data : []
+  } catch {
+    availableRooms.value = []
   }
 }
 
-watch(selectedUserIds, () => {
-  meetupStore.fetchAllForCalendar();
-}, { deep: true });
+watch(
+  selectedUserIds,
+  () => {
+    meetupStore.fetchAllForCalendar()
+  },
+  { deep: true },
+)
 
 watch(showModal, async (val) => {
   if (val) {
-    await nextTick();
-    modalRef.value?.focus();
+    await nextTick()
+    modalRef.value?.focus()
   }
-});
+})
 
 onMounted(() => {
-  meetupStore.fetchAllForCalendar();
-  loadUsers();
-  loadRooms();
-});
+  meetupStore.fetchAllForCalendar()
+  loadUsers()
+  loadRooms()
+})
 </script>

@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { prisma } from '../config/database'
 import { parsePagination, paginatedResponse } from '../utils/pagination'
+import type { ContentWhereInput, ContentUpdateData } from '../interfaces'
 
 interface AuthRequest extends Request {
   user?: { userId: string; email: string }
@@ -75,7 +76,7 @@ function itemToResponse(item: ContentRow, userId?: number) {
 
 export const getAll = async (req: Request, res: Response) => {
   try {
-    const { page, limit, skip } = parsePagination(req.query as Record<string, string>)
+    const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string })
     const tagId = req.query.tagId ? Number(req.query.tagId) : null
     const favoritesOnly = req.query.favorites === '1'
     const authReq = req as AuthRequest
@@ -88,7 +89,7 @@ export const getAll = async (req: Request, res: Response) => {
     const field = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt'
     const orderBy = { [field]: sortOrder } as Record<string, 'asc' | 'desc'>
 
-    const where: Record<string, unknown> = {}
+    const where: ContentWhereInput = {}
     if (tagId) {
       where.contentTags = { some: { tagId } }
     }
@@ -225,7 +226,7 @@ export const update = async (req: AuthRequest, res: Response) => {
       }
     }
 
-    const data: Record<string, unknown> = {}
+    const data: ContentUpdateData = {}
     if (title !== undefined) data.title = title
     if (type !== undefined) data.type = type
     if (body !== undefined) data.body = body

@@ -59,7 +59,7 @@
           class="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
         >
           <h3 class="font-semibold text-gray-800">{{ meetup.title }}</h3>
-          <p class="text-sm text-gray-500 mt-1">{{ meetup.date }}</p>
+          <p class="text-sm text-gray-500 mt-1">{{ meetup.startTime }}</p>
           <p v-if="meetup.description" class="text-gray-600 mt-2">{{ meetup.description }}</p>
         </div>
       </div>
@@ -70,64 +70,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useMeetupStore } from '../stores/meetup';
-import apiClient from '../api';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useMeetupStore } from '../stores/meetup'
+import apiClient from '../api'
 
-const router = useRouter();
-const meetupStore = useMeetupStore();
+const router = useRouter()
+const meetupStore = useMeetupStore()
 
-const newRoomSlug = ref('');
-const roomPassword = ref('');
-const joinSlug = ref('');
-const creating = ref(false);
-const joining = ref(false);
-const roomError = ref<string | null>(null);
-const joinError = ref<string | null>(null);
+const newRoomSlug = ref('')
+const roomPassword = ref('')
+const joinSlug = ref('')
+const creating = ref(false)
+const joining = ref(false)
+const roomError = ref<string | null>(null)
+const joinError = ref<string | null>(null)
 
 async function createAndJoin() {
-  const slug = newRoomSlug.value.trim();
-  if (!slug) return;
-  creating.value = true;
-  roomError.value = null;
+  const slug = newRoomSlug.value.trim()
+  if (!slug) return
+  creating.value = true
+  roomError.value = null
   try {
-    const payload: any = { title: slug, slug };
-    if (roomPassword.value.trim()) payload.password = roomPassword.value.trim();
-    await apiClient.post('/rooms', payload);
-    router.push(`/room/${slug}`);
-  } catch (e: any) {
-    if (e.response?.status === 409) {
+    const payload: { title: string; slug: string; password?: string } = { title: slug, slug }
+    if (roomPassword.value.trim()) payload.password = roomPassword.value.trim()
+    await apiClient.post('/rooms', payload)
+    router.push(`/room/${slug}`)
+  } catch (e: unknown) {
+    const err = e as { response?: { status?: number; data?: { message?: string } } }
+    if (err.response?.status === 409) {
       // Room exists and is active — suggest joining
-      roomError.value = e.response?.data?.message || 'Комната уже существует';
+      roomError.value = err.response?.data?.message || 'Комната уже существует'
     } else {
-      roomError.value = e.response?.data?.message || 'Ошибка создания комнаты';
+      roomError.value = err.response?.data?.message || 'Ошибка создания комнаты'
     }
   } finally {
-    creating.value = false;
+    creating.value = false
   }
 }
 
 async function joinRoom() {
-  const slug = joinSlug.value.trim();
-  if (!slug) return;
-  joining.value = true;
-  joinError.value = null;
+  const slug = joinSlug.value.trim()
+  if (!slug) return
+  joining.value = true
+  joinError.value = null
   try {
-    await apiClient.get(`/rooms/${slug}`);
-    router.push(`/room/${slug}`);
-  } catch (e: any) {
-    if (e.response?.status === 404) {
-      joinError.value = 'Комната не найдена. Проверьте название.';
+    await apiClient.get(`/rooms/${slug}`)
+    router.push(`/room/${slug}`)
+  } catch (e: unknown) {
+    const err = e as { response?: { status?: number } }
+    if (err.response?.status === 404) {
+      joinError.value = 'Комната не найдена. Проверьте название.'
     } else {
-      joinError.value = 'Ошибка подключения к комнате';
+      joinError.value = 'Ошибка подключения к комнате'
     }
   } finally {
-    joining.value = false;
+    joining.value = false
   }
 }
 
 onMounted(() => {
-  meetupStore.fetchMeetups();
-});
+  meetupStore.fetchMeetups()
+})
 </script>
