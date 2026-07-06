@@ -1,2 +1,2 @@
 #!/bin/sh
-cd meetup && npm run type-check
+npm run type-check
