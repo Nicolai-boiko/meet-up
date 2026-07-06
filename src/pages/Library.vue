@@ -795,7 +795,9 @@ async function handleSave() {
     isEditing.value = false
     editingId.value = null
   } catch (e: unknown) {
-    saveError.value = e.response?.data?.message || 'Ошибка сохранения'
+    saveError.value =
+      (e as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      'Ошибка сохранения'
   } finally {
     saving.value = false
   }

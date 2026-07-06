@@ -219,7 +219,9 @@ async function handleUpdateProfile() {
       profileSuccess.value = null
     }, 3000)
   } catch (e: unknown) {
-    profileError.value = e.response?.data?.message || 'Ошибка сохранения'
+    profileError.value =
+      (e as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      'Ошибка сохранения'
   } finally {
     saving.value = false
   }
@@ -238,7 +240,9 @@ async function handleChangePassword() {
       passwordSuccess.value = null
     }, 3000)
   } catch (e: unknown) {
-    passwordError.value = e.response?.data?.message || 'Ошибка смены пароля'
+    passwordError.value =
+      (e as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      'Ошибка смены пароля'
   } finally {
     changingPassword.value = false
   }
@@ -254,7 +258,9 @@ async function handleAvatarUpload(e: Event) {
   try {
     await authStore.uploadAvatar(file)
   } catch (e: unknown) {
-    profileError.value = e.response?.data?.message || 'Ошибка загрузки аватара'
+    profileError.value =
+      (e as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      'Ошибка загрузки аватара'
   }
 }
 
