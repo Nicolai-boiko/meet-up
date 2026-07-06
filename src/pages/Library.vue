@@ -26,10 +26,7 @@
             class="flex-1 border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
-            @click="
-              showFavorites = !showFavorites
-              fetchFiltered()
-            "
+            @click="toggleFavorites"
             class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
             :class="
               showFavorites
@@ -572,6 +569,11 @@ const pendingEditFiles = ref<File[]>([])
 const editingFiles = computed<ContentFile[]>(() => {
   return contentStore.current?.files ?? []
 })
+
+function toggleFavorites() {
+  showFavorites.value = !showFavorites.value
+  fetchFiltered()
+}
 
 function onFileSelected(e: Event) {
   const input = e.target as HTMLInputElement
