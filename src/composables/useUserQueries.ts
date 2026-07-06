@@ -4,8 +4,8 @@ import type { UserSummary, PaginatedResponse } from '../types'
 import type { UserQueryParams } from '../interfaces'
 
 export const userKeys = {
-  all: ['users'],
-  list: (params: UserQueryParams) => ['users', 'list', params],
+  all: ['users'] as readonly unknown[],
+  list: (params: UserQueryParams): readonly unknown[] => ['users', 'list', params],
 }
 
 export function useUserList(params: () => UserQueryParams) {
@@ -32,7 +32,7 @@ export function useUpdateUserRole() {
 
 export function useAdminStats() {
   return useQuery({
-    queryKey: ['admin', 'stats'],
+    queryKey: ['admin', 'stats'] as readonly unknown[],
     queryFn: async () => {
       const { data } = await apiClient.get('/admin/stats')
       return data
@@ -43,7 +43,7 @@ export function useAdminStats() {
 
 export function useRooms() {
   return useQuery({
-    queryKey: ['rooms'],
+    queryKey: ['rooms'] as readonly unknown[],
     queryFn: async () => {
       const { data } = await apiClient.get('/rooms')
       return data

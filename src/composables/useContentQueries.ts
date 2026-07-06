@@ -4,9 +4,9 @@ import type { ContentItem, PaginatedResponse, Tag } from '../types'
 import type { ContentQueryParams } from '../interfaces'
 
 export const contentKeys = {
-  all: ['content'],
-  list: (params: ContentQueryParams) => ['content', 'list', params],
-  byId: (id: number) => ['content', 'detail', id],
+  all: ['content'] as readonly unknown[],
+  list: (params: ContentQueryParams): readonly unknown[] => ['content', 'list', params],
+  byId: (id: number): readonly unknown[] => ['content', 'detail', id],
 }
 
 export function useContentList(params: () => ContentQueryParams) {
@@ -83,7 +83,7 @@ export function useToggleFavorite() {
 
 export function useTags() {
   return useQuery({
-    queryKey: ['tags'],
+    queryKey: ['tags'] as readonly unknown[],
     queryFn: async () => {
       const { data } = await apiClient.get<Tag[]>('/tags')
       return data
