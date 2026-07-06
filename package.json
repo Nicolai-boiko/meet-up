@@ -1,0 +1,11 @@
+{
+  "name": "meetup-monorepo",
+  "private": true,
+  "scripts": {
+    "prepare": "cd meetup && husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8"
+  }
+}

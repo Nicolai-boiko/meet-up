@@ -1,25 +1,25 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client'
 
-const SOCKET_URL = 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
-let socket: Socket | null = null;
+let socket: Socket | null = null
 
 export function getSignalingSocket(): Socket {
   if (!socket) {
     socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       autoConnect: false,
-    });
+    })
   }
   if (!socket.connected) {
-    socket.connect();
+    socket.connect()
   }
-  return socket;
+  return socket
 }
 
 export function disconnectSignaling(): void {
   if (socket?.connected) {
-    socket.disconnect();
+    socket.disconnect()
   }
-  socket = null;
+  socket = null
 }

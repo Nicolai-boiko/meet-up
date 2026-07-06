@@ -1,0 +1,2 @@
+#!/bin/sh
+cd meetup && npm run type-check
