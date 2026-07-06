@@ -1076,8 +1076,8 @@ async function handleSave() {
       endTime: string
       roomId: number | null
       participantIds: number[]
-      scope?: string
-      recurrenceType?: string | null
+      scope?: RecurrenceScope
+      recurrenceType?: RecurrenceType | null
       recurrenceEndDate?: string | null
     } = {
       title: form.title,
