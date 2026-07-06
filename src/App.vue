@@ -122,7 +122,7 @@
           </button>
           <select
             v-model="currentLocale"
-            @change="setLocale(currentLocale)"
+            @change="setLocale(currentLocale as 'ru' | 'en')"
             class="bg-blue-700 dark:bg-blue-800 text-white text-xs rounded px-2 py-1 border border-blue-500 focus:outline-none"
           >
             <option value="ru">RU</option>
