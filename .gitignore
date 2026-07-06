@@ -16,8 +16,7 @@ coverage
 .env
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea
 *.suo
 *.ntvs*
@@ -40,3 +39,9 @@ __screenshots__/
 *.timestamp-*-*.mjs
 
 .cache/
+
+# Build outputs
+meetup-backend/dist/
+
+# Package artifacts
+*.tgz
