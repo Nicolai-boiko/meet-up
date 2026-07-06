@@ -3,15 +3,11 @@ import apiClient from '../api'
 import type { Meetup, PaginatedResponse } from '../types'
 import type { MeetupQueryParams } from '../interfaces'
 
-export const meetupKeys = {
-  all: ['meetups'] as readonly unknown[],
-  list: (params: MeetupQueryParams): readonly unknown[] => ['meetups', 'list', params],
-  byId: (id: number): readonly unknown[] => ['meetups', 'detail', id],
-}
+const ALL_MEETUPS = ['meetups'] as const
 
 export function useMeetupList(params: () => MeetupQueryParams) {
   return useQuery({
-    queryKey: () => meetupKeys.list(params()),
+    queryKey: ALL_MEETUPS,
     queryFn: async () => {
       const { data } = await apiClient.get<PaginatedResponse<Meetup>>('/meetups', {
         params: params(),
@@ -23,7 +19,7 @@ export function useMeetupList(params: () => MeetupQueryParams) {
 
 export function useMeetupById(id: () => number | null) {
   return useQuery({
-    queryKey: () => meetupKeys.byId(id()!),
+    queryKey: ['meetups', 'detail', id()] as const,
     queryFn: async () => {
       const { data } = await apiClient.get<Meetup>(`/meetups/${id()}`)
       return data
@@ -39,7 +35,7 @@ export function useCreateMeetup() {
       const { data } = await apiClient.post<{ data: Meetup }>('/meetups', payload)
       return data.data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: meetupKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_MEETUPS }),
   })
 }
 
@@ -50,7 +46,7 @@ export function useUpdateMeetup() {
       const { data } = await apiClient.put<{ data: Meetup }>(`/meetups/${id}`, payload)
       return data.data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: meetupKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_MEETUPS }),
   })
 }
 
@@ -60,7 +56,7 @@ export function useDeleteMeetup() {
     mutationFn: async ({ id, scope }: { id: number; scope?: string }) => {
       await apiClient.delete(`/meetups/${id}`, { data: { scope } })
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: meetupKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_MEETUPS }),
   })
 }
 
@@ -71,7 +67,7 @@ export function useJoinMeetup() {
       const { data } = await apiClient.post<{ data: Meetup }>(`/meetups/${id}/join`)
       return data.data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: meetupKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_MEETUPS }),
   })
 }
 
@@ -82,6 +78,6 @@ export function useDeclineMeetup() {
       const { data } = await apiClient.post<{ data: Meetup }>(`/meetups/${id}/decline`)
       return data.data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: meetupKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_MEETUPS }),
   })
 }

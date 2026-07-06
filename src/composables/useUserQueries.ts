@@ -3,14 +3,11 @@ import apiClient from '../api'
 import type { UserSummary, PaginatedResponse } from '../types'
 import type { UserQueryParams } from '../interfaces'
 
-export const userKeys = {
-  all: ['users'] as readonly unknown[],
-  list: (params: UserQueryParams): readonly unknown[] => ['users', 'list', params],
-}
+const ALL_USERS = ['users'] as const
 
 export function useUserList(params: () => UserQueryParams) {
   return useQuery({
-    queryKey: () => userKeys.list(params()),
+    queryKey: ALL_USERS,
     queryFn: async () => {
       const { data } = await apiClient.get<PaginatedResponse<UserSummary>>('/users', {
         params: params(),
@@ -26,13 +23,13 @@ export function useUpdateUserRole() {
     mutationFn: async ({ id, role }: { id: number; role: string }) => {
       await apiClient.put(`/users/${id}/role`, { role })
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_USERS }),
   })
 }
 
 export function useAdminStats() {
   return useQuery({
-    queryKey: ['admin', 'stats'] as readonly unknown[],
+    queryKey: ['admin', 'stats'] as const,
     queryFn: async () => {
       const { data } = await apiClient.get('/admin/stats')
       return data
@@ -43,7 +40,7 @@ export function useAdminStats() {
 
 export function useRooms() {
   return useQuery({
-    queryKey: ['rooms'] as readonly unknown[],
+    queryKey: ['rooms'] as const,
     queryFn: async () => {
       const { data } = await apiClient.get('/rooms')
       return data

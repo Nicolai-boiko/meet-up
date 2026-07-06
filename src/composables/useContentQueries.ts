@@ -3,15 +3,12 @@ import apiClient from '../api'
 import type { ContentItem, PaginatedResponse, Tag } from '../types'
 import type { ContentQueryParams } from '../interfaces'
 
-export const contentKeys = {
-  all: ['content'] as readonly unknown[],
-  list: (params: ContentQueryParams): readonly unknown[] => ['content', 'list', params],
-  byId: (id: number): readonly unknown[] => ['content', 'detail', id],
-}
+const ALL_CONTENT = ['content'] as const
+const ALL_TAGS = ['tags'] as const
 
 export function useContentList(params: () => ContentQueryParams) {
   return useQuery({
-    queryKey: () => contentKeys.list(params()),
+    queryKey: ALL_CONTENT,
     queryFn: async () => {
       const { data } = await apiClient.get<PaginatedResponse<ContentItem>>('/content', {
         params: params(),
@@ -23,7 +20,7 @@ export function useContentList(params: () => ContentQueryParams) {
 
 export function useContentById(id: () => number | null) {
   return useQuery({
-    queryKey: () => contentKeys.byId(id()!),
+    queryKey: ['content', 'detail', id()] as const,
     queryFn: async () => {
       const { data } = await apiClient.get<ContentItem>(`/content/${id()}`)
       return data
@@ -41,7 +38,7 @@ export function useCreateContent() {
       })
       return data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: contentKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_CONTENT }),
   })
 }
 
@@ -54,7 +51,7 @@ export function useUpdateContent() {
       })
       return data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: contentKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_CONTENT }),
   })
 }
 
@@ -64,7 +61,7 @@ export function useDeleteContent() {
     mutationFn: async (id: number) => {
       await apiClient.delete(`/content/${id}`)
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: contentKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_CONTENT }),
   })
 }
 
@@ -77,13 +74,13 @@ export function useToggleFavorite() {
       )
       return data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: contentKeys.all }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_CONTENT }),
   })
 }
 
 export function useTags() {
   return useQuery({
-    queryKey: ['tags'] as readonly unknown[],
+    queryKey: ALL_TAGS,
     queryFn: async () => {
       const { data } = await apiClient.get<Tag[]>('/tags')
       return data
@@ -99,6 +96,6 @@ export function useCreateTag() {
       const { data } = await apiClient.post<Tag>('/tags', { name })
       return data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ALL_TAGS }),
   })
 }
