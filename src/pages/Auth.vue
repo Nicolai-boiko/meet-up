@@ -1,54 +1,63 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col justify-center sm:py-12">
+  <div
+    class="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col justify-center sm:py-12 transition-colors"
+  >
     <div class="p-10 xs:p-0 mx-auto w-full max-w-md">
-      <div class="bg-white shadow w-full rounded-lg divide-y divide-gray-200 min-w-80">
-        <!-- Tabs -->
+      <div
+        class="bg-white dark:bg-gray-900 shadow w-full rounded-lg divide-y divide-gray-200 dark:divide-gray-700 min-w-80"
+      >
         <div v-if="authMode !== 'forgotPassword'" class="p-5">
           <div class="flex justify-around">
             <button
               @click="switchMode('login')"
-              :class="[
-                'px-4 py-2 font-bold rounded-md',
-                authMode === 'login' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700',
-              ]"
+              :class="
+                authMode === 'login'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
+              "
+              class="px-4 py-2 font-bold rounded-md"
             >
-              Авторизация
+              {{ $t('auth.login') }}
             </button>
             <button
               @click="switchMode('register')"
-              :class="[
-                'px-4 py-2 font-bold rounded-md',
-                authMode === 'register' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700',
-              ]"
+              :class="
+                authMode === 'register'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
+              "
+              class="px-4 py-2 font-bold rounded-md"
             >
-              Регистрация
+              {{ $t('auth.register') }}
             </button>
           </div>
         </div>
-
-        <!-- Login Form -->
         <div v-if="authMode === 'login'" class="px-5 py-7">
           <form @submit.prevent="handleLogin">
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">E-mail</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.email')
+            }}</label>
             <input
               v-model="email"
               type="email"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">Пароль</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.password')
+            }}</label>
             <input
               v-model="password"
               type="password"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
             <div v-if="error" class="text-red-500 text-sm mb-4">{{ error }}</div>
             <button
               type="submit"
-              class="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+              class="transition duration-200 bg-blue-500 hover:bg-blue-600 text-white w-full py-2.5 rounded-lg text-sm font-semibold"
             >
-              <span class="inline-block mr-2">Войти</span>
+              {{ $t('auth.loginBtn') }}
             </button>
           </form>
           <div class="text-center mt-4">
@@ -56,54 +65,57 @@
               href="#"
               @click.prevent="switchMode('forgotPassword')"
               class="text-sm text-blue-500 hover:underline"
+              >{{ $t('auth.forgotPassword') }}</a
             >
-              Забыли пароль?
-            </a>
           </div>
         </div>
-
-        <!-- Registration Form -->
         <div v-if="authMode === 'register'" class="px-5 py-7">
           <form @submit.prevent="handleRegister">
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">Имя</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.name')
+            }}</label>
             <input
               v-model="name"
               type="text"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">E-mail</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.email')
+            }}</label>
             <input
               v-model="email"
               type="email"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">Пароль</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.password')
+            }}</label>
             <input
               v-model="password"
               type="password"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
             <div v-if="error" class="text-red-500 text-sm mb-4">{{ error }}</div>
             <button
               type="submit"
-              class="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+              class="transition duration-200 bg-blue-500 hover:bg-blue-600 text-white w-full py-2.5 rounded-lg text-sm font-semibold"
             >
-              <span class="inline-block mr-2">Зарегистрироваться</span>
+              {{ $t('auth.registerBtn') }}
             </button>
           </form>
         </div>
-
-        <!-- Forgot Password Form -->
         <div v-if="authMode === 'forgotPassword'" class="px-5 py-7">
           <form @submit.prevent="handleForgotPassword">
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">E-mail</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.email')
+            }}</label>
             <input
               v-model="email"
               type="email"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
             />
             <div v-if="error" class="text-red-500 text-sm mb-4">{{ error }}</div>
@@ -111,11 +123,9 @@
             <button
               type="submit"
               :disabled="forgotSending"
-              class="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block disabled:opacity-50"
+              class="transition duration-200 bg-blue-500 hover:bg-blue-600 text-white w-full py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
             >
-              <span class="inline-block mr-2">{{
-                forgotSending ? 'Отправка...' : 'Отправить'
-              }}</span>
+              {{ forgotSending ? '...' : $t('auth.sendReset') }}
             </button>
           </form>
           <div class="text-center mt-4">
@@ -123,49 +133,45 @@
               href="#"
               @click.prevent="switchMode('login')"
               class="text-sm text-blue-500 hover:underline"
+              >{{ $t('auth.hasAccount') }}</a
             >
-              Вернуться к входу
-            </a>
           </div>
         </div>
-
-        <!-- Reset Password Form -->
         <div v-if="authMode === 'resetPassword'" class="px-5 py-7">
           <div class="text-center mb-4">
-            <h3 class="font-semibold text-gray-800">Новый пароль</h3>
-            <p class="text-sm text-gray-500 mt-1">Придумайте новый пароль для вашего аккаунта</p>
+            <h3 class="font-semibold text-gray-800 dark:text-white">
+              {{ $t('auth.resetPassword') }}
+            </h3>
           </div>
           <form @submit.prevent="handleResetPassword">
-            <label class="font-semibold text-sm text-gray-600 pb-1 block">Новый пароль</label>
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.newPassword')
+            }}</label>
             <input
               v-model="newPassword"
               type="password"
-              class="border rounded-lg px-3 py-2 mt-1 mb-2 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-2 text-sm w-full"
               required
               minlength="6"
-              placeholder="Не менее 6 символов"
             />
-            <label class="font-semibold text-sm text-gray-600 pb-1 block"
-              >Подтверждение пароля</label
-            >
+            <label class="font-semibold text-sm text-gray-600 dark:text-white pb-1 block">{{
+              $t('auth.confirmPassword')
+            }}</label>
             <input
               v-model="newPasswordConfirm"
               type="password"
-              class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
               required
               minlength="6"
-              placeholder="Повторите пароль"
             />
             <div v-if="error" class="text-red-500 text-sm mb-4">{{ error }}</div>
             <div v-if="message" class="text-green-500 text-sm mb-4">{{ message }}</div>
             <button
               type="submit"
               :disabled="resetSending"
-              class="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block disabled:opacity-50"
+              class="transition duration-200 bg-blue-500 hover:bg-blue-600 text-white w-full py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
             >
-              <span class="inline-block mr-2">{{
-                resetSending ? 'Сохранение...' : 'Сохранить пароль'
-              }}</span>
+              {{ resetSending ? '...' : $t('auth.resetBtn') }}
             </button>
           </form>
         </div>

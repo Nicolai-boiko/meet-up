@@ -1,16 +1,13 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 py-8 transition-colors">
     <div class="max-w-2xl mx-auto px-4 space-y-6">
-      <h1 class="text-2xl font-bold text-gray-800">Профиль</h1>
-
-      <!-- Avatar + Name Card -->
-      <div class="bg-white rounded-xl shadow-sm p-6">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $t('profile.title') }}</h1>
+      <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
         <div class="flex flex-col sm:flex-row items-center gap-5">
-          <!-- Avatar -->
           <div class="relative group">
             <div
               v-if="authStore.profile?.avatar"
-              class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200"
+              class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-600"
             >
               <img
                 :src="authStore.profile.avatar"
@@ -20,12 +17,11 @@
             </div>
             <div
               v-else
-              class="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white border-4 border-gray-200"
+              class="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white border-4 border-gray-200 dark:border-gray-600"
               :style="{ backgroundColor: avatarColor }"
             >
               {{ authStore.initials }}
             </div>
-            <!-- Upload overlay -->
             <label
               class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
             >
@@ -38,68 +34,75 @@
             </label>
           </div>
           <div class="text-center sm:text-left">
-            <h2 class="text-xl font-semibold text-gray-800">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               {{ authStore.displayName }}
             </h2>
-            <p class="text-gray-500 text-sm">{{ authStore.profile?.email }}</p>
+            <p class="text-gray-500 dark:text-white text-sm">{{ authStore.profile?.email }}</p>
             <button
               v-if="authStore.profile?.avatar"
               @click="removeAvatar"
               class="text-red-500 text-sm hover:underline mt-1"
             >
-              Удалить аватар
+              {{ $t('profile.removeAvatar') }}
             </button>
           </div>
         </div>
       </div>
-
-      <!-- Profile Edit Form -->
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Личные данные</h3>
+      <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          {{ $t('profile.personalData') }}
+        </h3>
         <form @submit.prevent="handleUpdateProfile" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Имя (username)</label>
-              <input
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('profile.username')
+              }}</label
+              ><input
                 v-model="form.name"
                 type="text"
-                class="w-full border rounded-lg px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                 disabled
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
-              <input
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1"
+                >Email</label
+              ><input
                 :value="authStore.profile?.email"
                 type="email"
-                class="w-full border rounded-lg px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                 disabled
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Имя</label>
-              <input
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('profile.firstName')
+              }}</label
+              ><input
                 v-model="form.firstName"
                 type="text"
-                placeholder="Иван"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Фамилия</label>
-              <input
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('profile.lastName')
+              }}</label
+              ><input
                 v-model="form.lastName"
                 type="text"
-                placeholder="Иванов"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Дата рождения</label>
-              <input
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('profile.birthDate')
+              }}</label
+              ><input
                 v-model="form.birthDate"
                 type="date"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
           </div>
@@ -110,30 +113,34 @@
             :disabled="saving"
             class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
           >
-            {{ saving ? 'Сохранение...' : 'Сохранить' }}
+            {{ saving ? $t('profile.saving') : $t('profile.save') }}
           </button>
         </form>
       </div>
-
-      <!-- Change Password -->
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Сменить пароль</h3>
+      <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          {{ $t('profile.changePassword') }}
+        </h3>
         <form @submit.prevent="handleChangePassword" class="space-y-4 max-w-md">
           <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Текущий пароль</label>
-            <input
+            <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+              $t('profile.currentPassword')
+            }}</label
+            ><input
               v-model="passwordForm.current"
               type="password"
-              class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Новый пароль</label>
-            <input
+            <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+              $t('profile.newPassword')
+            }}</label
+            ><input
               v-model="passwordForm.new"
               type="password"
-              class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               minlength="6"
             />
@@ -145,7 +152,7 @@
             :disabled="changingPassword"
             class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
           >
-            {{ changingPassword ? 'Смена...' : 'Сменить пароль' }}
+            {{ changingPassword ? $t('profile.changing') : $t('profile.changePassword') }}
           </button>
         </form>
       </div>

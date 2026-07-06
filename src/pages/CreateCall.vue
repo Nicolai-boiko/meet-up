@@ -1,16 +1,18 @@
 <template>
   <div class="space-y-8">
     <!-- Create / Join Room -->
-    <section class="bg-white rounded-xl shadow-sm p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Видео-комнаты</h2>
+    <section class="bg-white dark:bg-gray-900 dark:bg-gray-900 rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+        {{ $t('createCall.title') }}
+      </h2>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1 flex flex-col gap-2">
           <div class="flex gap-2">
             <input
               v-model="newRoomSlug"
               type="text"
-              placeholder="Название комнаты (slug)"
-              class="border rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              :placeholder="$t('createCall.roomNamePlaceholder')"
+              class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
               @keyup.enter="createAndJoin"
             />
             <button
@@ -18,22 +20,22 @@
               :disabled="!newRoomSlug.trim() || creating"
               class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
             >
-              {{ creating ? 'Создание...' : 'Создать' }}
+              {{ creating ? $t('createCall.creating') : $t('createCall.create') }}
             </button>
           </div>
           <input
             v-model="roomPassword"
             type="text"
-            placeholder="Пароль (оставьте пустым для открытой комнаты)"
-            class="border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            :placeholder="$t('createCall.passwordOptional')"
+            class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
         <div class="flex-1 flex gap-2">
           <input
             v-model="joinSlug"
             type="text"
-            placeholder="Slug комнаты для входа"
-            class="border rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            :placeholder="$t('createCall.joinPlaceholder')"
+            class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
             @keyup.enter="joinRoom"
           />
           <button
@@ -41,7 +43,7 @@
             :disabled="!joinSlug.trim() || joining"
             class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors"
           >
-            {{ joining ? 'Поиск...' : 'Войти' }}
+            {{ joining ? $t('createCall.joining') : $t('createCall.join') }}
           </button>
         </div>
       </div>
@@ -50,22 +52,31 @@
     </section>
 
     <!-- Upcoming Meetups -->
-    <section v-if="meetupStore.upcomingMeetups.length" class="bg-white rounded-xl shadow-sm p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Предстоящие митапы</h2>
+    <section
+      v-if="meetupStore.upcomingMeetups.length"
+      class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6"
+    >
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+        {{ $t('createCall.upcomingTitle') }}
+      </h2>
       <div class="space-y-3">
         <div
           v-for="meetup in meetupStore.upcomingMeetups"
           :key="meetup.id"
-          class="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+          class="border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
-          <h3 class="font-semibold text-gray-800">{{ meetup.title }}</h3>
-          <p class="text-sm text-gray-500 mt-1">{{ meetup.startTime }}</p>
-          <p v-if="meetup.description" class="text-gray-600 mt-2">{{ meetup.description }}</p>
+          <h3 class="font-semibold text-gray-800 dark:text-white">{{ meetup.title }}</h3>
+          <p class="text-sm text-gray-500 dark:text-white mt-1">{{ meetup.startTime }}</p>
+          <p v-if="meetup.description" class="text-gray-600 dark:text-white mt-2">
+            {{ meetup.description }}
+          </p>
         </div>
       </div>
     </section>
 
-    <div v-if="meetupStore.loading" class="text-center text-gray-500 py-8">Загрузка...</div>
+    <div v-if="meetupStore.loading" class="text-center text-gray-500 dark:text-white py-8">
+      {{ $t('common.loading') }}
+    </div>
   </div>
 </template>
 

@@ -1,15 +1,19 @@
 <template>
-  <div class="flex h-full -mx-6 -my-6 bg-white overflow-hidden">
+  <div class="flex h-full -mx-6 -my-6 bg-white dark:bg-gray-900 overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-72 border-r border-gray-200 flex flex-col bg-gray-50 shrink-0">
+    <aside
+      class="w-72 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900 shrink-0"
+    >
       <div class="p-4 border-b border-gray-200">
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-semibold text-gray-800">Библиотека</h2>
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
+            {{ $t('library.title') }}
+          </h2>
           <button
             v-if="authStore.isAdmin"
             @click="openCreate"
             class="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 transition-colors"
-            title="Добавить материал"
+            :title="$t('library.addMaterial')"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -22,8 +26,8 @@
           <input
             v-model="search"
             type="text"
-            placeholder="Поиск..."
-            class="flex-1 border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            :placeholder="$t('library.search')"
+            class="flex-1 border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             @click="toggleFavorites"
@@ -31,9 +35,9 @@
             :class="
               showFavorites
                 ? 'bg-amber-100 text-amber-600'
-                : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'
             "
-            title="Избранное"
+            :title="$t('library.favorites')"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -46,13 +50,13 @@
         <div class="mt-2">
           <select
             v-model="sortBy"
-            class="w-full border rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-600"
+            class="w-full border rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-900 text-gray-600 dark:text-white"
           >
-            <option value="createdAt_desc">По дате (новые)</option>
-            <option value="createdAt_asc">По дате (старые)</option>
-            <option value="title_asc">По названию (А-Я)</option>
-            <option value="title_desc">По названию (Я-А)</option>
-            <option value="type_asc">По типу</option>
+            <option value="createdAt_desc">{{ $t('library.sortNew') }}</option>
+            <option value="createdAt_asc">{{ $t('library.sortOld') }}</option>
+            <option value="title_asc">{{ $t('library.sortAz') }}</option>
+            <option value="title_desc">{{ $t('library.sortZa') }}</option>
+            <option value="type_asc">{{ $t('library.sortType') }}</option>
           </select>
         </div>
         <!-- Tag filter chips -->
@@ -73,16 +77,20 @@
         </div>
       </div>
       <div class="flex-1 overflow-y-auto">
-        <div v-if="contentStore.loading" class="p-4 text-center text-gray-500 text-sm">
-          Загрузка...
+        <div
+          v-if="contentStore.loading"
+          class="p-4 text-center text-gray-500 dark:text-white text-sm"
+        >
+          {{ $t('library.loading') }}
         </div>
         <div
           v-for="item in filteredItems"
           :key="item.id"
           @click="selectItem(item)"
-          class="px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors"
+          class="px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           :class="{
-            'bg-blue-50 border-l-4 border-l-blue-500': contentStore.current?.id === item.id,
+            'bg-blue-50 dark:bg-blue-900/40 border-l-4 border-l-blue-500':
+              contentStore.current?.id === item.id,
           }"
         >
           <div class="flex items-center gap-2">
@@ -99,7 +107,9 @@
             </span>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5">
-                <div class="text-sm font-medium text-gray-800 truncate">{{ item.title }}</div>
+                <div class="text-sm font-medium text-gray-800 dark:text-white truncate">
+                  {{ item.title }}
+                </div>
                 <button
                   v-if="authStore.isAuthenticated"
                   @click.stop="handleToggleFavorite(item)"
@@ -116,7 +126,7 @@
                   </svg>
                 </button>
               </div>
-              <div class="text-xs text-gray-400 mt-0.5">
+              <div class="text-xs text-gray-400 dark:text-white mt-0.5">
                 {{ item.author?.name }} · {{ formatDate(item.createdAt) }}
               </div>
               <div v-if="item.tags?.length" class="flex flex-wrap gap-1 mt-1">
@@ -133,18 +143,22 @@
         </div>
         <div
           v-if="!contentStore.loading && filteredItems.length === 0"
-          class="p-4 text-center text-gray-400 text-sm"
+          class="p-4 text-center text-gray-400 dark:text-white text-sm"
         >
-          {{ search ? 'Ничего не найдено' : 'Нет материалов' }}
+          {{ search ? $t('library.notFound') : $t('library.noItems') }}
         </div>
         <!-- Load more -->
         <div v-if="contentStore.hasMore && !search" class="p-3 border-t border-gray-100">
           <button
             @click="loadMore"
             :disabled="contentStore.loadingMore"
-            class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+            class="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:text-white rounded-lg transition-colors disabled:opacity-50"
           >
-            {{ contentStore.loadingMore ? 'Загрузка...' : `Загрузить ещё (${remainingCount})` }}
+            {{
+              contentStore.loadingMore
+                ? $t('library.loading')
+                : $t('library.loadMore', { count: remainingCount })
+            }}
           </button>
         </div>
       </div>
@@ -155,7 +169,7 @@
       <!-- Empty selection state -->
       <div
         v-if="!contentStore.current && !isEditing"
-        class="flex-1 flex flex-col items-center justify-center text-gray-400 gap-3"
+        class="flex-1 flex flex-col items-center justify-center text-gray-400 dark:text-white gap-3"
       >
         <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -165,13 +179,13 @@
             d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
           />
         </svg>
-        <span class="text-lg">Выберите материал из списка слева</span>
+        <span class="text-lg">{{ $t('library.selectItem') }}</span>
         <button
           v-if="authStore.isAdmin"
           @click="openCreate"
           class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
-          Создать новый
+          {{ $t('library.create') }}
         </button>
       </div>
 
@@ -195,7 +209,7 @@
                 </span>
                 <h1 class="text-2xl font-bold text-gray-900">{{ contentStore.current.title }}</h1>
               </div>
-              <div class="flex items-center gap-3 text-sm text-gray-500">
+              <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-white">
                 <span>{{ contentStore.current.author?.name }}</span>
                 <span>·</span>
                 <span>{{ formatDate(contentStore.current.createdAt) }}</span>
@@ -204,15 +218,15 @@
             <div v-if="authStore.isAdmin" class="flex gap-2">
               <button
                 @click="openEdit"
-                class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                Редактировать
+                {{ $t('common.edit') }}
               </button>
               <button
                 @click="handleDelete"
                 class="px-3 py-1.5 text-sm border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
               >
-                Удалить
+                {{ $t('common.delete') }}
               </button>
             </div>
           </div>
@@ -234,7 +248,11 @@
 
           <!-- Files list -->
           <div v-if="contentStore.current.files?.length" class="mb-6">
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Файлы</h3>
+            <h3
+              class="text-sm font-semibold text-gray-500 dark:text-white uppercase tracking-wide mb-2"
+            >
+              {{ $t('library.filesSection') }}
+            </h3>
             <div class="space-y-2">
               <div
                 v-for="f in contentStore.current.files"
@@ -287,7 +305,7 @@
                 />
               </svg>
               <span class="text-sm font-medium">{{
-                contentStore.current.fileName || 'Скачать файл'
+                contentStore.current.fileName || $t('library.downloadFile')
               }}</span>
             </a>
           </div>
@@ -295,11 +313,13 @@
           <!-- Body -->
           <div
             v-if="contentStore.current.body"
-            class="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed"
+            class="prose max-w-none text-gray-700 dark:text-white whitespace-pre-wrap leading-relaxed"
           >
             {{ contentStore.current.body }}
           </div>
-          <div v-else class="text-gray-400 italic">Нет содержимого</div>
+          <div v-else class="text-gray-400 dark:text-white dark:text-white italic">
+            {{ $t('library.noContent') }}
+          </div>
         </div>
       </div>
 
@@ -311,47 +331,58 @@
           </h2>
           <form @submit.prevent="handleSave" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Название</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.titleLabel')
+              }}</label>
               <input
                 v-model="form.title"
                 type="text"
                 required
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Тип</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.typeLabel')
+              }}</label>
               <select
                 v-model="form.type"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
-                <option value="text">Текст</option>
-                <option value="video">Видео</option>
-                <option value="link">Ссылка</option>
-                <option value="file">Файл</option>
+                <option value="text">{{ $t('library.typeText') }}</option>
+                <option value="video">{{ $t('library.typeVideo') }}</option>
+                <option value="link">{{ $t('library.typeLink') }}</option>
+                <option value="file">{{ $t('library.typeFile') }}</option>
               </select>
             </div>
             <div v-if="form.type === 'video' || form.type === 'link'">
-              <label class="block text-sm font-medium text-gray-600 mb-1">URL</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.urlLabel')
+              }}</label>
               <input
                 v-model="form.mediaUrl"
                 type="url"
-                placeholder="https://..."
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                :placeholder="$t('library.urlPlaceholder')"
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div v-if="form.type === 'file'">
-              <label class="block text-sm font-medium text-gray-600 mb-1">Файл</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.typeFile')
+              }}</label>
               <input
                 ref="fileInput"
                 type="file"
                 @change="onFileSelected"
-                class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                class="w-full text-sm text-gray-600 dark:text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
-              <div v-if="selectedFile" class="text-xs text-gray-500 mt-1">
+              <div v-if="selectedFile" class="text-xs text-gray-500 dark:text-white mt-1">
                 {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
               </div>
-              <div v-else-if="editingId && form.mediaUrl" class="text-xs text-gray-500 mt-1">
+              <div
+                v-else-if="editingId && form.mediaUrl"
+                class="text-xs text-gray-500 dark:text-white mt-1"
+              >
                 Текущий файл: {{ form.fileName || 'загружен' }} (новый не выбран)
               </div>
             </div>
@@ -359,18 +390,22 @@
             <div>
               <!-- Edit mode: already saved files -->
               <div v-if="editingId && editingFiles.length" class="space-y-1">
-                <label class="block text-sm font-medium text-gray-600 mb-1">Файлы записи</label>
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('library.recordFiles')
+                }}</label>
                 <div
                   v-for="f in editingFiles"
                   :key="f.id"
-                  class="flex items-center justify-between px-3 py-2 bg-gray-50 border rounded-lg"
+                  class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800 border dark:border-gray-600 rounded-lg"
                 >
-                  <span class="text-sm text-gray-700 truncate">{{ f.fileName }}</span>
+                  <span class="text-sm text-gray-700 dark:text-white truncate">{{
+                    f.fileName
+                  }}</span>
                   <button
                     type="button"
                     @click="handleDeleteFile(f.id)"
                     class="ml-2 text-red-400 hover:text-red-600 shrink-0"
-                    title="Удалить"
+                    :title="$t('common.delete')"
                   >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path
@@ -384,16 +419,16 @@
               </div>
               <!-- Create mode: pending files (not yet uploaded) -->
               <div v-if="!editingId && pendingCreateFiles.length" class="space-y-1">
-                <label class="block text-sm font-medium text-gray-600 mb-1"
-                  >Файлы для загрузки</label
-                >
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('library.filesToUpload')
+                }}</label>
                 <div
                   v-for="(f, idx) in pendingCreateFiles"
                   :key="idx"
                   class="flex items-center justify-between px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg"
                 >
-                  <span class="text-sm text-gray-700 truncate">{{ f.name }}</span>
-                  <span class="text-xs text-gray-400 shrink-0 mx-2">{{
+                  <span class="text-sm text-gray-700 dark:text-white truncate">{{ f.name }}</span>
+                  <span class="text-xs text-gray-400 dark:text-white shrink-0 mx-2">{{
                     formatFileSize(f.size)
                   }}</span>
                   <button
@@ -414,16 +449,16 @@
               </div>
               <!-- Edit mode: pending new files (sent on save) -->
               <div v-if="editingId && pendingEditFiles.length" class="space-y-1 mt-2">
-                <label class="block text-sm font-medium text-gray-600 mb-1"
-                  >Новые файлы (будут загружены при сохранении)</label
-                >
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('library.newFilesPending')
+                }}</label>
                 <div
                   v-for="(f, idx) in pendingEditFiles"
                   :key="idx"
                   class="flex items-center justify-between px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg"
                 >
-                  <span class="text-sm text-gray-700 truncate">{{ f.name }}</span>
-                  <span class="text-xs text-gray-400 shrink-0 mx-2">{{
+                  <span class="text-sm text-gray-700 dark:text-white truncate">{{ f.name }}</span>
+                  <span class="text-xs text-gray-400 dark:text-white shrink-0 mx-2">{{
                     formatFileSize(f.size)
                   }}</span>
                   <button
@@ -444,29 +479,35 @@
               </div>
               <!-- Edit mode: add files (collected locally, sent on save) -->
               <div v-if="editingId" class="mt-2">
-                <label class="block text-sm font-medium text-gray-600 mb-1">Добавить файлы</label>
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('library.addFiles')
+                }}</label>
                 <input
                   type="file"
                   multiple
                   @change="onPendingEditFilesSelected"
-                  class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  class="w-full text-sm text-gray-600 dark:text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
               <!-- Create mode: select files (sent on save) -->
               <div v-if="!editingId" class="mt-2">
-                <label class="block text-sm font-medium text-gray-600 mb-1">Добавить файлы</label>
+                <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                  $t('library.addFiles')
+                }}</label>
                 <input
                   type="file"
                   multiple
                   @change="onPendingFilesSelected"
-                  class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  class="w-full text-sm text-gray-600 dark:text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Теги</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.tagsLabel')
+              }}</label>
               <div
-                class="flex flex-wrap gap-1.5 p-2 border rounded-lg min-h-[38px] bg-white items-center"
+                class="flex flex-wrap gap-1.5 p-2 border rounded-lg min-h-[38px] bg-white dark:bg-gray-900 items-center"
               >
                 <span
                   v-for="tag in allTags"
@@ -476,19 +517,21 @@
                   :class="
                     formTagIds.includes(tag.id)
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'
                   "
                 >
                   {{ tag.name }}
                 </span>
-                <span v-if="allTags.length === 0" class="text-xs text-gray-400">Нет тегов</span>
+                <span v-if="allTags.length === 0" class="text-xs text-gray-400 dark:text-white">{{
+                  $t('library.noTags')
+                }}</span>
                 <!-- Inline new tag input (admin only) -->
                 <div v-if="authStore.isAdmin" class="flex gap-1 items-center">
                   <input
                     v-model="newTagName"
                     type="text"
-                    placeholder="Новый тег"
-                    class="w-20 px-1.5 py-0.5 text-xs border rounded-full focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    :placeholder="$t('library.newTagPlaceholder')"
+                    class="w-20 px-1.5 py-0.5 text-xs border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-400"
                     @keydown.enter.prevent="createAndAddTag"
                   />
                   <button
@@ -503,12 +546,14 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Содержимое</label>
+              <label class="block text-sm font-medium text-gray-600 dark:text-white mb-1">{{
+                $t('library.bodyLabel')
+              }}</label>
               <textarea
                 v-model="form.body"
                 rows="12"
-                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono"
-                placeholder="Текст материала..."
+                class="w-full border dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono"
+                :placeholder="$t('library.bodyPlaceholder')"
               ></textarea>
             </div>
             <div v-if="saveError" class="text-red-500 text-sm">{{ saveError }}</div>
@@ -518,14 +563,14 @@
                 :disabled="saving"
                 class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
               >
-                {{ saving ? 'Сохранение...' : 'Сохранить' }}
+                {{ saving ? $t('library.saving') : $t('library.save') }}
               </button>
               <button
                 type="button"
                 @click="cancelEdit"
-                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                class="px-6 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                Отмена
+                {{ $t('common.cancel') }}
               </button>
             </div>
           </form>
@@ -540,8 +585,11 @@ import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useContentStore } from '../stores/content'
 import { useAuthStore } from '../stores/auth'
 import { useConfirm } from '../composables/useConfirm'
+import { useI18n } from 'vue-i18n'
 import apiClient from '../api'
 import type { ContentFile, ContentItem, Tag } from '../types'
+
+const { t } = useI18n()
 
 const contentStore = useContentStore()
 const authStore = useAuthStore()
@@ -808,7 +856,7 @@ async function handleSave() {
 async function handleDelete() {
   if (!contentStore.current) return
   const ok = await confirm(
-    'Удалить материал?',
+    t('library.deleteMaterial'),
     `«${contentStore.current.title}» будет удалён безвозвратно.`,
     'danger',
   )

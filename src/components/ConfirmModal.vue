@@ -11,7 +11,12 @@
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
         <!-- Modal -->
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        <div
+          role="dialog"
+          aria-modal="true"
+          :aria-label="title"
+          class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
+        >
           <!-- Icon header -->
           <div class="pt-8 pb-4 flex flex-col items-center" :class="headerClass">
             <div
@@ -66,12 +71,17 @@
                 />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-gray-900 text-center px-6">{{ title }}</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white text-center px-6">
+              {{ title }}
+            </h3>
           </div>
 
           <!-- Body -->
           <div class="px-6 pb-2">
-            <p v-if="message" class="text-sm text-gray-500 text-center leading-relaxed">
+            <p
+              v-if="message"
+              class="text-sm text-gray-500 dark:text-white text-center leading-relaxed"
+            >
               {{ message }}
             </p>
           </div>
@@ -80,7 +90,7 @@
           <div class="px-6 pb-6 pt-4 flex gap-3">
             <button
               @click="cancel"
-              class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors text-sm"
+              class="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
             >
               {{ cancelText }}
             </button>

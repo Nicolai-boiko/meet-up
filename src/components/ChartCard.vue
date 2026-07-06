@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="bg-white rounded-xl shadow-sm p-5">
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
     <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{{ title }}</h3>
     <div v-if="hasData" class="max-h-64">
       <slot />

@@ -45,7 +45,7 @@ function onBackdrop(e: MouseEvent) {
       @keydown.escape="close"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full overflow-hidden"
+        class="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full overflow-hidden"
         :class="{
           'max-w-sm': size === 'sm',
           'max-w-lg': size === 'md' || !size,
@@ -54,10 +54,13 @@ function onBackdrop(e: MouseEvent) {
       >
         <div
           v-if="title"
-          class="flex items-center justify-between px-6 py-4 border-b border-gray-100"
+          class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700"
         >
-          <h3 class="text-lg font-semibold text-gray-800">{{ title }}</h3>
-          <button @click="close" class="text-gray-400 hover:text-gray-600 p-1">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ title }}</h3>
+          <button
+            @click="close"
+            class="text-gray-400 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 p-1"
+          >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
