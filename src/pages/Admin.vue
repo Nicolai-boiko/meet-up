@@ -592,7 +592,9 @@ const usersChartData = computed(() => {
 const typeChartData = computed(() => {
   if (!dashStats.value?.contentByType.length) return null
   return {
-    labels: dashStats.value.contentByType.map((c) => TYPE_LABELS.value[c.type] ?? c.type),
+    labels: dashStats.value.contentByType.map(
+      (c) => TYPE_LABELS.value[c.type as keyof typeof TYPE_LABELS.value] ?? c.type,
+    ),
     datasets: [
       {
         label: t('admin.chartMaterials'),

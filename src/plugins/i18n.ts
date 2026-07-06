@@ -12,7 +12,7 @@ export const i18n = createI18n({
   messages: { ru, en },
 })
 
-export function setLocale(lang: string) {
+export function setLocale(lang: 'ru' | 'en') {
   i18n.global.locale.value = lang
   localStorage.setItem('locale', lang)
 }
