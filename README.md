@@ -1,48 +1,28 @@
-# meetup
+# MeetUp — видео-конференции и обмен опытом
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3, Express 5, PostgreSQL 17, Prisma 7, Socket.io, Tailwind CSS 4.
 
-## Recommended IDE Setup
-
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Быстрый старт
 
 ```sh
-npm install
+git clone <repo-url> && cd meet-up
+docker compose up -d
+cp meetup-backend/.env.example meetup-backend/.env
+npm install && cd meetup-backend && npm install
+npm run db:generate && npm run db:migrate
+npm run dev &                     # бэкенд → localhost:3000
+cd .. && npm run dev              # фронтенд → localhost:5173
 ```
 
-### Compile and Hot-Reload for Development
+Если нет Docker — установи PostgreSQL, создай базу `meetup_db` и поправь `DATABASE_URL` в `.env`.
 
-```sh
-npm run dev
+## Команды
+
 ```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+npm run dev              # фронтенд (корень)
+npm run dev              # бэкенд (meetup-backend/)
+npm run db:migrate       # применить миграции
+npm run db:push          # синхронизировать схему БД без миграций
+npm run db:studio        # GUI для БД (Prisma Studio)
+npm run build            # собрать фронтенд
 ```
