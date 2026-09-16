@@ -350,6 +350,17 @@ export function useWebRTC(
     }
   }
 
+  async function replaceAudioTrackInPeers(newTrack: MediaStreamTrack) {
+    for (const pc of peerConnections.values()) {
+      try {
+        const sender = pc.getSenders().find((s) => s.track?.kind === 'audio')
+        if (sender) await sender.replaceTrack(newTrack)
+      } catch (e) {
+        console.error('Failed to replace audio track for a peer:', e)
+      }
+    }
+  }
+
   async function leaveRoom() {
     peerConnections.forEach((pc) => pc.close())
     peerConnections.clear()
@@ -384,5 +395,6 @@ export function useWebRTC(
     toggleMute,
     toggleVideo,
     toggleScreenShare,
+    replaceAudioTrackInPeers,
   }
 }

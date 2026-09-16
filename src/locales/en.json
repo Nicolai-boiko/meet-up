@@ -197,7 +197,11 @@
     "micOff": "Mute",
     "camNoAccess": "No camera access",
     "camOn": "Turn on camera",
-    "camOff": "Turn off camera"
+    "camOff": "Turn off camera",
+    "deviceSettings": "Audio settings",
+    "selectMic": "Microphone",
+    "noMicName": "Unnamed microphone",
+    "noMicsFound": "No microphones found"
   },
   "admin": {
     "title": "Admin Panel",
