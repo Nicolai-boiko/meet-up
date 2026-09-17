@@ -555,11 +555,11 @@
 
     <AppModal v-model="isSettingsOpen" :title="$t('video.deviceSettings')" size="sm">
       <div class="space-y-2">
-        <p class="text-gray-300 text-sm">{{ $t('video.selectMic') }}</p>
+        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ $t('video.selectMic') }}</p>
         <label
           v-for="mic in audioInputs"
           :key="mic.deviceId"
-          class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer"
+          class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
         >
           <input
             type="radio"
@@ -568,7 +568,9 @@
             @change="onMicChange"
             class="accent-blue-500"
           />
-          <span class="text-white text-sm">{{ mic.label || $t('video.noMicName') }}</span>
+          <span class="text-gray-800 dark:text-white text-sm">{{
+            mic.label || $t('video.noMicName')
+          }}</span>
         </label>
         <p v-if="!audioInputs.length" class="text-gray-500 text-sm">
           {{ $t('video.noMicsFound') }}
