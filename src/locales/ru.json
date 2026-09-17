@@ -263,7 +263,10 @@
     "deviceSettings": "Настройки звука",
     "selectMic": "Микрофон",
     "noMicName": "Микрофон без названия",
-    "noMicsFound": "Микрофоны не найдены"
+    "noMicsFound": "Микрофоны не найдены",
+    "noiseSuppression": "Шумоподавление",
+    "noiseSuppressionOn": "Включено",
+    "noiseSuppressionOff": "Выключено"
   },
   "admin": {
     "title": "Админ-панель",

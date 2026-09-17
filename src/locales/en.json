@@ -201,7 +201,10 @@
     "deviceSettings": "Audio settings",
     "selectMic": "Microphone",
     "noMicName": "Unnamed microphone",
-    "noMicsFound": "No microphones found"
+    "noMicsFound": "No microphones found",
+    "noiseSuppression": "Noise suppression",
+    "noiseSuppressionOn": "On",
+    "noiseSuppressionOff": "Off"
   },
   "admin": {
     "title": "Admin Panel",

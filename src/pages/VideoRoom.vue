@@ -514,7 +514,8 @@
 
       <button
         @click="openSettings"
-        class="control-btn bg-gray-600 hover:bg-gray-500"
+        :disabled="!localStream"
+        class="control-btn bg-gray-600 hover:bg-gray-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-600"
         :title="$t('video.deviceSettings')"
       >
         <svg
@@ -554,27 +555,40 @@
     </footer>
 
     <AppModal v-model="isSettingsOpen" :title="$t('video.deviceSettings')" size="sm">
-      <div class="space-y-2">
-        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ $t('video.selectMic') }}</p>
-        <label
-          v-for="mic in audioInputs"
-          :key="mic.deviceId"
-          class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-        >
-          <input
-            type="radio"
-            :value="mic.deviceId"
-            v-model="selectedAudioInputId"
+      <div class="space-y-4">
+        <div>
+          <label for="mic-select" class="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+            {{ $t('video.selectMic') }}
+          </label>
+          <select
+            id="mic-select"
+            :value="selectedAudioInputId"
             @change="onMicChange"
-            class="accent-blue-500"
-          />
-          <span class="text-gray-800 dark:text-white text-sm">{{
-            mic.label || $t('video.noMicName')
-          }}</span>
-        </label>
-        <p v-if="!audioInputs.length" class="text-gray-500 text-sm">
-          {{ $t('video.noMicsFound') }}
-        </p>
+            class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option v-for="mic in audioInputs" :key="mic.deviceId" :value="mic.deviceId">
+              {{ mic.label || $t('video.noMicName') }}
+            </option>
+          </select>
+          <p v-if="!audioInputs.length" class="text-gray-500 text-sm mt-1">
+            {{ $t('video.noMicsFound') }}
+          </p>
+        </div>
+
+        <div>
+          <label for="noise-select" class="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+            {{ $t('video.noiseSuppression') }}
+          </label>
+          <select
+            id="noise-select"
+            :value="noiseSuppressionEnabled ? 'on' : 'off'"
+            @change="onNoiseSuppressionChange"
+            class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="off">{{ $t('video.noiseSuppressionOff') }}</option>
+            <option value="on">{{ $t('video.noiseSuppressionOn') }}</option>
+          </select>
+        </div>
       </div>
     </AppModal>
   </div>
@@ -587,8 +601,11 @@ import { useWebRTC } from '../composables/useWebRTC'
 import {
   audioInputs,
   selectedAudioInputId,
+  noiseSuppressionEnabled,
   loadAudioDevices,
   changeAudioInput,
+  syncPeerAudioTrack,
+  disposeAudioProcessor,
 } from '../composables/useAudioProcessor'
 import AppModal from '../components/ui/AppModal.vue'
 import { useAuthStore } from '../stores/auth'
@@ -717,10 +734,17 @@ async function openSettings() {
   }
 }
 
-async function onMicChange() {
-  if (localStream.value) {
-    await changeAudioInput(localStream.value, replaceAudioTrackInPeers)
-  }
+async function onMicChange(e: Event) {
+  selectedAudioInputId.value = (e.target as HTMLSelectElement).value
+  if (!localStream.value) return
+  await changeAudioInput(localStream.value)
+  await syncPeerAudioTrack(localStream.value, replaceAudioTrackInPeers)
+}
+
+async function onNoiseSuppressionChange(e: Event) {
+  noiseSuppressionEnabled.value = (e.target as HTMLSelectElement).value === 'on'
+  if (!localStream.value) return
+  await syncPeerAudioTrack(localStream.value, replaceAudioTrackInPeers)
 }
 
 const AVATAR_COLORS = [
@@ -815,6 +839,7 @@ async function handleRoomPassword() {
 }
 
 async function handleLeave() {
+  disposeAudioProcessor()
   await leaveRoom()
   router.push('/home')
 }
@@ -839,6 +864,7 @@ onMounted(async () => {
 onBeforeUnmount(async () => {
   chatSocket.off('new-message')
   chatSocket.off('connect')
+  disposeAudioProcessor()
   await leaveRoom()
 })
 </script>
