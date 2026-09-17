@@ -118,9 +118,13 @@ export function useWebRTC(
 
   async function enableMedia(kinds?: { video?: boolean; audio?: boolean }) {
     try {
+      const wantAudio = kinds?.audio ?? true
       const stream = await navigator.mediaDevices.getUserMedia({
         video: kinds?.video ?? true,
-        audio: kinds?.audio ?? true,
+        // Нативная обработка отключена — шумодавит DeepFilterNet, двойная обработка ухудшает звук
+        audio: wantAudio
+          ? { noiseSuppression: false, autoGainControl: false, echoCancellation: true }
+          : false,
       })
       localStream.value = stream
       mediaDenied.value = false
